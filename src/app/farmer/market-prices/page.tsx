@@ -1,23 +1,47 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { marketPriceService } from '@/services/marketPriceService';
-import { MarketPrice, PriceTrendPoint } from '@/types/farmer';
+import { MarketPrice } from '@/types/farmer';
 import { Card } from '@/components/common/Card';
-import { TrendingUp, ArrowUpRight, ArrowDownRight, Search, Filter } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { formatINR } from '@/lib/utils';
 import { useBandwidth } from '@/context/BandwidthContext';
+import { LiveConnectionBanner, LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState, LiveStreamSubscription } from '@/services/hybridLiveClient';
 
 export default function MandiPricesPage() {
   const [prices, setPrices] = useState<MarketPrice[]>([]);
   const [selectedCommodity, setSelectedCommodity] = useState<string>('All');
   const [selectedState, setSelectedState] = useState<string>('All');
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const subRef = useRef<LiveStreamSubscription<any> | null>(null);
   const { isLowBandwidth } = useBandwidth();
 
-  useEffect(() => {
+  const initPrices = useCallback(() => {
     marketPriceService.getMarketPrices().then(setPrices);
+    if (subRef.current) {
+      subRef.current.unsubscribe();
+    }
+    subRef.current = marketPriceService.subscribeToPrices(
+      (updated) => {
+        setPrices(updated);
+      },
+      (state, _errMsg, updatedTime) => {
+        setLiveState(state);
+        if (updatedTime) setLastUpdated(updatedTime);
+      }
+    );
   }, []);
+
+  useEffect(() => {
+    initPrices();
+    return () => {
+      if (subRef.current) subRef.current.unsubscribe();
+    };
+  }, [initPrices]);
 
   const filtered = prices.filter(p => {
     const matchComm = selectedCommodity === 'All' || p.commodity.toLowerCase() === selectedCommodity.toLowerCase();
@@ -35,12 +59,32 @@ export default function MandiPricesPage() {
     <div className="space-y-6">
       
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Mandi Market Prices & Arbitrage</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Compare daily mandi benchmarks against AgriFlow direct bulk-buyer procurement opportunities.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Mandi Market Prices & Arbitrage</h1>
+            <LiveBadge state={liveState} />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Compare daily mandi benchmarks against AgriFlow direct bulk-buyer procurement opportunities.
+          </p>
+        </div>
       </div>
+
+      {/* Strict Real-Time Live Feed Status Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={() => {
+          if (subRef.current) {
+            subRef.current.reconnect();
+          } else {
+            initPrices();
+          }
+        }}
+        lastUpdated={lastUpdated || undefined}
+        streamName="APMC Mandi Auction Live Stream"
+      />
+
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">

@@ -18,13 +18,13 @@ import {
   ArrowLeft,
   Truck,
   RotateCcw,
-  Wifi,
 } from 'lucide-react';
+import { LiveConnectionBanner, LiveBadge } from '@/components/common/LiveConnectionState';
 
 export default function ConsumerTrackingPage() {
   const params = useParams();
   const id = (params?.id as string) || 'TRK-CONS-ROAD-9021';
-  const { activeTrip, setActiveTripId, refreshTrip } = useTracking();
+  const { activeTrip, setActiveTripId, refreshTrip, liveState, lastUpdated, reconnectLive } = useTracking();
   const { isLowBandwidth } = useBandwidth();
   const [localTrip, setLocalTrip] = useState<DeliveryTracking | null>(null);
   const [loading, setLoading] = useState(true);
@@ -90,12 +90,13 @@ export default function ConsumerTrackingPage() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-            <Wifi className="w-3.5 h-3.5" /> Realtime Telemetry Live
-          </span>
+          <LiveBadge state={liveState} />
           <button
             type="button"
-            onClick={() => refreshTrip()}
+            onClick={() => {
+              refreshTrip();
+              reconnectLive();
+            }}
             className="p-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition"
             title="Refresh state"
           >
@@ -103,6 +104,14 @@ export default function ConsumerTrackingPage() {
           </button>
         </div>
       </div>
+
+      {/* Strict Live Connection Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={reconnectLive}
+        lastUpdated={lastUpdated || undefined}
+        streamName="Highway Reefer IoT Stream"
+      />
 
       {/* Synchronized Delivery Status Header */}
       <DeliveryStatusCard

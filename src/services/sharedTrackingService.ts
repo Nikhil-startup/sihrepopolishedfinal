@@ -1,4 +1,12 @@
 import { DeliveryTracking } from '@/types/delivery';
+import { createLiveStream, getBackendBaseUrl, LiveConnectionState } from './hybridLiveClient';
+
+export interface TrackingSubscriptionHandle {
+  (): void;
+  unsubscribe: () => void;
+  reconnect: () => void;
+  getState: () => LiveConnectionState;
+}
 
 export const mockDeliveryTrips: Record<string, DeliveryTracking> = {
   "TRK-CONS-ROAD-9021": {
@@ -188,13 +196,41 @@ export const sharedTrackingService = {
         t.orderId.toUpperCase() === cleanId
     );
 
-    if (match) return { ...match };
-
-    return {
+    const fallbackTrip = match ? { ...match } : {
       ...defaultMockDeliveryTrip,
       id,
       tripId: id.includes("TRK") ? id : `TRK-${id}`,
     };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 1200);
+        const res = await fetch(`${getBackendBaseUrl()}/api/telematics/latest/${encodeURIComponent(cleanId)}`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        if (res.ok) {
+          const liveData = await res.json();
+          return {
+            ...fallbackTrip,
+            currentCoordinates: [liveData.latitude, liveData.longitude],
+            currentLocationName: liveData.location_name || fallbackTrip.currentLocationName,
+            telemetry: {
+              ...fallbackTrip.telemetry,
+              temperatureCelsius: liveData.temperature_celsius ?? fallbackTrip.telemetry.temperatureCelsius,
+              humidityPercent: liveData.humidity_percent ?? fallbackTrip.telemetry.humidityPercent,
+              spoilageRisk: liveData.spoilage_risk ?? fallbackTrip.telemetry.spoilageRisk,
+              reeferActive: liveData.reefer_active ?? fallbackTrip.telemetry.reeferActive,
+            },
+          };
+        }
+      } catch {
+        // Backend is offline, return fallback snapshot
+      }
+    }
+
+    return fallbackTrip;
   },
 
   async getTrackingByOrderId(orderId: string): Promise<DeliveryTracking | null> {
@@ -211,9 +247,16 @@ export const sharedTrackingService = {
     };
   },
 
-  subscribe(tripId: string, onUpdate: (trip: DeliveryTracking) => void, _onError?: (err: Event) => void): () => void {
-    if (typeof window === 'undefined') return () => {};
-
+  /**
+   * Genuine Live Stream Subscription for Road Reefer IoT Telematics.
+   * ZERO SIMULATED FALLBACK: If disconnected or backend is offline, reports OFFLINE
+   * and never generates fake GPS / temperature points.
+   */
+  subscribe(
+    tripId: string,
+    onUpdate: (trip: DeliveryTracking) => void,
+    onStateChange?: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void
+  ): TrackingSubscriptionHandle {
     const cleanId = tripId.trim().toUpperCase();
     const baseTrip = Object.values(mockDeliveryTrips).find(
       (t) =>
@@ -222,22 +265,46 @@ export const sharedTrackingService = {
         t.orderId.toUpperCase() === cleanId
     ) || defaultMockDeliveryTrip;
 
-    let step = 0;
-    const interval = setInterval(() => {
-      step++;
-      const tempDelta = Math.sin(step) * 0.3;
-      const updated: DeliveryTracking = {
-        ...baseTrip,
-        telemetry: {
-          ...baseTrip.telemetry,
-          temperatureCelsius: Number((5.8 + tempDelta).toFixed(1)),
-          humidityPercent: Math.min(95, Math.max(80, Math.round(86 + Math.cos(step) * 2))),
-        },
-      };
-      onUpdate(updated);
-    }, 3000);
+    let currentTripState = { ...baseTrip };
+    let lastUpdatedTime: string | undefined = undefined;
 
-    return () => clearInterval(interval);
+    const liveSub = createLiveStream<any>(
+      `/ws/telematics/${encodeURIComponent(cleanId)}`,
+      (packet) => {
+        if (packet && typeof packet.latitude === 'number' && typeof packet.longitude === 'number') {
+          lastUpdatedTime = packet.last_updated || new Date().toLocaleTimeString();
+          currentTripState = {
+            ...currentTripState,
+            currentCoordinates: [packet.latitude, packet.longitude],
+            currentLocationName: packet.location_name || currentTripState.currentLocationName,
+            telemetry: {
+              ...currentTripState.telemetry,
+              temperatureCelsius: typeof packet.temperature_celsius === 'number' ? packet.temperature_celsius : currentTripState.telemetry.temperatureCelsius,
+              targetTempCelsius: typeof packet.target_temp_celsius === 'number' ? packet.target_temp_celsius : currentTripState.telemetry.targetTempCelsius,
+              humidityPercent: typeof packet.humidity_percent === 'number' ? packet.humidity_percent : currentTripState.telemetry.humidityPercent,
+              spoilageRisk: packet.spoilage_risk || currentTripState.telemetry.spoilageRisk,
+              reeferActive: typeof packet.reefer_active === 'boolean' ? packet.reefer_active : currentTripState.telemetry.reeferActive,
+            },
+          };
+          onUpdate(currentTripState);
+          onStateChange?.('LIVE', undefined, lastUpdatedTime);
+        }
+      },
+      (state, errorMsg) => {
+        onStateChange?.(state, errorMsg, lastUpdatedTime);
+      }
+    );
+
+    const fn = (() => {
+      liveSub.unsubscribe();
+    }) as TrackingSubscriptionHandle;
+
+    fn.unsubscribe = () => liveSub.unsubscribe();
+    fn.reconnect = () => liveSub.reconnect();
+    fn.getState = () => liveSub.getState();
+
+    return fn;
   },
 };
+
 

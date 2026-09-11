@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { DeliveryTracking } from '@/types/delivery';
-import { sharedTrackingService } from '@/services/sharedTrackingService';
+import { sharedTrackingService, TrackingSubscriptionHandle } from '@/services/sharedTrackingService';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 interface TrackingContextType {
   getTrip: (id: string) => DeliveryTracking | null;
@@ -11,6 +12,9 @@ interface TrackingContextType {
   isLoading: boolean;
   error: string | null;
   refreshTrip: () => Promise<void>;
+  liveState: LiveConnectionState;
+  lastUpdated: string | null;
+  reconnectLive: () => void;
 }
 
 const TrackingContext = createContext<TrackingContextType | undefined>(undefined);
@@ -22,6 +26,9 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   const [activeTrip, setActiveTrip] = useState<DeliveryTracking | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const subRef = useRef<TrackingSubscriptionHandle | null>(null);
 
   const fetchTrip = useCallback(async () => {
     if (!activeTripId) return;
@@ -42,24 +49,38 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     fetchTrip();
   }, [fetchTrip]);
 
-  // Subscribe to simulated real-time telemetry updates
+  // Subscribe to genuine real-time IoT road telematics stream (ZERO simulated fallback)
   useEffect(() => {
     if (!activeTripId) return;
 
-    const unsubscribe = sharedTrackingService.subscribe(
+    const sub = sharedTrackingService.subscribe(
       activeTripId,
       (updatedTrip) => {
         setActiveTrip(updatedTrip);
       },
-      () => {
-        // Handled silently or state set
+      (state, _errMsg, updatedTime) => {
+        setLiveState(state);
+        if (updatedTime) {
+          setLastUpdated(updatedTime);
+        }
       }
     );
 
+    subRef.current = sub;
+
     return () => {
-      unsubscribe();
+      sub.unsubscribe();
+      subRef.current = null;
     };
   }, [activeTripId]);
+
+  const reconnectLive = useCallback(() => {
+    if (subRef.current) {
+      subRef.current.reconnect();
+    } else {
+      fetchTrip();
+    }
+  }, [fetchTrip]);
 
   const getTrip = useCallback((id: string): DeliveryTracking | null => {
     if (id === activeTrip?.id || id === activeTrip?.tripId || id === activeTrip?.orderId) {
@@ -77,6 +98,9 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
         isLoading,
         error,
         refreshTrip: fetchTrip,
+        liveState,
+        lastUpdated,
+        reconnectLive,
       }}
     >
       {children}
@@ -91,3 +115,4 @@ export function useTracking() {
   }
   return context;
 }
+
