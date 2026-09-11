@@ -25,12 +25,17 @@ connect_args = {}
 if "sqlite" in DATABASE_URL:
     connect_args["check_same_thread"] = False
 
-engine = create_engine(
-    DATABASE_URL,
-    pool_pre_ping=True,
-    pool_recycle=300,
-    connect_args=connect_args
-)
+try:
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,
+        pool_recycle=300,
+        connect_args=connect_args
+    )
+except Exception as e:
+    print(f"Warning: Failed to create engine with primary URL ({e}), falling back...")
+    engine = create_engine("sqlite:///./agriflow_fallback.db", connect_args={"check_same_thread": False})
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
