@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: agriflow-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 8000
+      - key: DATABASE_URL
+        sync: false
+      - key: NEON_AUTH_JWKS_URL
+        sync: false
