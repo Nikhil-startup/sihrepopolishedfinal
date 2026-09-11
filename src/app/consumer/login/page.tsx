@@ -66,10 +66,10 @@ export default function ConsumerLoginPage() {
           <Store className="w-8 h-8" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white">
-          Buyer Portal Login
+          {t('consumer.buyerLoginTitle', 'Buyer Portal Login')}
         </h1>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Direct farm-gate access with escrow safety & quality assurance
+          {t('consumer.buyerLoginSubtitle', 'Direct farm-gate access with escrow safety & quality assurance')}
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function ConsumerLoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5">
-              Email or Mobile Number
+              {t('consumer.emailOrMobile', 'Email or Mobile Number')}
             </label>
             <input
               type="text"
@@ -98,7 +98,7 @@ export default function ConsumerLoginPage() {
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                Password
+                {t('consumer.password', 'Password')}
               </label>
               <span className="text-[11px] text-zinc-400">Demo PIN: 1234</span>
             </div>
@@ -121,7 +121,7 @@ export default function ConsumerLoginPage() {
               <span className="inline-block animate-spin">⏳</span>
             ) : (
               <>
-                <LogIn className="w-4 h-4" /> Sign In to Buyer Portal
+                <LogIn className="w-4 h-4" /> {t('consumer.signInBuyer', 'Sign In to Buyer Portal')}
               </>
             )}
           </button>
@@ -130,7 +130,7 @@ export default function ConsumerLoginPage() {
         {/* Quick Demo Logins for SIH Judges */}
         <div className="pt-4 border-t border-zinc-200 dark:border-zinc-800 space-y-3">
           <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block text-center">
-            ⚡ Quick SIH Demo Personas
+            {t('consumer.quickDemoPersonas', '⚡ Quick SIH Demo Personas')}
           </span>
 
           <div className="grid grid-cols-2 gap-2">
@@ -140,9 +140,9 @@ export default function ConsumerLoginPage() {
               className="p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-left transition-colors"
             >
               <span className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-emerald-500" /> Bulk Buyer
+                <Building2 className="w-3.5 h-3.5 text-emerald-500" /> {t('consumer.bulkBuyer', 'Bulk Buyer')}
               </span>
-              <span className="text-[10px] text-zinc-500 block">5 Ton Hyderabad Tomato</span>
+              <span className="text-[10px] text-zinc-500 block">{t('consumer.bulkBuyerDesc', '5 Ton Hyderabad Tomato')}</span>
             </button>
 
             <button
@@ -151,7 +151,7 @@ export default function ConsumerLoginPage() {
               className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-left transition-colors"
             >
               <span className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                <Utensils className="w-3.5 h-3.5 text-amber-500" /> Restaurant
+                <Utensils className="w-3.5 h-3.5 text-amber-500" /> {t('auth.restaurant', 'Restaurant')}
               </span>
               <span className="text-[10px] text-zinc-500 block">Chef Ananya (150 kg)</span>
             </button>
@@ -162,7 +162,7 @@ export default function ConsumerLoginPage() {
               className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-left transition-colors"
             >
               <span className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                <ShoppingBag className="w-3.5 h-3.5 text-cyan-500" /> Supermarket
+                <ShoppingBag className="w-3.5 h-3.5 text-cyan-500" /> {t('auth.retailer', 'Supermarket')}
               </span>
               <span className="text-[10px] text-zinc-500 block">FreshMart Superstore</span>
             </button>
@@ -173,7 +173,7 @@ export default function ConsumerLoginPage() {
               className="p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-left transition-colors"
             >
               <span className="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                <Home className="w-3.5 h-3.5 text-purple-500" /> Household
+                <Home className="w-3.5 h-3.5 text-purple-500" /> {t('auth.household', 'Household')}
               </span>
               <span className="text-[10px] text-zinc-500 block">Family Kitchen (10 kg)</span>
             </button>
@@ -181,9 +181,9 @@ export default function ConsumerLoginPage() {
         </div>
 
         <div className="pt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-          New buyer on AgriFlow?{' '}
+          {t('auth.notRegistered', "Don't have an account?")}{' '}
           <Link href="/consumer/register" className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
-            Create an Account
+            {t('consumer.landing.createAccount', 'Create an Account')}
           </Link>
         </div>
       </div>

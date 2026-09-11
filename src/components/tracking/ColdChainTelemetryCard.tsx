@@ -3,12 +3,15 @@
 import React from 'react';
 import { ColdChainTelemetry, SpoilageRiskLevel } from '@/types/delivery';
 import { Thermometer, Snowflake, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 interface ColdChainTelemetryCardProps {
   telemetry: ColdChainTelemetry;
 }
 
 export default function ColdChainTelemetryCard({ telemetry }: ColdChainTelemetryCardProps) {
+  const { t } = useI18n();
+
   const getRiskColor = (risk: SpoilageRiskLevel) => {
     switch (risk) {
       case 'LOW':
@@ -20,46 +23,57 @@ export default function ColdChainTelemetryCard({ telemetry }: ColdChainTelemetry
     }
   };
 
+  const getRiskText = (risk: SpoilageRiskLevel) => {
+    switch (risk) {
+      case 'LOW':
+        return t('common.low');
+      case 'MEDIUM':
+        return t('common.medium');
+      case 'HIGH':
+        return t('common.high');
+    }
+  };
+
   return (
     <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-          <Snowflake className="w-4 h-4 text-cyan-500" /> Cold-Chain Telemetry & Spoilage
+          <Snowflake className="w-4 h-4 text-cyan-500" /> {t('tracking.coldChainTelemetry')}
         </span>
         <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700">
-          SIMULATED TELEMETRY
+          {t('tracking.simulatedTelemetry')}
         </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {/* Current Temp */}
         <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-          <span className="text-[11px] text-slate-400 block font-medium">Reefer Temp</span>
+          <span className="text-[11px] text-slate-400 block font-medium">{t('tracking.reeferTemp')}</span>
           <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
             {telemetry.temperatureCelsius}°C
           </div>
-          <span className="text-[10px] text-slate-500">Target: {telemetry.targetTempCelsius}°C</span>
+          <span className="text-[10px] text-slate-500">{t('tracking.target')}: {telemetry.targetTempCelsius}°C</span>
         </div>
 
         {/* Safe Window */}
         <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
-          <span className="text-[11px] text-slate-400 block font-medium">Safe Freshness Window</span>
+          <span className="text-[11px] text-slate-400 block font-medium">{t('tracking.safeFreshnessWindow')}</span>
           <div className="text-2xl font-black text-slate-900 dark:text-white mt-0.5">
             {telemetry.safeWindowHours}h {telemetry.safeWindowMinutes}m
           </div>
-          <span className="text-[10px] text-slate-500">Humidity: {telemetry.humidityPercent}% RH</span>
+          <span className="text-[10px] text-slate-500">{t('tracking.humidity')}: {telemetry.humidityPercent}% RH</span>
         </div>
 
         {/* Spoilage Risk */}
         <div className={`p-3.5 rounded-2xl border col-span-2 sm:col-span-1 ${getRiskColor(telemetry.spoilageRisk)}`}>
-          <span className="text-[11px] block font-medium opacity-80">Spoilage Risk Level</span>
+          <span className="text-[11px] block font-medium opacity-80">{t('tracking.spoilageRisk')}</span>
           <div className="text-2xl font-black mt-0.5 flex items-center gap-1">
             {telemetry.spoilageRisk === 'LOW' && <ShieldCheck className="w-5 h-5" />}
             {telemetry.spoilageRisk !== 'LOW' && <AlertTriangle className="w-5 h-5" />}
-            {telemetry.spoilageRisk}
+            {getRiskText(telemetry.spoilageRisk)}
           </div>
           <span className="text-[10px] opacity-80">
-            {telemetry.reeferActive ? 'Reefer: RUNNING' : 'Ambient Ventilated'}
+            {telemetry.reeferActive ? t('tracking.reeferRunning') : t('tracking.ambientVentilated')}
           </span>
         </div>
       </div>
@@ -70,3 +84,4 @@ export default function ColdChainTelemetryCard({ telemetry }: ColdChainTelemetry
     </div>
   );
 }
+

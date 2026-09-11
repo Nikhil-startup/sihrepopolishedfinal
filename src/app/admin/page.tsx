@@ -16,38 +16,43 @@ import {
   ExternalLink,
   Sprout
 } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { ConnectionIndicator } from '@/components/common/ConnectionIndicator';
 
 export default function AdminCommandCenterPage() {
+  const { t } = useI18n();
+
   const portalLinks = [
     {
-      title: 'Farmer & FPO Decision Center',
-      description: 'Unified AI pricing, weather shock simulator, buyer ranking & storage optimizer',
+      title: t('admin.portal1Title'),
+      description: t('admin.portal1Desc'),
       href: '/farmer/intelligence',
-      badge: 'Dynamic AI Core',
+      badge: t('admin.portal1Badge'),
       icon: Sprout,
       color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20',
     },
     {
-      title: 'Consumer & Buyer Marketplace',
-      description: 'Wholesale direct produce sourcing, verified QC grades & transparent checkout',
+      title: t('admin.portal2Title'),
+      description: t('admin.portal2Desc'),
       href: '/consumer/marketplace',
-      badge: 'Buyer Network',
+      badge: t('admin.portal2Badge'),
       icon: Building2,
       color: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
     },
     {
-      title: 'Road Logistics & Reefer Telemetry',
-      description: 'Live GPS route optimization, IoT temperature sensors & zero-internet SMS fallback',
+      title: t('admin.portal3Title'),
+      description: t('admin.portal3Desc'),
       href: '/logistics',
-      badge: 'Cold Chain',
+      badge: t('admin.portal3Badge'),
       icon: Truck,
       color: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
     },
     {
-      title: 'Universal Lot Traceability Audit',
-      description: '10-step cryptographic provenance from seed sowing to instant bank UPI payout',
+      title: t('admin.portal4Title'),
+      description: t('admin.portal4Desc'),
       href: '/traceability/LOT-2026-7842',
-      badge: 'Verified Ledger',
+      badge: t('admin.portal4Badge'),
       icon: ShieldCheck,
       color: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
     },
@@ -65,28 +70,30 @@ export default function AdminCommandCenterPage() {
           <div>
             <div className='flex items-center gap-2'>
               <span className='text-[11px] font-extrabold uppercase tracking-widest text-emerald-400'>
-                AgriFlow AI Platform Architecture
+                {t('admin.architecture')}
               </span>
               <span className='w-2 h-2 rounded-full bg-emerald-400 animate-pulse' />
             </div>
             <h1 className='text-2xl sm:text-3xl font-black text-white tracking-tight'>
-              Admin Command & Coordination Center
+              {t('admin.title')}
             </h1>
           </div>
         </div>
 
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 sm:gap-3 flex-wrap'>
+          <ConnectionIndicator />
+          <LanguageSelector variant="compact" />
           <Link
             href='/'
             className='px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition border border-slate-700'
           >
-            Public Gateway
+            {t('admin.gatewayBtn')}
           </Link>
           <Link
             href='/farmer/intelligence'
             className='px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-md'
           >
-            <Sparkles className='w-4 h-4' /> Launch Farmer AI
+            <Sparkles className='w-4 h-4' /> {t('admin.launchAiBtn')}
           </Link>
         </div>
       </div>
@@ -96,46 +103,46 @@ export default function AdminCommandCenterPage() {
         {/* Platform Overview Metric Cards */}
         <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3'>
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Active Farmers</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.activeFarmers')}</span>
             <span className='text-xl font-black text-white block'>1,284</span>
-            <span className='text-[10px] text-emerald-400 font-semibold'>+12% this month</span>
+            <span className='text-[10px] text-emerald-400 font-semibold'>{t('admin.thisMonth')}</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Verified Buyers</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.verifiedBuyers')}</span>
             <span className='text-xl font-black text-white block'>342</span>
-            <span className='text-[10px] text-blue-400 font-semibold'>Direct retail & FPOs</span>
+            <span className='text-[10px] text-blue-400 font-semibold'>{t('admin.retailFpos')}</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Active Reefer Fleet</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.activeFleet')}</span>
             <span className='text-xl font-black text-white block'>86</span>
-            <span className='text-[10px] text-amber-400 font-semibold'>100% IoT Telemetry</span>
+            <span className='text-[10px] text-amber-400 font-semibold'>{t('admin.iotTelemetry')}</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Daily Volume</span>
-            <span className='text-xl font-black text-white block'>48.5 <span className='text-xs text-slate-400'>Tons</span></span>
-            <span className='text-[10px] text-slate-400 font-semibold'>Direct trade</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.dailyVolume')}</span>
+            <span className='text-xl font-black text-white block'>48.5 <span className='text-xs text-slate-400'>{t('admin.tons')}</span></span>
+            <span className='text-[10px] text-slate-400 font-semibold'>{t('admin.directTrade')}</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Food Loss Salvaged</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.foodLossSalvaged')}</span>
             <span className='text-xl font-black text-emerald-400 block'>12,400 <span className='text-xs text-slate-400'>kg</span></span>
-            <span className='text-[10px] text-emerald-400 font-semibold'>Via 5 rescue paths</span>
+            <span className='text-[10px] text-emerald-400 font-semibold'>{t('admin.rescuePaths')}</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Avg. Farmer Uplift</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.avgUplift')}</span>
             <span className='text-xl font-black text-emerald-400 block'>+18.4%</span>
-            <span className='text-[10px] text-slate-400 font-semibold'>Over mandi spot</span>
+            <span className='text-[10px] text-slate-400 font-semibold'>{t('admin.overMandi')}</span>
           </div>
         </div>
 
         {/* Portal Quick Launcher Grid */}
         <div className='space-y-3'>
           <h2 className='text-base font-extrabold uppercase tracking-wider text-slate-400'>
-            Unified Platform Architecture Gateways
+            {t('admin.gatewaysTitle')}
           </h2>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
             {portalLinks.map((portal, idx) => {
@@ -183,14 +190,14 @@ export default function AdminCommandCenterPage() {
               </div>
               <div>
                 <h3 className='text-base font-bold text-white'>
-                  Live Weather Shock & Shortage Surveillance
+                  {t('admin.weatherWatchTitle')}
                 </h3>
                 <p className='text-xs text-slate-400'>
-                  Oracle feeds automatically tuning price elasticity across production clusters
+                  {t('admin.weatherWatchDesc')}
                 </p>
               </div>
             </div>
-            <span className='text-xs text-slate-500'>Updated 8 mins ago</span>
+            <span className='text-xs text-slate-500'>{t('admin.updatedAgo')}</span>
           </div>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs'>
@@ -207,7 +214,7 @@ export default function AdminCommandCenterPage() {
               <div className='flex items-center justify-between text-[11px] pt-1 border-t border-slate-700 text-slate-400'>
                 <span>Affected Crops: Tomato, Green Chilli</span>
                 <Link href='/farmer/weather-shock' className='text-emerald-400 hover:underline font-bold'>
-                  Inspect Model &rarr;
+                  {t('admin.inspectModel')}
                 </Link>
               </div>
             </div>
@@ -225,7 +232,7 @@ export default function AdminCommandCenterPage() {
               <div className='flex items-center justify-between text-[11px] pt-1 border-t border-slate-700 text-slate-400'>
                 <span>Affected Crops: Onion (Nashik Red)</span>
                 <Link href='/farmer/intelligence' className='text-emerald-400 hover:underline font-bold'>
-                  Inspect Model &rarr;
+                  {t('admin.inspectModel')}
                 </Link>
               </div>
             </div>

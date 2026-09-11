@@ -50,13 +50,13 @@ export default function ConsumerProfilePage() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
         <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-          Account & Warehousing
+          {t('profile', 'Account & Warehousing')}
         </span>
         <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
-          Buyer Profile & Sourcing Rules
+          {t('consumer.buyerProfileTitle', 'Buyer Profile & Sourcing Rules')}
         </h1>
         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-          Configure default logistics corridors, quality grade standards, and entity contact details.
+          {t('consumer.buyerProfileSubtitle', 'Configure default logistics corridors, quality grade standards, and entity contact details.')}
         </p>
       </div>
 
@@ -78,7 +78,7 @@ export default function ConsumerProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Full Name / Organization
+                {t('farmer.profile.name', 'Full Name / Organization')}
               </label>
               <input
                 type="text"
@@ -91,7 +91,7 @@ export default function ConsumerProfilePage() {
 
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Official Phone Number
+                {t('farmer.profile.phone', 'Official Phone Number')}
               </label>
               <input
                 type="text"
@@ -104,7 +104,7 @@ export default function ConsumerProfilePage() {
 
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Email Address
+                {t('farmer.profile.email', 'Email Address')}
               </label>
               <input
                 type="email"
@@ -117,7 +117,7 @@ export default function ConsumerProfilePage() {
 
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Primary City / State
+                {t('farmer.profile.location', 'Primary City / State')}
               </label>
               <input
                 type="text"
@@ -130,33 +130,33 @@ export default function ConsumerProfilePage() {
 
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Buyer Category
+                {t('consumer.buyerCategory', 'Buyer Category')}
               </label>
               <select
                 value={buyerType}
                 onChange={(e) => setBuyerType(e.target.value as BuyerType)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-semibold text-zinc-900 dark:text-white"
               >
-                <option value="bulk-buyer">Bulk Commercial Buyer (Wholesale/Mandi)</option>
-                <option value="restaurant">Restaurant & Cloud Kitchen</option>
-                <option value="retailer">Retailer & Supermarket</option>
+                <option value="bulk-buyer">{t('consumer.bulkBuyer', 'Bulk Commercial Buyer')}</option>
+                <option value="restaurant">{t('auth.restaurant', 'Restaurant & Cloud Kitchen')}</option>
+                <option value="retailer">{t('auth.retailer', 'Retailer & Supermarket')}</option>
                 <option value="institution">Institutional Buyer (Canteen/Hostel)</option>
-                <option value="household">Direct Household Buyer</option>
+                <option value="household">{t('auth.household', 'Direct Household Buyer')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                Default Produce Quality Standard
+                {t('grade', 'Default Produce Quality Standard')}
               </label>
               <select
                 value={preferredGrade}
                 onChange={(e) => setPreferredGrade(e.target.value as ProduceGrade)}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs font-semibold text-zinc-900 dark:text-white"
               >
-                <option value="A">Grade A Premium (Uniform / Export Quality)</option>
-                <option value="B">Grade B Value (Commercial Processing)</option>
-                <option value="Organic Certified">Organic Certified (Zero Chemical)</option>
+                <option value="A">{t('consumer.gradeAPremium', 'Grade A Premium')}</option>
+                <option value="B">{t('consumer.gradeBValue', 'Grade B Value')}</option>
+                <option value="Organic Certified">{t('consumer.organicCertified', 'Organic Certified')}</option>
               </select>
             </div>
           </div>
@@ -165,7 +165,7 @@ export default function ConsumerProfilePage() {
           <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-1.5">
               <MapPin className="w-4 h-4 text-emerald-500" />
-              Saved Delivery Hubs & Corridors
+              {t('consumer.deliveryDestination', 'Saved Delivery Hubs & Corridors')}
             </h3>
 
             <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
@@ -178,7 +178,7 @@ export default function ConsumerProfilePage() {
                 </p>
               </div>
               <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60">
-                Active
+                {t('status.active', 'Active')}
               </span>
             </div>
           </div>
@@ -186,17 +186,17 @@ export default function ConsumerProfilePage() {
           <div className="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
             {savedSuccess ? (
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" /> Profile updated successfully!
+                <CheckCircle2 className="w-4 h-4" /> {t('saved', 'Profile updated successfully!')}
               </span>
             ) : (
-              <span className="text-xs text-zinc-400">All changes persist in local smart storage.</span>
+              <span className="text-xs text-zinc-400">{t('farmer.profile.savedInStorage', 'All changes persist in local smart storage.')}</span>
             )}
 
             <button
               type="submit"
               className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-2 shadow-md shadow-emerald-600/20 transition-all"
             >
-              <Save className="w-4 h-4" /> Save Profile Preferences
+              <Save className="w-4 h-4" /> {t('save', 'Save Profile Preferences')}
             </button>
           </div>
         </div>

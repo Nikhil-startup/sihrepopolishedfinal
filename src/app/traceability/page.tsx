@@ -4,12 +4,16 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, QrCode, ArrowRight, Search, CheckCircle2, Lock } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
 
 export default function TraceabilityLookupPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [lotInput, setLotInput] = useState('LOT-2026-7842');
 
   const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
     if (lotInput.trim()) {
       router.push(`/traceability/${encodeURIComponent(lotInput.trim())}`);
     }
@@ -22,11 +26,14 @@ export default function TraceabilityLookupPage() {
       <div className='bg-emerald-900 text-emerald-100 text-xs py-2 px-4 flex items-center justify-between'>
         <span className='font-bold flex items-center gap-1.5'>
           <ShieldCheck className='w-4 h-4 text-emerald-400' />
-          AgriFlow Universal Provenance & Cold-Chain Ledger
+          {t('traceability.ledgerBanner')}
         </span>
-        <Link href='/' className='hover:text-white font-bold text-xs'>
-          Back to Gateway &rarr;
-        </Link>
+        <div className='flex items-center gap-3'>
+          <LanguageSelector variant="compact" />
+          <Link href='/' className='hover:text-white font-bold text-xs'>
+            {t('nav.backToGateway')} &rarr;
+          </Link>
+        </div>
       </div>
 
       <main className='flex-1 max-w-3xl w-full mx-auto px-4 py-12 flex flex-col justify-center items-center space-y-8 text-center'>
@@ -36,10 +43,10 @@ export default function TraceabilityLookupPage() {
 
         <div className='space-y-2'>
           <h1 className='text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white'>
-            Verify Produce Provenance
+            {t('traceability.searchTitle')}
           </h1>
           <p className='text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto'>
-            Enter a Batch / Lot ID to audit complete 10-step cryptographic provenance from farm soil to cold-chain delivery and farmer payout.
+            {t('traceability.searchSubtitle')}
           </p>
         </div>
 
@@ -59,33 +66,33 @@ export default function TraceabilityLookupPage() {
             type='submit'
             className='px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-md transition flex items-center gap-1.5 shrink-0'
           >
-            Verify <ArrowRight className='w-4 h-4' />
+            {t('traceability.verifyBtn')} <ArrowRight className='w-4 h-4' />
           </button>
         </form>
 
         {/* Demo Callout */}
         <div className='bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 max-w-md w-full text-left space-y-2 text-xs'>
           <div className='flex items-center justify-between'>
-            <span className='font-bold text-slate-700 dark:text-slate-300'>Featured Verified Batch:</span>
+            <span className='font-bold text-slate-700 dark:text-slate-300'>{t('traceability.featuredBatch')}</span>
             <span className='px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[10px]'>
-              10/10 Steps Completed
+              {t('traceability.stepsCompleted')}
             </span>
           </div>
           <div className='flex items-center justify-between text-slate-500'>
-            <span>Batch: <strong className='text-slate-800 dark:text-slate-200'>LOT-2026-7842</strong></span>
+            <span>{t('traceability.batch')}: <strong className='text-slate-800 dark:text-slate-200'>LOT-2026-7842</strong></span>
             <span>Tomato (Hybrid Desi) &bull; 600 kg</span>
           </div>
           <Link
             href='/traceability/LOT-2026-7842'
             className='block text-center py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-bold transition'
           >
-            View Full Lifecycle Audit Report &rarr;
+            {t('traceability.viewReport')}
           </Link>
         </div>
 
         <div className='flex items-center gap-6 text-xs text-slate-400'>
-          <span className='flex items-center gap-1.5'><Lock className='w-3.5 h-3.5 text-emerald-500' /> SHA-256 Verified Hashes</span>
-          <span className='flex items-center gap-1.5'><CheckCircle2 className='w-3.5 h-3.5 text-emerald-500' /> IoT Reefer Telemetry Pass</span>
+          <span className='flex items-center gap-1.5'><Lock className='w-3.5 h-3.5 text-emerald-500' /> {t('traceability.shaVerified')}</span>
+          <span className='flex items-center gap-1.5'><CheckCircle2 className='w-3.5 h-3.5 text-emerald-500' /> {t('traceability.iotPass')}</span>
         </div>
       </main>
     </div>

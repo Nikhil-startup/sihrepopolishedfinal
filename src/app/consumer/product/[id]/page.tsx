@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
     return (
       <div className="py-24 text-center space-y-3">
         <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-xs text-zinc-400">Loading verified harvest details...</p>
+        <p className="text-xs text-zinc-400">{t('common.loadingFreshProduce', 'Loading verified harvest details...')}</p>
       </div>
     );
   }
@@ -68,10 +68,10 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="py-20 text-center space-y-4">
-        <h2 className="text-xl font-bold">Produce Not Found</h2>
-        <p className="text-xs text-zinc-500">The product batch requested may have expired or sold out.</p>
+        <h2 className="text-xl font-bold">{t('consumer.noProductsFound', 'Produce Not Found')}</h2>
+        <p className="text-xs text-zinc-500">{t('consumer.tryResetting', 'The product batch requested may have expired or sold out.')}</p>
         <Link href="/consumer/marketplace" className="inline-flex px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">
-          Return to Marketplace
+          {t('consumer.exploreMarketplace', 'Return to Marketplace')}
         </Link>
       </div>
     );
@@ -102,7 +102,7 @@ export default function ProductDetailPage() {
         href="/consumer/marketplace"
         className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-emerald-600 transition-colors"
       >
-        <ArrowLeft className="w-4 h-4" /> Back to Marketplace
+        <ArrowLeft className="w-4 h-4" /> {t('consumer.exploreMarketplace', 'Back to Marketplace')}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -116,11 +116,11 @@ export default function ProductDetailPage() {
             />
             <div className="absolute top-4 left-4 flex flex-wrap gap-2">
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/90 dark:bg-zinc-900/90 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 backdrop-blur-md shadow-sm">
-                Grade {product.grade}
+                {t('grade', 'Grade')} {product.grade}
               </span>
               {product.isColdChainEligible && (
                 <span className="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/90 text-white backdrop-blur-md flex items-center gap-1 shadow-sm">
-                  <Snowflake className="w-3.5 h-3.5" /> Cold-Chain
+                  <Snowflake className="w-3.5 h-3.5" /> {t('logistics.liveColdChainTelemetry', 'Cold-Chain')}
                 </span>
               )}
             </div>
@@ -141,24 +141,24 @@ export default function ProductDetailPage() {
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-500" />
-                  AI Computer-Vision Quality Assessment
+                  {t('qualityScore', 'AI Quality Assessment')}
                 </h4>
                 <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded">
-                  Passed (98.4%)
+                  {t('status.completed', 'Passed')} (98.4%)
                 </span>
               </div>
 
               <div className="grid grid-cols-3 gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800 text-center">
                 <div className="p-2.5 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl">
-                  <span className="text-[10px] text-zinc-400 block">Color Uniformity</span>
+                  <span className="text-[10px] text-zinc-400 block">{t('qualityScore', 'Color Uniformity')}</span>
                   <span className="text-sm font-black text-zinc-900 dark:text-white">{product.qualityInspectionReport.colorScore}/100</span>
                 </div>
                 <div className="p-2.5 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl">
-                  <span className="text-[10px] text-zinc-400 block">Firmness Index</span>
+                  <span className="text-[10px] text-zinc-400 block">{t('qualityScore', 'Firmness Index')}</span>
                   <span className="text-sm font-black text-zinc-900 dark:text-white">{product.qualityInspectionReport.firmnessScore}/100</span>
                 </div>
                 <div className="p-2.5 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl">
-                  <span className="text-[10px] text-zinc-400 block">Surface Defect</span>
+                  <span className="text-[10px] text-zinc-400 block">{t('spoilageRisk', 'Surface Defect')}</span>
                   <span className="text-sm font-black text-emerald-500">{product.qualityInspectionReport.defectPercentage}%</span>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export default function ProductDetailPage() {
               onClick={() => setShowFarmerModal(true)}
               className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-800 hover:bg-emerald-100 dark:hover:bg-zinc-700 text-xs font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors shadow-sm"
             >
-              Know Farmer
+              {t('consumer.viewStory', 'Know Farmer')}
             </button>
           </div>
 
@@ -217,7 +217,7 @@ export default function ProductDetailPage() {
           {product.bulkTiers && product.bulkTiers.length > 0 && (
             <div className="space-y-3">
               <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-                Wholesale Volume Price Tiers
+                {t('consumer.landing.bulkBuyersTitle', 'Wholesale Volume Price Tiers')}
               </h4>
               <div className="grid grid-cols-3 gap-2">
                 {product.bulkTiers.map((tier, i) => {
@@ -254,19 +254,19 @@ export default function ProductDetailPage() {
           {/* Sourcing Specs */}
           <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-800 grid grid-cols-2 gap-3 text-xs">
             <div>
-              <span className="text-zinc-400 block">Available Volume</span>
+              <span className="text-zinc-400 block">{t('quantity', 'Available Volume')}</span>
               <span className="font-bold text-zinc-900 dark:text-white">{product.availableQuantityKg.toLocaleString('en-IN')} kg</span>
             </div>
             <div>
-              <span className="text-zinc-400 block">Optimal Temp</span>
+              <span className="text-zinc-400 block">{t('logistics.reeferClimate', 'Optimal Temp')}</span>
               <span className="font-bold text-cyan-600 dark:text-cyan-400">{product.optimalStorageTempCelsius || 8}°C (Reefer Safe)</span>
             </div>
             <div>
-              <span className="text-zinc-400 block">Shelf Life</span>
+              <span className="text-zinc-400 block">{t('farmer.spoilageSafeWindow', 'Shelf Life')}</span>
               <span className="font-bold text-zinc-900 dark:text-white">{product.shelfLifeDays || 7} Days</span>
             </div>
             <div>
-              <span className="text-zinc-400 block">Minimum Order</span>
+              <span className="text-zinc-400 block">{t('farmer.minOrderQuantity', 'Minimum Order')}</span>
               <span className="font-bold text-zinc-900 dark:text-white">{product.minOrderQuantityKg || 1} kg</span>
             </div>
           </div>
@@ -275,7 +275,7 @@ export default function ProductDetailPage() {
           <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-5">
             <div className="flex items-baseline justify-between">
               <div>
-                <span className="text-xs text-zinc-400 block">Total Order Price</span>
+                <span className="text-xs text-zinc-400 block">{t('total', 'Total Order Price')}</span>
                 <span className="text-3xl font-black text-zinc-900 dark:text-white">
                   ₹{totalPrice.toLocaleString('en-IN')}
                 </span>
@@ -325,7 +325,7 @@ export default function ProductDetailPage() {
                 }`}
               >
                 {isAdded ? <Check className="w-4 h-4" /> : <ShoppingBag className="w-4 h-4" />}
-                {isAdded ? `Added ${quantity}kg` : 'Add to Cart'}
+                {isAdded ? `${t('consumer.added', 'Added')} ${quantity}kg` : t('consumer.addToCart', 'Add to Cart')}
               </button>
 
               <button
@@ -336,7 +336,7 @@ export default function ProductDetailPage() {
                 }}
                 className="py-3.5 px-4 rounded-xl bg-zinc-900 dark:bg-zinc-100 hover:bg-zinc-800 dark:hover:bg-white text-white dark:text-zinc-900 font-bold text-xs shadow-md transition-colors"
               >
-                Direct Sourcing Order
+                {t('consumer.confirmOrder', 'Direct Sourcing Order')}
               </button>
             </div>
 
@@ -348,7 +348,7 @@ export default function ProductDetailPage() {
                 className="text-[11px] font-bold text-zinc-400 hover:text-rose-500 transition inline-flex items-center gap-1"
               >
                 <Flag className="w-3 h-3" />
-                Report listing inaccuracy or quality issue
+                {t('reports.title', 'Report listing inaccuracy or quality issue')}
               </button>
             </div>
           </div>

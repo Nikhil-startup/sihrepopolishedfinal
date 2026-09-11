@@ -13,8 +13,11 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { WhatIfSimulator } from '@/components/intelligence/WhatIfSimulator';
+import { useI18n } from '@/context/I18nContext';
 
 export default function WeatherShockDeepDivePage() {
+  const { t } = useI18n();
+
   return (
     <div className='space-y-8 pb-12 animate-in fade-in'>
       
@@ -26,19 +29,19 @@ export default function WeatherShockDeepDivePage() {
               href='/farmer/intelligence'
               className='text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 flex items-center gap-1 transition'
             >
-              <ArrowLeft className='w-3.5 h-3.5' /> AI Decision Center
+              <ArrowLeft className='w-3.5 h-3.5' /> {t('farmer.aiDecisionCenter', 'AI Decision Center')}
             </Link>
             <span className='text-xs text-slate-400'>/</span>
             <span className='text-xs font-bold text-emerald-600 dark:text-emerald-400'>
-              Weather Shock Simulator
+              {t('farmer.weatherSimulator', 'Weather Shock Simulator')}
             </span>
           </div>
 
           <h1 className='text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1'>
-            Weather Shock & Regional Shortage Deep-Dive
+            {t('farmer.weatherDeepDiveTitle', 'Weather Shock & Regional Shortage Deep-Dive')}
           </h1>
           <p className='text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5'>
-            Dynamic mathematical pricing model adjusting for harvest damage, regional supply deficit, and recovery costs.
+            {t('farmer.weatherDeepDiveSubtitle', 'Dynamic mathematical pricing model adjusting for harvest damage, regional supply deficit, and recovery costs.')}
           </p>
         </div>
 
@@ -46,7 +49,7 @@ export default function WeatherShockDeepDivePage() {
           href='/farmer/intelligence'
           className='px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md transition self-start sm:self-auto'
         >
-          View Central Decision Center
+          {t('farmer.viewCentralDecision', 'View Central Decision Center')}
         </Link>
       </div>
 
@@ -58,7 +61,7 @@ export default function WeatherShockDeepDivePage() {
               1
             </span>
             <h4 className='text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300'>
-              Damage Rate vs Shortage
+              {t('farmer.damageVsShortage', 'Damage Rate vs Shortage')}
             </h4>
           </div>
           <p className='text-xs text-slate-600 dark:text-slate-400 leading-relaxed'>
@@ -72,7 +75,7 @@ export default function WeatherShockDeepDivePage() {
               2
             </span>
             <h4 className='text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300'>
-              Minimum Sustainable Price
+              {t('farmer.minSustainablePrice', 'Minimum Sustainable Price')}
             </h4>
           </div>
           <p className='text-xs text-slate-600 dark:text-slate-400 leading-relaxed'>
@@ -86,7 +89,7 @@ export default function WeatherShockDeepDivePage() {
               3
             </span>
             <h4 className='text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300'>
-              Dynamic Price Elasticity
+              {t('farmer.dynamicPriceElasticity', 'Dynamic Price Elasticity')}
             </h4>
           </div>
           <p className='text-xs text-slate-600 dark:text-slate-400 leading-relaxed'>

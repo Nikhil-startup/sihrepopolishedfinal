@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ProduceGrade } from '@/types/consumer';
+import { useI18n } from '@/context/I18nContext';
 import { Sparkles, Award, Shield, CheckCircle2 } from 'lucide-react';
 
 interface GradeFilterTabsProps {
@@ -20,11 +21,12 @@ export const GradeFilterTabs: React.FC<GradeFilterTabsProps> = ({
   onSelectGrade,
   counts,
 }) => {
+  const { t } = useI18n();
   const tabs = [
-    { id: 'all', label: 'All Grades', icon: Sparkles },
-    { id: 'A', label: 'Grade A Premium', icon: Award },
-    { id: 'B', label: 'Grade B Value', icon: CheckCircle2 },
-    { id: 'Organic Certified', label: 'Organic Certified', icon: Shield },
+    { id: 'all', label: t('consumer.allGrades'), icon: Sparkles },
+    { id: 'A', label: t('consumer.gradeAPremium'), icon: Award },
+    { id: 'B', label: t('consumer.gradeBValue'), icon: CheckCircle2 },
+    { id: 'Organic Certified', label: t('consumer.organicCertified'), icon: Shield },
   ];
 
   return (

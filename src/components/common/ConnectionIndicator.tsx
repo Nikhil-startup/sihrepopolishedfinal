@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 export function ConnectionIndicator() {
+  const { t } = useI18n();
   const [isOnline, setIsOnline] = useState(true);
   const [lastSynced, setLastSynced] = useState<string>('');
 
@@ -42,14 +44,14 @@ export function ConnectionIndicator() {
           ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30'
           : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30'
       }`}
-      title={isOnline ? `Online - Last synced at ${lastSynced}` : 'Offline - Showing cached state'}
+      title={isOnline ? t('common.onlineTooltip', { time: lastSynced }) : t('common.offlineTooltip')}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`} />
       <span className="hidden sm:inline font-bold">
-        {isOnline ? `Live (${lastSynced})` : 'Offline'}
+        {isOnline ? `${t('common.live')} (${lastSynced})` : t('common.offline')}
       </span>
       <span className="sm:hidden font-bold">
-        {isOnline ? 'Live' : 'Offline'}
+        {isOnline ? t('common.live') : t('common.offline')}
       </span>
     </div>
   );

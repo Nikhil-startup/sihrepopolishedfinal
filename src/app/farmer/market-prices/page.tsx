@@ -10,8 +10,10 @@ import { formatINR } from '@/lib/utils';
 import { useBandwidth } from '@/context/BandwidthContext';
 import { LiveConnectionBanner, LiveBadge } from '@/components/common/LiveConnectionState';
 import { LiveConnectionState, LiveStreamSubscription } from '@/services/hybridLiveClient';
+import { useI18n } from '@/context/I18nContext';
 
 export default function MandiPricesPage() {
+  const { t } = useI18n();
   const [prices, setPrices] = useState<MarketPrice[]>([]);
   const [selectedCommodity, setSelectedCommodity] = useState<string>('All');
   const [selectedState, setSelectedState] = useState<string>('All');
@@ -62,11 +64,11 @@ export default function MandiPricesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Mandi Market Prices & Arbitrage</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.mandiPricesTitle', 'Mandi Market Prices & Arbitrage')}</h1>
             <LiveBadge state={liveState} />
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Compare daily mandi benchmarks against AgriFlow direct bulk-buyer procurement opportunities.
+            {t('farmer.mandiPricesSubtitle', 'Compare daily mandi benchmarks against AgriFlow direct bulk-buyer procurement opportunities.')}
           </p>
         </div>
       </div>
@@ -89,28 +91,28 @@ export default function MandiPricesPage() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div>
-          <label className="text-[11px] font-bold text-slate-400 block mb-1">Commodity</label>
+          <label className="text-[11px] font-bold text-slate-400 block mb-1">{t('farmer.commodity', 'Commodity')}</label>
           <select
             value={selectedCommodity}
             onChange={(e) => setSelectedCommodity(e.target.value)}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white"
           >
-            <option value="All">All Commodities</option>
-            <option value="Tomato">Tomato</option>
-            <option value="Green Chilli">Green Chilli</option>
-            <option value="Onion">Onion</option>
-            <option value="Potato">Potato</option>
+            <option value="All">{t('farmer.allCommodities', 'All Commodities')}</option>
+            <option value="Tomato">{t('crop.tomato', 'Tomato')}</option>
+            <option value="Green Chilli">{t('crop.greenChilli', 'Green Chilli')}</option>
+            <option value="Onion">{t('crop.onion', 'Onion')}</option>
+            <option value="Potato">{t('crop.potato', 'Potato')}</option>
           </select>
         </div>
 
         <div>
-          <label className="text-[11px] font-bold text-slate-400 block mb-1">State</label>
+          <label className="text-[11px] font-bold text-slate-400 block mb-1">{t('farmer.state', 'State')}</label>
           <select
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
             className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-2 text-xs font-semibold text-slate-800 dark:text-white"
           >
-            <option value="All">All States</option>
+            <option value="All">{t('farmer.allStates', 'All States')}</option>
             <option value="Telangana">Telangana</option>
             <option value="Andhra Pradesh">Andhra Pradesh</option>
             <option value="Karnataka">Karnataka</option>
@@ -123,8 +125,8 @@ export default function MandiPricesPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Mandi vs AgriFlow Buyer Realization (₹/kg)</h3>
-              <p className="text-xs text-slate-400">Green bar represents potential higher realization through direct buyer demand</p>
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('farmer.mandiVsBuyer', 'Mandi vs AgriFlow Buyer Realization (₹/kg)')}</h3>
+              <p className="text-xs text-slate-400">{t('farmer.greenBarNote', 'Green bar represents potential higher realization through direct buyer demand')}</p>
             </div>
           </div>
           <div className="h-64 w-full">
@@ -138,8 +140,8 @@ export default function MandiPricesPage() {
                   formatter={(val: unknown) => [`₹${Number(val) || 0}/kg`, 'Price']}
                 />
                 <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
-                <Bar dataKey="mandiPrice" fill="#64748b" radius={[4, 4, 0, 0]} name="Local Mandi Price" />
-                <Bar dataKey="buyerOpportunity" fill="#10b981" radius={[4, 4, 0, 0]} name="AgriFlow Buyer Opportunity" />
+                <Bar dataKey="mandiPrice" fill="#64748b" radius={[4, 4, 0, 0]} name={t('farmer.localMandiPrice', 'Local Mandi Price')} />
+                <Bar dataKey="buyerOpportunity" fill="#10b981" radius={[4, 4, 0, 0]} name={t('farmer.buyerOpportunity', 'AgriFlow Buyer Opportunity')} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -148,18 +150,18 @@ export default function MandiPricesPage() {
 
       {/* Mandi Table */}
       <Card className="p-6">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">Regional Mandi Price Board</h3>
+        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">{t('farmer.regionalMandiBoard', 'Regional Mandi Price Board')}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400">
-                <th className="pb-3 font-semibold">Commodity</th>
-                <th className="pb-3 font-semibold">Market Name</th>
-                <th className="pb-3 font-semibold">District, State</th>
-                <th className="pb-3 font-semibold">Current Mandi</th>
-                <th className="pb-3 font-semibold">24h Change</th>
-                <th className="pb-3 font-semibold">AgriFlow Buyer Price</th>
-                <th className="pb-3 font-semibold">Potential Gain</th>
+                <th className="pb-3 font-semibold">{t('farmer.commodity', 'Commodity')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.marketName', 'Market Name')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.districtState', 'District, State')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.currentMandi', 'Current Mandi')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.change24h', '24h Change')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.agriflowBuyerPrice', 'AgriFlow Buyer Price')}</th>
+                <th className="pb-3 font-semibold">{t('farmer.potentialGain', 'Potential Gain')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">

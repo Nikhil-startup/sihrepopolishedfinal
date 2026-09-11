@@ -101,7 +101,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setUser(demoUser);
     sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(demoUser));
-    sessionStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'te');
+    if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+      localStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'en');
+    }
     setIsLoading(false);
     return true;
   };
@@ -117,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       state: data.state || 'Telangana',
       district: data.district || 'Rangareddy',
       place: data.place || 'Chevella',
-      preferredLanguage: data.preferredLanguage || 'te',
+      preferredLanguage: data.preferredLanguage || 'en',
       farmName: data.farmName || '',
       location: data.location || `${data.place || 'Chevella'}, ${data.district || 'Rangareddy'}, ${data.state || 'Telangana'}`,
       farmerType: data.farmerType || 'Individual Farmer',
@@ -129,7 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setUser(newUser);
     sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(newUser));
-    sessionStorage.setItem('agriflow_cached_lang', newUser.preferredLanguage || 'te');
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    }
     setIsLoading(false);
     return true;
   };
@@ -138,20 +142,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updated = { ...(user || demoFarmerUser), ...data };
     setUser(updated);
     sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(updated));
-    if (data.preferredLanguage) {
-      sessionStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
     }
     return true;
   };
 
   const updateFarmerLanguage = async (lang: string): Promise<boolean> => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agriflow_cached_lang', lang);
+    }
     return updateFarmerProfile({ preferredLanguage: lang as any });
   };
 
   const logout = () => {
     setUser(null);
     sessionStorage.removeItem('agriflow_farmer_auth');
-    sessionStorage.removeItem('agriflow_cached_lang');
     router.push('/farmer');
   };
 
@@ -183,14 +189,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       state: data.state || 'Telangana',
       district: data.district || 'Hyderabad',
       place: data.place || 'Bowenpally',
-      preferredLanguage: data.preferredLanguage || 'ta',
+      preferredLanguage: data.preferredLanguage || 'en',
       profileCompleted: true,
       createdAt: new Date().toISOString(),
       ...data,
     };
     setConsumerUser(newUser);
     sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(newUser));
-    sessionStorage.setItem('agriflow_cached_lang', newUser.preferredLanguage || 'ta');
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    }
     setIsLoading(false);
     return true;
   };
@@ -199,20 +207,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updated = { ...(consumerUser || demoConsumerUser), ...data };
     setConsumerUser(updated);
     sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(updated));
-    if (data.preferredLanguage) {
-      sessionStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
     }
     return true;
   };
 
   const updateConsumerLanguage = async (lang: string): Promise<boolean> => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agriflow_cached_lang', lang);
+    }
     return updateConsumerProfile({ preferredLanguage: lang as any });
   };
 
   const logoutConsumer = () => {
     setConsumerUser(null);
     sessionStorage.removeItem('agriflow_consumer_auth');
-    sessionStorage.removeItem('agriflow_cached_lang');
     router.push('/consumer');
   };
 
@@ -226,7 +236,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setLogisticsUser(demoUser);
     sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(demoUser));
-    sessionStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'hi');
+    if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+      localStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'en');
+    }
     setIsLoading(false);
     return true;
   };
@@ -248,14 +260,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       state: data.state || 'Telangana',
       district: data.district || 'Rangareddy',
       place: data.place || 'Shamshabad Fleet Hub',
-      preferredLanguage: data.preferredLanguage || 'hi',
+      preferredLanguage: data.preferredLanguage || 'en',
       profileCompleted: true,
       createdAt: new Date().toISOString(),
       ...data,
     };
     setLogisticsUser(newUser);
     sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(newUser));
-    sessionStorage.setItem('agriflow_cached_lang', newUser.preferredLanguage || 'hi');
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    }
     setIsLoading(false);
     return true;
   };
@@ -264,20 +278,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const updated = { ...(logisticsUser || demoLogisticsUser), ...data };
     setLogisticsUser(updated);
     sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(updated));
-    if (data.preferredLanguage) {
-      sessionStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
+    if (typeof window !== 'undefined' && data.preferredLanguage) {
+      localStorage.setItem('agriflow_cached_lang', data.preferredLanguage);
     }
     return true;
   };
 
   const updateLogisticsLanguage = async (lang: string): Promise<boolean> => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('agriflow_cached_lang', lang);
+    }
     return updateLogisticsProfile({ preferredLanguage: lang as any });
   };
 
   const logoutLogistics = () => {
     setLogisticsUser(null);
     sessionStorage.removeItem('agriflow_logistics_auth');
-    sessionStorage.removeItem('agriflow_cached_lang');
     router.push('/logistics');
   };
 
@@ -339,7 +355,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setUser(demoFarmer);
       sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(demoFarmer));
-      sessionStorage.setItem('agriflow_cached_lang', 'te');
+      if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+        localStorage.setItem('agriflow_cached_lang', 'en');
+      }
     } else if (role === 'consumer') {
       const demoConsumer: ConsumerUser = {
         ...demoConsumerUser,
@@ -348,7 +366,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setConsumerUser(demoConsumer);
       sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(demoConsumer));
-      sessionStorage.setItem('agriflow_cached_lang', 'ta');
+      if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+        localStorage.setItem('agriflow_cached_lang', 'en');
+      }
     } else if (role === 'logistics') {
       const demoLogistics: LogisticsOperator = {
         ...demoLogisticsUser,
@@ -357,7 +377,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
       setLogisticsUser(demoLogistics);
       sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(demoLogistics));
-      sessionStorage.setItem('agriflow_cached_lang', 'hi');
+      if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+        localStorage.setItem('agriflow_cached_lang', 'en');
+      }
     }
     setIsLoading(false);
   };

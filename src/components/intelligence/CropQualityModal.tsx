@@ -5,6 +5,7 @@ import { Camera, CheckCircle2, Sparkles, X, ShieldAlert, Tag, ArrowRight } from 
 import { evaluateProduceQuality } from '@/services/qualityService';
 import { QualityInspectionResult } from '@/types/intelligence';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface CropQualityModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function CropQualityModal({
   quantityKg = 600,
   onListingCreated,
 }: CropQualityModalProps) {
+  const { t } = useI18n();
   const [isScanning, setIsScanning] = useState(false);
   const [inspectionResult, setInspectionResult] = useState<QualityInspectionResult | null>(() => 
     evaluateProduceQuality(cropName, quantityKg)
@@ -48,10 +50,10 @@ export function CropQualityModal({
             </div>
             <div>
               <h3 className='text-base font-bold text-slate-900 dark:text-white'>
-                Computer-Vision Produce Quality Inspection
+                {t('intelligence.cvTitle')}
               </h3>
               <p className='text-xs text-slate-500 dark:text-slate-400'>
-                Automated optical grading & smart listing generator
+                {t('intelligence.cvSubtitle')}
               </p>
             </div>
           </div>
@@ -75,10 +77,10 @@ export function CropQualityModal({
 
           <Camera className={cn('w-10 h-10 text-emerald-400 mb-2', isScanning && 'animate-pulse')} />
           <span className='text-xs font-bold text-white uppercase tracking-wider'>
-            {isScanning ? 'Analyzing Fruit Geometry & Surface...' : 'Simulated Mobile Optical Lens Active'}
+            {isScanning ? t('intelligence.analyzing') : t('intelligence.lensActive')}
           </span>
           <span className='text-[11px] text-slate-400 mt-1'>
-            Detecting color reflectance, surface blemish index, and diameter ratio
+            {t('intelligence.cvDesc')}
           </span>
 
           <button
@@ -87,7 +89,7 @@ export function CropQualityModal({
             disabled={isScanning}
             className='mt-4 px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition'
           >
-            {isScanning ? 'Processing...' : 'Capture & Inspect Batch'}
+            {isScanning ? t('intelligence.processing') : t('intelligence.captureInspect')}
           </button>
         </div>
 
@@ -96,7 +98,7 @@ export function CropQualityModal({
           <div className='space-y-4'>
             <div className='grid grid-cols-3 gap-2.5 text-xs'>
               <div className='p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800'>
-                <span className='text-[10px] text-slate-400 block'>Optical Grade</span>
+                <span className='text-[10px] text-slate-400 block'>{t('intelligence.opticalGrade')}</span>
                 <span className='text-base font-black text-emerald-600 dark:text-emerald-400 mt-0.5 block'>
                   {inspectionResult.assignedGrade}
                 </span>
@@ -104,7 +106,7 @@ export function CropQualityModal({
               </div>
 
               <div className='p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800'>
-                <span className='text-[10px] text-slate-400 block'>Blemish Rate</span>
+                <span className='text-[10px] text-slate-400 block'>{t('intelligence.blemishRate')}</span>
                 <span className='text-base font-black text-slate-900 dark:text-white mt-0.5 block'>
                   {inspectionResult.blemishRatePercent}%
                 </span>
@@ -112,11 +114,11 @@ export function CropQualityModal({
               </div>
 
               <div className='p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-800'>
-                <span className='text-[10px] text-slate-400 block'>Color Maturity</span>
+                <span className='text-[10px] text-slate-400 block'>{t('intelligence.colorMaturity')}</span>
                 <span className='text-base font-black text-slate-900 dark:text-white mt-0.5 block'>
                   {inspectionResult.colorMaturityPercent}%
                 </span>
-                <span className='text-[10px] text-slate-400'>{inspectionResult.shelfLifeRemainingDays} days safe life</span>
+                <span className='text-[10px] text-slate-400'>{t('intelligence.safeLife', { days: inspectionResult.shelfLifeRemainingDays })}</span>
               </div>
             </div>
 
@@ -124,13 +126,13 @@ export function CropQualityModal({
             <div className='p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-between gap-3'>
               <div>
                 <span className='text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400 tracking-wider block'>
-                  Verified Pre-filled Listing
+                  {t('intelligence.verifiedListing')}
                 </span>
                 <span className='text-xs font-extrabold text-slate-900 dark:text-white block'>
                   {inspectionResult.prefilledListing.title} - {quantityKg} kg
                 </span>
                 <span className='text-[11px] text-slate-600 dark:text-slate-300'>
-                  Suggested price: ₹{inspectionResult.prefilledListing.suggestedListingPrice}/kg
+                  {t('intelligence.suggestedPrice', { price: inspectionResult.prefilledListing.suggestedListingPrice })}
                 </span>
               </div>
 
@@ -142,7 +144,7 @@ export function CropQualityModal({
                 }}
                 className='px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-md shrink-0'
               >
-                <Tag className='w-3.5 h-3.5' /> Auto-Publish Listing
+                <Tag className='w-3.5 h-3.5' /> {t('intelligence.autoPublish')}
               </button>
             </div>
           </div>

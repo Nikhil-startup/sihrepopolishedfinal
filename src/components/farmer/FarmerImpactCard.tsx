@@ -6,8 +6,10 @@ import { aiService } from '@/services/aiService';
 import { SIHScenarioData } from '@/types/farmer';
 import { TrendingUp, ShieldCheck } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export function FarmerImpactCard() {
+  const { t } = useI18n();
   const [scenario, setScenario] = useState<SIHScenarioData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -31,38 +33,38 @@ export function FarmerImpactCard() {
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-bold mb-3">
-            <TrendingUp className="w-3.5 h-3.5" /> Direct Farmer Realization Advantage
+            <TrendingUp className="w-3.5 h-3.5" /> {t('farmer.impact.advantage')}
           </div>
-          <h3 className="text-xl font-extrabold text-white">Direct Realization & Middlemen Elimination</h3>
+          <h3 className="text-xl font-extrabold text-white">{t('farmer.impact.title')}</h3>
           <p className="text-xs text-slate-300 mt-1 max-w-xl">
-            Comparing conventional mandi intermediaries vs. AgriFlow direct institutional demand pooling for {scenario?.commodity || 'Produce'}.
+            {t('farmer.impact.subtitle', { commodity: scenario?.commodity || t('category.vegetables') })}
           </p>
 
           {loading ? (
-            <div className="py-6 text-xs text-slate-400">Loading realization data...</div>
+            <div className="py-6 text-xs text-slate-400">{t('farmer.impact.loading')}</div>
           ) : !scenario ? (
             <div className="py-6 text-xs text-slate-400">
-              Direct realization impact data will appear here when the backend is connected.
+              {t('farmer.impact.subtitle', { commodity: t('category.vegetables') })}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
               <div className="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block font-medium">Conventional Mandi</span>
+                <span className="text-[11px] text-slate-400 block font-medium">{t('farmer.impact.conventionalMandi')}</span>
                 <span className="text-lg font-black text-slate-300">{formatINR(scenario.conventionalPrice)}<span className="text-xs font-normal">/kg</span></span>
               </div>
               <div className="bg-emerald-950/60 rounded-xl p-3.5 border border-emerald-500/40">
-                <span className="text-[11px] text-emerald-300 block font-bold">AgriFlow Net Payout</span>
+                <span className="text-[11px] text-emerald-300 block font-bold">{t('farmer.impact.agriflowPayout')}</span>
                 <span className="text-xl font-black text-emerald-400">{formatINR(scenario.agriflowRealization)}<span className="text-xs font-normal">/kg</span></span>
               </div>
               <div className="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block font-medium">Price Improvement</span>
+                <span className="text-[11px] text-slate-400 block font-medium">{t('farmer.impact.priceImprovement')}</span>
                 <span className="text-lg font-black text-emerald-400">+{formatINR(scenario.improvementPerKg)}/kg</span>
-                <span className="text-[10px] text-emerald-300 block">+{scenario.percentageImprovement}% gain</span>
+                <span className="text-[10px] text-emerald-300 block">{t('farmer.impact.gain', { percent: scenario.percentageImprovement })}</span>
               </div>
               <div className="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800">
-                <span className="text-[11px] text-slate-400 block font-medium">Total Added Earnings</span>
+                <span className="text-[11px] text-slate-400 block font-medium">{t('farmer.impact.totalEarnings')}</span>
                 <span className="text-lg font-black text-emerald-400">+{formatINR(scenario.totalAdditionalRealization)}</span>
-                <span className="text-[10px] text-slate-400 block">on {scenario.targetDemandKg.toLocaleString()} kg pool</span>
+                <span className="text-[10px] text-slate-400 block">{t('farmer.impact.poolSize', { qty: scenario.targetDemandKg.toLocaleString() })}</span>
               </div>
             </div>
           )}
@@ -70,29 +72,29 @@ export function FarmerImpactCard() {
 
         <div className="w-full lg:w-72 bg-slate-900/90 rounded-xl p-4 border border-slate-800 flex flex-col justify-between">
           <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" /> Transparent Realization
+            <ShieldCheck className="w-4 h-4 text-emerald-400" /> {t('farmer.impact.transparentTitle')}
           </h4>
           <div className="space-y-2 text-xs">
             <div className="flex justify-between text-slate-300">
-              <span>Direct Buyer Price:</span>
+              <span>{t('farmer.impact.directBuyerPrice')}</span>
               <span className="font-semibold text-white">{scenario ? `₹${scenario.agriflowRealization + 3}/kg` : '--'}</span>
             </div>
             <div className="flex justify-between text-slate-400">
-              <span>Road Logistics:</span>
+              <span>{t('farmer.impact.roadLogistics')}</span>
               <span>{scenario ? '-₹2.00/kg' : '--'}</span>
             </div>
             <div className="flex justify-between text-slate-400">
-              <span>AgriFlow Fee:</span>
+              <span>{t('farmer.impact.agriflowFee')}</span>
               <span>{scenario ? '-₹1.00/kg' : '--'}</span>
             </div>
             <div className="border-t border-slate-800 pt-2 flex justify-between font-bold text-emerald-400 text-sm">
-              <span>Farmer Net Realization:</span>
+              <span>{t('farmer.impact.netRealization')}</span>
               <span>{scenario ? `₹${scenario.agriflowRealization}/kg` : '--'}</span>
             </div>
           </div>
           <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-            <span>Intermediary middlemen:</span>
-            <span className="text-emerald-400 font-bold">0 (Direct)</span>
+            <span>{t('farmer.impact.middlemen')}</span>
+            <span className="text-emerald-400 font-bold">{t('farmer.impact.direct')}</span>
           </div>
         </div>
       </div>

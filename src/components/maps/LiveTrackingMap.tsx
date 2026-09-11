@@ -5,6 +5,8 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { DeliveryTracking } from '@/types/delivery';
+import { useI18n } from '@/context/I18nContext';
+import { translateStatus } from '@/lib/i18nHelpers';
 
 // Fix for default Leaflet icon paths in Next.js
 const createCustomIcon = (color: string, label: string, isVehicle: boolean = false) => {
@@ -49,6 +51,7 @@ interface LiveTrackingMapProps {
 }
 
 export default function LiveTrackingMap({ trip, showTelemetryPopup = true }: LiveTrackingMapProps) {
+  const { t } = useI18n();
   const vehiclePosition = trip.currentCoordinates || trip.pickupCoordinates;
   const pickupPosition = trip.pickupCoordinates;
   const destinationPosition = trip.destinationCoordinates;
@@ -90,7 +93,7 @@ export default function LiveTrackingMap({ trip, showTelemetryPopup = true }: Liv
         <Marker position={pickupPosition} icon={pickupIcon}>
           <Popup>
             <div className="p-1 font-sans text-xs">
-              <strong className="block text-slate-900 font-bold">Farm Pickup Point</strong>
+              <strong className="block text-slate-900 font-bold">{t('tracking.maps.farmPickup')}</strong>
               <span className="text-slate-600 text-[11px]">{trip.pickupLocation}</span>
             </div>
           </Popup>
@@ -100,7 +103,7 @@ export default function LiveTrackingMap({ trip, showTelemetryPopup = true }: Liv
         <Marker position={destinationPosition} icon={destinationIcon}>
           <Popup>
             <div className="p-1 font-sans text-xs">
-              <strong className="block text-slate-900 font-bold">Destination Hub</strong>
+              <strong className="block text-slate-900 font-bold">{t('tracking.maps.destinationHub')}</strong>
               <span className="text-slate-600 text-[11px]">{trip.destinationLocation}</span>
             </div>
           </Popup>
@@ -130,14 +133,14 @@ export default function LiveTrackingMap({ trip, showTelemetryPopup = true }: Liv
                 {trip.vehicleNumber}
               </p>
               <p className="text-[11px] text-slate-600">
-                Driver: <strong>{trip.driverName}</strong>
+                {t('tracking.maps.driver')}: <strong>{trip.driverName}</strong>
               </p>
               <p className="text-[11px] text-slate-600">
-                Speed: <strong>52 km/h</strong> &bull; Status: <strong>{trip.status}</strong>
+                {t('tracking.maps.speed')}: <strong>52 km/h</strong> &bull; {t('common.status')}: <strong>{translateStatus(trip.status, t)}</strong>
               </p>
               {showTelemetryPopup && trip.telemetry && (
                 <div className="pt-1 border-t border-slate-200 text-[10px] text-slate-500">
-                  Temp: <strong className="text-emerald-600">{trip.telemetry.temperatureCelsius}&deg;C</strong> (Reefer Active)
+                  {t('temperature')}: <strong className="text-emerald-600">{trip.telemetry.temperatureCelsius}&deg;C</strong> ({t('tracking.maps.reeferActive')})
                 </div>
               )}
             </div>
@@ -148,7 +151,7 @@ export default function LiveTrackingMap({ trip, showTelemetryPopup = true }: Liv
       {/* Overlay Badge */}
       <div className="absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700 text-white text-[11px] font-bold shadow-lg z-[1000] flex items-center gap-2">
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-        <span>ROAD ROUTE &bull; GPS ACTIVE</span>
+        <span>{t('tracking.maps.roadGpsActive')}</span>
       </div>
     </div>
   );

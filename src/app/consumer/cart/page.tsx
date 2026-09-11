@@ -40,15 +40,15 @@ export default function ConsumerCartPage() {
         <div className="w-16 h-16 rounded-3xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 mx-auto flex items-center justify-center">
           <ShoppingBag className="w-8 h-8" />
         </div>
-        <h2 className="text-xl font-bold text-zinc-900 dark:text-white">Your Sourcing Cart is Empty</h2>
+        <h2 className="text-xl font-bold text-zinc-900 dark:text-white">{t('consumer.emptyCart', 'Your Sourcing Cart is Empty')}</h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Select fresh farm produce directly from our partner FPOs and smallholder farmers.
+          {t('consumer.tryResetting', 'Select fresh farm produce directly from our partner FPOs and smallholder farmers.')}
         </p>
         <Link
           href="/consumer/marketplace"
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition-colors"
         >
-          Browse Farm Marketplace <ArrowRight className="w-4 h-4" />
+          {t('consumer.exploreMarketplace', 'Browse Farm Marketplace')} <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     );
@@ -61,10 +61,10 @@ export default function ConsumerCartPage() {
       <div className="flex items-center justify-between">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Order Review
+            {t('orders', 'Order Review')}
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
-            Sourcing Cart ({items.length} Items)
+            {t('consumer.cartTitle', 'Sourcing Cart')} ({items.length})
           </h1>
         </div>
 
@@ -73,7 +73,7 @@ export default function ConsumerCartPage() {
           onClick={clearCart}
           className="text-xs font-semibold text-red-500 hover:underline flex items-center gap-1"
         >
-          <Trash2 className="w-3.5 h-3.5" /> Clear All
+          <Trash2 className="w-3.5 h-3.5" /> {t('consumer.clearAllFilters', 'Clear All')}
         </button>
       </div>
 
@@ -93,7 +93,7 @@ export default function ConsumerCartPage() {
                 />
                 <div>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300">
-                    Grade {item.product.grade}
+                    {t('grade', 'Grade')} {item.product.grade}
                   </span>
                   <h3 className="text-sm font-bold text-zinc-900 dark:text-white mt-1">
                     {item.product.name}
@@ -138,7 +138,7 @@ export default function ConsumerCartPage() {
                     onClick={() => removeFromCart(item.product.id)}
                     className="text-[11px] text-red-500 hover:underline"
                   >
-                    Remove
+                    {t('cancel', 'Remove')}
                   </button>
                 </div>
               </div>
@@ -149,7 +149,7 @@ export default function ConsumerCartPage() {
             href="/consumer/marketplace"
             className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Continue Shopping
+            <ArrowLeft className="w-3.5 h-3.5" /> {t('consumer.exploreMarketplace', 'Continue Shopping')}
           </Link>
         </div>
 
@@ -157,32 +157,32 @@ export default function ConsumerCartPage() {
         <div className="lg:col-span-5 space-y-6">
           <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-xl space-y-5">
             <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-white pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              Procurement Summary
+              {t('orders', 'Procurement Summary')}
             </h3>
 
             <div className="space-y-2.5 text-xs text-zinc-600 dark:text-zinc-300">
               <div className="flex justify-between">
-                <span>Total Net Produce Weight:</span>
+                <span>{t('quantity', 'Total Net Produce Weight')}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">{totalWeightKg.toLocaleString('en-IN')} kg</span>
               </div>
               <div className="flex justify-between">
-                <span>Produce Sourcing Subtotal:</span>
+                <span>{t('common.subtotal', 'Produce Sourcing Subtotal')}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1">
                   <Truck className="w-3.5 h-3.5 text-cyan-500" />
-                  Road Freight ({totalWeightKg >= 1500 ? 'Tata 407 Reefer' : totalWeightKg >= 300 ? 'Mahindra Bolero' : 'Tata Ace'}):
+                  {t('roadLogistics', 'Road Freight')} ({totalWeightKg >= 1500 ? 'Tata 407 Reefer' : totalWeightKg >= 300 ? 'Mahindra Bolero' : 'Tata Ace'}):
                 </span>
                 <span className="font-bold text-zinc-900 dark:text-white">₹{roadLogisticsFee.toLocaleString('en-IN')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Quality AI & Smart Escrow Fee:</span>
+                <span>{t('consumer.platformFee', 'Quality AI & Smart Escrow Fee')}:</span>
                 <span className="font-bold text-zinc-900 dark:text-white">₹{platformFee.toLocaleString('en-IN')}</span>
               </div>
 
               <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-baseline text-sm">
-                <span className="font-bold text-zinc-900 dark:text-white">Total Sourcing Amount:</span>
+                <span className="font-bold text-zinc-900 dark:text-white">{t('total', 'Total Sourcing Amount')}:</span>
                 <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
                   ₹{total.toLocaleString('en-IN')}
                 </span>
@@ -193,14 +193,14 @@ export default function ConsumerCartPage() {
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20 space-y-1.5">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
-                  <TrendingUp className="w-4 h-4 text-emerald-500" /> Direct Farmer Payout:
+                  <TrendingUp className="w-4 h-4 text-emerald-500" /> {t('farmer.impact.agriflowPayout', 'Direct Farmer Payout')}:
                 </span>
                 <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                   ₹{estimatedFarmerRealization.toLocaleString('en-IN')} ({farmerPercentage}%)
                 </span>
               </div>
               <p className="text-[11px] text-emerald-700 dark:text-emerald-400 leading-snug">
-                This transaction bypasses 5 intermediate mandi broker cuts, guaranteeing higher realized revenue directly into the farmer&apos;s bank account.
+                {t('consumer.provenanceSubtitle', 'Verified direct farm provenance | Zero middleman exploitation')}
               </p>
             </div>
 
@@ -209,7 +209,7 @@ export default function ConsumerCartPage() {
               onClick={() => router.push('/consumer/checkout')}
               className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all duration-200"
             >
-              Proceed to Delivery Checkout <ArrowRight className="w-4 h-4" />
+              {t('consumer.proceedToCheckout', 'Proceed to Delivery Checkout')} <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>

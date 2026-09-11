@@ -1,5 +1,9 @@
+'use client';
+
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
+import { translateStatus } from '@/lib/i18nHelpers';
 
 interface StatusBadgeProps {
   status: string;
@@ -7,6 +11,8 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
+  const { t } = useI18n();
+
   const getColors = () => {
     switch (status.toLowerCase()) {
       case 'active':
@@ -41,7 +47,7 @@ export function StatusBadge({ status, size = 'sm' }: StatusBadgeProps) {
       getColors()
     )}>
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
-      {status}
+      {translateStatus(status, t)}
     </span>
   );
 }

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Clock, MapPin, Navigation, TrendingUp } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 interface ETACardProps {
   estimatedArrival: string;
@@ -22,9 +23,12 @@ export default function ETACard({
   progressPercentage,
   currentLocationName,
 }: ETACardProps) {
+  const { t } = useI18n();
   const hrs = Math.floor(etaMinutes / 60);
   const mins = etaMinutes % 60;
-  const timeRemainingStr = hrs > 0 ? `${hrs}h ${mins}m remaining` : `${mins}m remaining`;
+  const timeRemainingStr = hrs > 0 
+    ? `${hrs}h ${mins}m ${t('tracking.remaining')}` 
+    : `${mins}m ${t('tracking.remaining')}`;
 
   return (
     <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-5">
@@ -33,7 +37,7 @@ export default function ETACard({
         <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-500/20">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Clock className="w-4 h-4" /> Estimated Arrival
+              <Clock className="w-4 h-4" /> {t('tracking.eta')}
             </span>
             <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 font-mono">
               {timeRemainingStr}
@@ -48,14 +52,14 @@ export default function ETACard({
         <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-cyan-500" /> Road Distance
+              <MapPin className="w-4 h-4 text-cyan-500" /> {t('tracking.roadDistance')}
             </span>
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-              {distanceCompletedKm} km of {totalDistanceKm} km
+              {distanceCompletedKm} km / {totalDistanceKm} km
             </span>
           </div>
           <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1">
-            {distanceRemainingKm} <span className="text-base font-normal text-slate-500">km remaining</span>
+            {distanceRemainingKm} <span className="text-base font-normal text-slate-500">km {t('tracking.remaining')}</span>
           </div>
         </div>
       </div>
@@ -68,7 +72,7 @@ export default function ETACard({
             <span>{currentLocationName}</span>
           </span>
           <span className="text-emerald-600 dark:text-emerald-400 font-mono">
-            {progressPercentage}% Completed
+            {progressPercentage}% {t('tracking.completed')}
           </span>
         </div>
         <div className="h-3.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-slate-700">

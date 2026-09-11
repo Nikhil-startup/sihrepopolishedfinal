@@ -4,12 +4,15 @@ import React from 'react';
 import { ReturnLoadDetails } from '@/types/delivery';
 import { RotateCcw, TrendingUp, ShieldCheck } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface ReturnLoadCardProps {
   returnLoad?: ReturnLoadDetails;
 }
 
 export default function ReturnLoadCard({ returnLoad }: ReturnLoadCardProps) {
+  const { t } = useI18n();
+
   if (!returnLoad) return null;
 
   return (
@@ -22,7 +25,7 @@ export default function ReturnLoadCard({ returnLoad }: ReturnLoadCardProps) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-emerald-300">
-                Return Load Matched (Zero Empty Run)
+                {t('tracking.returnLoadMatched')}
               </span>
               <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
                 AI Logistics Optimization
@@ -32,14 +35,13 @@ export default function ReturnLoadCard({ returnLoad }: ReturnLoadCardProps) {
               {returnLoad.route}
             </h4>
             <p className="text-xs text-slate-300">
-              Return Cargo: <strong>{returnLoad.commodity}</strong> &bull; Avoids{' '}
-              <strong className="text-emerald-300">{returnLoad.emptyDistanceAvoidedKm} km</strong> empty return haul.
+              {t('tracking.returnCargo')} <strong>{returnLoad.commodity}</strong> &bull; {t('tracking.emptyHaulAvoided', { km: returnLoad.emptyDistanceAvoidedKm })}
             </p>
           </div>
         </div>
 
         <div className="text-left sm:text-right flex-shrink-0">
-          <span className="text-xs text-slate-400 block">Carrier Added Realization</span>
+          <span className="text-xs text-slate-400 block">{t('tracking.carrierRealization')}</span>
           <span className="text-xl font-black text-emerald-400">
             +{formatINR(returnLoad.additionalEarnings)}
           </span>

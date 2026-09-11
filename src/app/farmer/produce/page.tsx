@@ -12,8 +12,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { produceSchema, ProduceFormData } from '@/lib/validators';
 import { Sprout, Plus, Filter, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerProducePage() {
+  const { t } = useI18n();
   const [produceList, setProduceList] = useState<Produce[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -54,36 +56,44 @@ export default function FarmerProducePage() {
     ? produceList
     : produceList.filter(p => p.status.toLowerCase() === filterStatus.toLowerCase());
 
+  const filterOptions = [
+    { key: 'All', label: t('farmer.filterAll', 'All') },
+    { key: 'Active', label: t('farmer.filterActive', 'Active') },
+    { key: 'Reserved', label: t('farmer.filterReserved', 'Reserved') },
+    { key: 'Sold', label: t('farmer.filterSold', 'Sold') },
+    { key: 'Expired', label: t('farmer.filterExpired', 'Expired') },
+  ];
+
   return (
     <div className="space-y-6">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">My Produce Inventory</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.myProduceInventory', 'My Produce Inventory')}</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Manage listed crops, declare harvest quantities, and connect with direct buyers.
+            {t('farmer.manageListedCrops', 'Manage listed crops, declare harvest quantities, and connect with direct buyers.')}
           </p>
         </div>
         <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="w-4 h-4" />
-          <span>+ Add Produce</span>
+          <span>{t('farmer.addProduceTitle', 'Add Agricultural Produce')}</span>
         </Button>
       </div>
 
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        {['All', 'Active', 'Reserved', 'Sold', 'Expired'].map((status) => (
+        {filterOptions.map((opt) => (
           <button
-            key={status}
-            onClick={() => setFilterStatus(status)}
+            key={opt.key}
+            onClick={() => setFilterStatus(opt.key)}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
-              filterStatus === status
+              filterStatus === opt.key
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            {status}
+            {opt.label}
           </button>
         ))}
       </div>
@@ -92,10 +102,10 @@ export default function FarmerProducePage() {
       {filtered.length === 0 ? (
         <Card className="text-center py-16">
           <Sprout className="w-12 h-12 mx-auto text-slate-400 mb-3" />
-          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">No produce listings found</h3>
-          <p className="text-xs text-slate-400 mt-1 mb-4">Add your first agricultural harvest listing to discover buyers.</p>
+          <h3 className="text-base font-bold text-slate-800 dark:text-slate-200">{t('farmer.noListingsFound', 'No produce listings found')}</h3>
+          <p className="text-xs text-slate-400 mt-1 mb-4">{t('farmer.addFirstListing', 'Add your first agricultural harvest listing to discover buyers.')}</p>
           <Button onClick={() => setIsAddModalOpen(true)} size="sm">
-            + Add Produce
+            {t('farmer.addProduceTitle', 'Add Agricultural Produce')}
           </Button>
         </Card>
       ) : (
@@ -113,19 +123,19 @@ export default function FarmerProducePage() {
 
                 <div className="grid grid-cols-2 gap-3 my-4 text-xs">
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-slate-400 block">Quantity</span>
+                    <span className="text-slate-400 block">{t('farmer.quantityLabel', 'Quantity').replace('*', '').trim()}</span>
                     <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{item.quantity.toLocaleString()} {item.unit}</span>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-slate-400 block">Quality Grade</span>
-                    <span className="text-sm font-black text-emerald-500">Grade {item.grade}</span>
+                    <span className="text-slate-400 block">{t('common.qualityGrade', 'Quality Grade')}</span>
+                    <span className="text-sm font-black text-emerald-500">{t('common.grade', 'Grade')} {item.grade}</span>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-slate-400 block">Expected Price</span>
+                    <span className="text-slate-400 block">{t('farmer.expectedPrice', 'Expected Price')}</span>
                     <span className="text-sm font-bold text-emerald-500">{formatINR(item.expectedPrice)}/{item.unit}</span>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                    <span className="text-slate-400 block">Harvest Date</span>
+                    <span className="text-slate-400 block">{t('farmer.harvestDateLabel', 'Harvest Date').replace('*', '').trim()}</span>
                     <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.harvestDate}</span>
                   </div>
                 </div>
@@ -138,7 +148,7 @@ export default function FarmerProducePage() {
               </div>
 
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Total Lot Value:</span>
+                <span className="text-slate-400">{t('farmer.totalLotValue', 'Total Lot Value')}:</span>
                 <span className="font-black text-slate-900 dark:text-white text-sm">
                   {formatINR(item.quantity * item.expectedPrice)}
                 </span>
@@ -149,11 +159,11 @@ export default function FarmerProducePage() {
       )}
 
       {/* Add Produce Modal */}
-      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title="Add Agricultural Produce" subtitle="Declare crop quantity, grade, and expected realization price.">
+      <Modal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} title={t('farmer.addProduceTitle', 'Add Agricultural Produce')} subtitle={t('farmer.addProduceSubtitle', 'Declare crop quantity, grade, and expected realization price.')}>
         <form onSubmit={handleSubmit(onAddProduceSubmit)} className="space-y-4">
           
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">Produce / Crop Name *</label>
+            <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.cropNameLabel', 'Produce / Crop Name *')}</label>
             <input
               type="text"
               {...register('crop')}
@@ -164,7 +174,7 @@ export default function FarmerProducePage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Quantity *</label>
+              <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.quantityLabel', 'Quantity *')}</label>
               <input
                 type="number"
                 {...register('quantity', { valueAsNumber: true })}
@@ -172,7 +182,7 @@ export default function FarmerProducePage() {
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Unit</label>
+              <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.unitLabel', 'Unit')}</label>
               <select
                 {...register('unit')}
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white"
@@ -187,7 +197,7 @@ export default function FarmerProducePage() {
 
           {/* Grade selection */}
           <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-2">
-            <label className="text-xs font-bold text-slate-300">Grade (A, A-, B, B-, C, C-, D) *</label>
+            <label className="text-xs font-bold text-slate-300">{t('farmer.gradeLabel', 'Grade (A, A-, B, B-, C, C-, D) *')}</label>
             <div className="grid grid-cols-7 gap-1.5">
               {(['A', 'A-', 'B', 'B-', 'C', 'C-', 'D'] as ProduceGrade[]).map((g) => (
                 <label key={g} className="cursor-pointer">
@@ -207,7 +217,7 @@ export default function FarmerProducePage() {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Expected Price (₹/unit) *</label>
+              <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.expectedPriceLabel', 'Expected Price (₹/unit) *')}</label>
               <input
                 type="number"
                 step="0.5"
@@ -216,7 +226,7 @@ export default function FarmerProducePage() {
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Harvest Date *</label>
+              <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.harvestDateLabel', 'Harvest Date *')}</label>
               <input
                 type="date"
                 {...register('harvestDate')}
@@ -226,7 +236,7 @@ export default function FarmerProducePage() {
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">Pickup Location / Hub *</label>
+            <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.pickupLocationLabel', 'Pickup Location / Hub *')}</label>
             <input
               type="text"
               {...register('location')}
@@ -235,7 +245,7 @@ export default function FarmerProducePage() {
           </div>
 
           <div>
-            <label className="text-xs font-bold text-slate-300 block mb-1">Storage / Crate Notes</label>
+            <label className="text-xs font-bold text-slate-300 block mb-1">{t('farmer.notesLabel', 'Storage / Crate Notes')}</label>
             <textarea
               rows={2}
               {...register('notes')}
@@ -245,10 +255,10 @@ export default function FarmerProducePage() {
 
           <div className="flex gap-3 pt-3">
             <Button type="button" variant="secondary" onClick={() => setIsAddModalOpen(false)} className="flex-1">
-              Cancel
+              {t('farmer.cancel', 'Cancel')}
             </Button>
             <Button type="submit" className="flex-1">
-              Publish Listing
+              {t('farmer.publishListing', 'Publish Listing')}
             </Button>
           </div>
         </form>

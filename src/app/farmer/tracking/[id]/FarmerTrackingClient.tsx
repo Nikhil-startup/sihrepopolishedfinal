@@ -17,8 +17,10 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerTrackingClient() {
+  const { t } = useI18n();
   const params = useParams();
   const id = (params?.id as string) || 'TRK-RD-9021';
   const [tracking, setTracking] = useState<RoadLogisticsTracking | null>(null);
@@ -31,7 +33,7 @@ export default function FarmerTrackingClient() {
     return (
       <div className="py-16 text-center space-y-4">
         <Truck className="w-12 h-12 mx-auto text-slate-400 animate-pulse" />
-        <h2 className="text-xl font-bold text-white">Loading Road Logistics Telemetry...</h2>
+        <h2 className="text-xl font-bold text-white">{t('consumer.fetchingGpsCoords', 'Loading Road Logistics Telemetry...')}</h2>
       </div>
     );
   }
@@ -42,7 +44,7 @@ export default function FarmerTrackingClient() {
       {/* Back button */}
       <div>
         <Link href="/farmer/orders" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Orders
+          <ArrowLeft className="w-4 h-4" /> {t('farmer.backToOrders', 'Back to Orders')}
         </Link>
       </div>
 
@@ -52,7 +54,7 @@ export default function FarmerTrackingClient() {
           <div className="flex items-center gap-2 mb-1">
             <span className="font-mono text-xs text-slate-400 font-bold">{tracking.id}</span>
             <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
-              ROAD FREIGHT ONLY
+              {t('farmer.roadFreightOnly', 'ROAD FREIGHT ONLY')}
             </span>
             <StatusBadge status={tracking.status} />
           </div>
@@ -62,7 +64,7 @@ export default function FarmerTrackingClient() {
           </p>
         </div>
         <div className="text-right">
-          <span className="text-xs text-slate-400 block">Estimated Arrival (ETA)</span>
+          <span className="text-xs text-slate-400 block">{t('farmer.estimatedEta', 'Estimated Arrival (ETA)')}</span>
           <span className="text-xl font-black text-emerald-400">{tracking.estimatedArrival}</span>
         </div>
       </div>
@@ -74,7 +76,7 @@ export default function FarmerTrackingClient() {
         <Card className="bg-slate-900 border-slate-800 p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Thermometer className="w-4 h-4 text-emerald-400" /> Cold-Chain Telemetry
+              <Thermometer className="w-4 h-4 text-emerald-400" /> {t('logistics.liveColdChainTelemetry', 'Cold-Chain Telemetry')}
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Simulated GPS</span>
           </div>
@@ -88,33 +90,33 @@ export default function FarmerTrackingClient() {
         <Card className="bg-slate-900 border-slate-800 p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-amber-400" /> Spoilage Safe Window
+              <Clock className="w-4 h-4 text-amber-400" /> {t('farmer.spoilageSafeWindow', 'Spoilage Safe Window')}
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400">Low Risk</span>
           </div>
           <div className="text-2xl font-black text-white">
             {tracking.spoilageTelemetry.safeWindowHours}h {tracking.spoilageTelemetry.safeWindowMinutes}m
           </div>
-          <p className="text-xs text-slate-400 mt-1">Produce fresh shelf-life under Reefer transit.</p>
+          <p className="text-xs text-slate-400 mt-1">{t('farmer.freshShelfLife', 'Produce fresh shelf-life under Reefer transit.')}</p>
         </Card>
 
         {/* Route Progress */}
         <Card className="bg-slate-900 border-slate-800 p-5">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-blue-400" /> Road Route Progress
+              <MapPin className="w-4 h-4 text-blue-400" /> {t('farmer.routeProgress', 'Road Route Progress')}
             </span>
             <span className="text-[10px] font-bold text-emerald-400">{tracking.progressPercent}% Complete</span>
           </div>
           <div className="text-2xl font-black text-white">{tracking.distanceRemainingKm} km remaining</div>
-          <p className="text-xs text-slate-400 mt-1">Total Trip Distance: {tracking.totalDistanceKm} km</p>
+          <p className="text-xs text-slate-400 mt-1">{t('farmer.totalTripDistance', 'Total Trip Distance: {km} km').replace('{km}', String(tracking.totalDistanceKm))}</p>
         </Card>
 
       </div>
 
       {/* Waypoint Timeline */}
       <Card className="p-6">
-        <h3 className="text-base font-bold text-white mb-6">Road Waypoint Progression</h3>
+        <h3 className="text-base font-bold text-white mb-6">{t('farmer.waypointProgression', 'Road Waypoint Progression')}</h3>
         <div className="space-y-6">
           {tracking.timeline.map((point, idx) => (
             <div key={idx} className="flex items-start gap-4">
@@ -149,7 +151,7 @@ export default function FarmerTrackingClient() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-emerald-300">Return Load Matching Available</span>
+                  <span className="text-xs font-bold text-emerald-300">{t('logistics.returnLoadMatch', 'Return Load Matching Available')}</span>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">Demo Simulation</span>
                 </div>
                 <h4 className="text-base font-bold text-white mt-0.5">
@@ -161,7 +163,7 @@ export default function FarmerTrackingClient() {
               </div>
             </div>
             <div className="text-right flex-shrink-0">
-              <span className="text-xs text-slate-400 block">Additional Carrier Earnings</span>
+              <span className="text-xs text-slate-400 block">{t('logistics.addedOperatorRevenue', 'Additional Carrier Earnings')}</span>
               <span className="text-lg font-black text-emerald-400">+{formatINR(tracking.returnLoad.additionalEarnings)}</span>
             </div>
           </div>

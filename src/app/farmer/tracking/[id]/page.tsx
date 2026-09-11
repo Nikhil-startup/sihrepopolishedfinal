@@ -21,8 +21,10 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { LiveConnectionBanner, LiveBadge } from '@/components/common/LiveConnectionState';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerTrackingPage() {
+  const { t } = useI18n();
   const params = useParams();
   const id = (params?.id as string) || 'TRK-CONS-ROAD-9021';
   const { activeTrip, setActiveTripId, refreshTrip, liveState, lastUpdated, reconnectLive } = useTracking();
@@ -52,8 +54,8 @@ export default function FarmerTrackingPage() {
     return (
       <div className="py-24 text-center space-y-4">
         <Truck className="w-12 h-12 mx-auto text-emerald-400 animate-pulse" />
-        <h2 className="text-xl font-bold text-white">Connecting to Carrier Realtime Telemetry...</h2>
-        <p className="text-xs text-slate-400">Streaming live GPS coordinates and cold-chain telemetry.</p>
+        <h2 className="text-xl font-bold text-white">{t('consumer.connectingGps', 'Connecting to Carrier Realtime Telemetry...')}</h2>
+        <p className="text-xs text-slate-400">{t('consumer.fetchingGpsCoords', 'Streaming live GPS coordinates and cold-chain telemetry.')}</p>
       </div>
     );
   }
@@ -61,13 +63,13 @@ export default function FarmerTrackingPage() {
   if (!trip) {
     return (
       <div className="py-20 text-center space-y-4">
-        <h2 className="text-xl font-bold text-white">Live Tracking Unavailable</h2>
+        <h2 className="text-xl font-bold text-white">{t('noData', 'Live Tracking Unavailable')}</h2>
         <p className="text-xs text-slate-400">Tracking ID #{id} will display live location updates once connected to the carrier backend.</p>
         <Link
           href="/farmer/orders"
           className="inline-flex px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-colors"
         >
-          Return to Orders
+          {t('farmer.backToOrders', 'Return to Orders')}
         </Link>
       </div>
     );
@@ -81,7 +83,7 @@ export default function FarmerTrackingPage() {
           href="/farmer/orders"
           className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition font-medium"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to My Orders
+          <ArrowLeft className="w-4 h-4" /> {t('farmer.backToOrders', 'Back to My Orders')}
         </Link>
 
         <div className="flex items-center gap-2">

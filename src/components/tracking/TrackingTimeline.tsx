@@ -3,6 +3,7 @@
 import React from 'react';
 import { DeliveryWaypoint, DeliveryStatus } from '@/types/delivery';
 import { CheckCircle2, Clock, CircleDot, Circle } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 interface TrackingTimelineProps {
   waypoints: DeliveryWaypoint[];
@@ -15,15 +16,17 @@ export default function TrackingTimeline({
   status,
   isFarmerView = false,
 }: TrackingTimelineProps) {
+  const { t } = useI18n();
+
   return (
     <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md space-y-6">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
           <Clock className="w-4 h-4 text-emerald-500" />
-          {isFarmerView ? 'Farm Gate to Hub Route Progression' : 'Live Delivery Milestones'}
+          {isFarmerView ? t('tracking.routeProgression') : t('tracking.milestones')}
         </h3>
         <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-          Road Transport Timeline
+          {t('tracking.timeline')}
         </span>
       </div>
 

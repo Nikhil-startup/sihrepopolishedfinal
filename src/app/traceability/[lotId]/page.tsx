@@ -12,33 +12,38 @@ import {
   Sparkles, 
   Truck, 
   DollarSign, 
-  QrCode,
-  Lock,
-  ExternalLink
+  QrCode, 
+  Lock, 
+  ExternalLink 
 } from 'lucide-react';
 import { getTraceabilityLot } from '@/services/traceabilityService';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { translateStatus, translateQualityGrade } from '@/lib/i18nHelpers';
 
 export default function TraceabilityDetailPage({ params }: { params: Promise<{ lotId: string }> }) {
   const resolvedParams = use(params);
   const lotId = resolvedParams.lotId || 'LOT-2026-7842';
   const lot = getTraceabilityLot(lotId);
+  const { t } = useI18n();
 
   return (
     <div className='min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-16'>
       
       {/* Top Header */}
-      <div className='bg-emerald-900 text-emerald-100 text-xs py-2.5 px-4 sm:px-8 flex items-center justify-between border-b border-emerald-800'>
+      <div className='bg-emerald-900 text-emerald-100 text-xs py-2.5 px-4 sm:px-8 flex items-center justify-between border-b border-emerald-800 flex-wrap gap-2'>
         <div className='flex items-center gap-2'>
           <ShieldCheck className='w-4 h-4 text-emerald-400' />
-          <span className='font-bold'>AgriFlow Verified Traceability Certificate</span>
+          <span className='font-bold'>{t('traceability.certTitle')}</span>
         </div>
         <div className='flex items-center gap-3'>
+          <LanguageSelector variant="compact" />
           <Link href='/traceability' className='hover:text-white'>
-            Audit Another Batch
+            {t('traceability.auditAnother')}
           </Link>
           <Link href='/farmer/intelligence' className='hover:text-white font-bold text-emerald-300'>
-            Farmer Portal &rarr;
+            {t('nav.farmerPortal')} &rarr;
           </Link>
         </div>
       </div>
@@ -50,7 +55,7 @@ export default function TraceabilityDetailPage({ params }: { params: Promise<{ l
           href='/traceability'
           className='inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-emerald-600 transition'
         >
-          <ArrowLeft className='w-3.5 h-3.5' /> Back to Traceability Search
+          <ArrowLeft className='w-3.5 h-3.5' /> {t('traceability.backToSearch')}
         </Link>
 
         {/* Certificate Hero Card */}
@@ -59,15 +64,15 @@ export default function TraceabilityDetailPage({ params }: { params: Promise<{ l
             <div>
               <div className='flex items-center gap-2'>
                 <span className='px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-black text-xs'>
-                  {lot.currentStatus}
+                  {translateStatus(lot.currentStatus, t)}
                 </span>
-                <span className='text-xs font-mono text-slate-400'>Batch: {lot.lotId}</span>
+                <span className='text-xs font-mono text-slate-400'>{t('traceability.batch')}: {lot.lotId}</span>
               </div>
               <h1 className='text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1'>
                 {lot.commodity} <span className='text-emerald-600 dark:text-emerald-400 font-normal'>({lot.variety})</span>
               </h1>
               <p className='text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5'>
-                <MapPin className='w-3.5 h-3.5 text-emerald-500' /> {lot.farmLocation} &bull; Harvested: {lot.harvestDate}
+                <MapPin className='w-3.5 h-3.5 text-emerald-500' /> {lot.farmLocation} &bull; {t('common.date')}: {lot.harvestDate}
               </p>
             </div>
 
@@ -79,9 +84,9 @@ export default function TraceabilityDetailPage({ params }: { params: Promise<{ l
                 className='w-16 h-16 rounded-lg bg-white p-1'
               />
               <div className='text-left text-xs'>
-                <span className='font-bold block text-slate-800 dark:text-slate-200'>Cryptographic QR</span>
-                <span className='text-[10px] text-slate-400 block'>Scan on mobile to verify</span>
-                <span className='text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-0.5'>✓ 10 Steps Verified</span>
+                <span className='font-bold block text-slate-800 dark:text-slate-200'>{t('traceability.cryptoQr')}</span>
+                <span className='text-[10px] text-slate-400 block'>{t('traceability.scanMobile')}</span>
+                <span className='text-[10px] text-emerald-600 dark:text-emerald-400 font-bold block mt-0.5'>✓ {t('traceability.stepsCompleted')}</span>
               </div>
             </div>
           </div>
@@ -89,27 +94,27 @@ export default function TraceabilityDetailPage({ params }: { params: Promise<{ l
           {/* Key Parameters */}
           <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs'>
             <div className='p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800'>
-              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Farmer</span>
+              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('traceability.farmer')}</span>
               <span className='font-extrabold text-slate-900 dark:text-white text-sm block mt-0.5'>{lot.farmerName}</span>
               <span className='text-[10px] text-slate-400'>Zaheerabad Cluster</span>
             </div>
 
             <div className='p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800'>
-              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Quality Grade</span>
-              <span className='font-extrabold text-emerald-600 dark:text-emerald-400 text-sm block mt-0.5'>{lot.assignedGrade}</span>
-              <span className='text-[10px] text-slate-400'>AI CV Optically Rated</span>
+              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('traceability.qualityGrade')}</span>
+              <span className='font-extrabold text-emerald-600 dark:text-emerald-400 text-sm block mt-0.5'>{translateQualityGrade(lot.assignedGrade, t)}</span>
+              <span className='text-[10px] text-slate-400'>{t('traceability.aiCvRated')}</span>
             </div>
 
             <div className='p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800'>
-              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Marketable Volume</span>
+              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('common.quantity')}</span>
               <span className='font-extrabold text-slate-900 dark:text-white text-sm block mt-0.5'>{lot.marketableQuantityKg} kg</span>
-              <span className='text-[10px] text-slate-400'>400 kg damaged salvaged</span>
+              <span className='text-[10px] text-slate-400'>{t('common.verified')}</span>
             </div>
 
             <div className='p-3.5 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800'>
-              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Direct Buyer</span>
+              <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('orders.buyer')}</span>
               <span className='font-extrabold text-slate-900 dark:text-white text-sm block mt-0.5'>{lot.buyerName}</span>
-              <span className='text-[10px] text-emerald-600 font-bold'>₹{lot.finalPayoutPerKg}/kg Settled</span>
+              <span className='text-[10px] text-emerald-600 font-bold'>₹{lot.finalPayoutPerKg}/kg {t('status.delivered')}</span>
             </div>
           </div>
         </div>

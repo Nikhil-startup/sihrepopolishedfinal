@@ -4,6 +4,7 @@ import React from 'react';
 import { FoodLossRiskResult } from '@/types/intelligence';
 import { AlertOctagon, Clock, ArrowRight, ShieldCheck, HeartHandshake } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface FoodLossAlertCardProps {
   lossRisk: FoodLossRiskResult;
@@ -12,6 +13,7 @@ interface FoodLossAlertCardProps {
 }
 
 export function FoodLossAlertCard({ lossRisk, onSelectChannel, className }: FoodLossAlertCardProps) {
+  const { t } = useI18n();
   const isHighRisk = lossRisk.riskLevel === 'HIGH' || lossRisk.riskLevel === 'CRITICAL';
 
   return (
@@ -32,12 +34,12 @@ export function FoodLossAlertCard({ lossRisk, onSelectChannel, className }: Food
           </div>
           <div>
             <h3 className='text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2'>
-              Zero-Loss Perishable Safeguard
+              {t('intelligence.zeroLossSafeguard')}
               <span className={cn(
                 'text-[10px] uppercase font-bold px-2 py-0.5 rounded-full',
                 isHighRisk ? 'bg-rose-600 text-white' : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
               )}>
-                {lossRisk.riskLevel} Risk
+                {t('intelligence.risk', { risk: lossRisk.riskLevel })}
               </span>
             </h3>
             <p className='text-xs text-slate-500 dark:text-slate-400 mt-0.5'>
@@ -47,16 +49,16 @@ export function FoodLossAlertCard({ lossRisk, onSelectChannel, className }: Food
         </div>
 
         <div className='text-right shrink-0'>
-          <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Remaining Window</span>
+          <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('intelligence.remainingWindow')}</span>
           <span className='text-sm font-black text-rose-600 dark:text-rose-400 flex items-center justify-end gap-1'>
-            <Clock className='w-3.5 h-3.5' /> {lossRisk.remainingShelfLifeHours} Hours
+            <Clock className='w-3.5 h-3.5' /> {t('intelligence.hours', { hours: lossRisk.remainingShelfLifeHours })}
           </span>
         </div>
       </div>
 
       <div className='space-y-2 pt-1'>
         <span className='text-[11px] font-bold uppercase tracking-wider text-slate-400 block'>
-          5-Path Emergency Rescue Alternatives
+          {t('intelligence.emergencyRescue')}
         </span>
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs'>
           {lossRisk.recommendedRescueChannels.map((channel, i) => (
@@ -72,7 +74,10 @@ export function FoodLossAlertCard({ lossRisk, onSelectChannel, className }: Food
                   {channel.partnerName}
                 </span>
                 <span className='text-[11px] text-slate-500 block mt-1'>
-                  Salvage: ₹{channel.potentialSalvageValue.toLocaleString()} ({channel.offeredPricePerKg > 0 ? `₹${channel.offeredPricePerKg}/kg` : 'Zero Waste Donation'})
+                  {t('intelligence.salvage', {
+                    val: channel.potentialSalvageValue.toLocaleString(),
+                    price: channel.offeredPricePerKg > 0 ? `₹${channel.offeredPricePerKg}/kg` : t('intelligence.zeroWasteDonation')
+                  })}
                 </span>
               </div>
 
@@ -81,7 +86,7 @@ export function FoodLossAlertCard({ lossRisk, onSelectChannel, className }: Food
                 onClick={() => onSelectChannel && onSelectChannel(channel)}
                 className='w-full py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition flex items-center justify-center gap-1'
               >
-                Dispatch Channel <ArrowRight className='w-3 h-3' />
+                {t('intelligence.dispatchChannel')} <ArrowRight className='w-3 h-3' />
               </button>
             </div>
           ))}

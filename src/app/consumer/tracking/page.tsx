@@ -13,6 +13,7 @@ import DriverCard from '@/components/tracking/DriverCard';
 import ColdChainTelemetryCard from '@/components/tracking/ColdChainTelemetryCard';
 import ETACard from '@/components/tracking/ETACard';
 import ProofOfDeliveryCard from '@/components/tracking/ProofOfDeliveryCard';
+import { useI18n } from '@/context/I18nContext';
 import {
   Truck,
   Search,
@@ -37,6 +38,7 @@ import {
 } from 'lucide-react';
 
 function ConsumerTrackingContent() {
+  const { t } = useI18n();
   const searchParams = useSearchParams();
   const initialId = searchParams.get('id') || 'TRK-CONS-ROAD-9021';
 
@@ -156,10 +158,10 @@ function ConsumerTrackingContent() {
       <div className="py-24 text-center space-y-4">
         <div className="w-12 h-12 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
         <h2 className="text-xl font-bold text-zinc-900 dark:text-white">
-          Connecting to Road GPS Satellite & IoT Carrier Stream...
+          {t('consumer.connectingGps', 'Connecting to Road GPS Satellite & IoT Carrier Stream...')}
         </h2>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Fetching live coordinates, reefer temperature telemetry, and waypoints.
+          {t('consumer.fetchingGpsCoords', 'Fetching live coordinates, reefer temperature telemetry, and waypoints.')}
         </p>
       </div>
     );
@@ -171,13 +173,13 @@ function ConsumerTrackingContent() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-2">
-            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-500" /> Live GPS Road Freight Telemetry
+            <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-500" /> {t('logistics.liveGpsSensorStream', 'Live GPS Road Freight Telemetry')}
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
-            Delivery Tracking by GPS
+            {t('consumer.deliveryTrackingGps', 'Delivery Tracking by GPS')}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-            Real-time highway position, driver speed, and IoT temperature monitoring for your farm produce.
+            {t('consumer.trackingSubtitle', 'Real-time highway position, driver speed, and IoT temperature monitoring for your farm produce.')}
           </p>
         </div>
 
@@ -193,7 +195,7 @@ function ConsumerTrackingContent() {
             }`}
           >
             <Wifi className="w-4 h-4" />
-            {isLowBandwidth ? 'Low Bandwidth: ON' : 'Standard Map Mode'}
+            {isLowBandwidth ? t('consumer.lowBandwidthOn', 'Low Bandwidth: ON') : t('consumer.standardMapMode', 'Standard Map Mode')}
           </button>
 
           {activeTrip && (
@@ -205,11 +207,11 @@ function ConsumerTrackingContent() {
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-500" /> Copied!
+                  <Check className="w-4 h-4 text-emerald-500" /> {t('consumer.copied', 'Copied!')}
                 </>
               ) : (
                 <>
-                  <Share2 className="w-4 h-4" /> Share Link
+                  <Share2 className="w-4 h-4" /> {t('consumer.shareLink', 'Share Link')}
                 </>
               )}
             </button>
@@ -224,7 +226,7 @@ function ConsumerTrackingContent() {
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
             <input
               type="text"
-              placeholder="Search by Tracking ID (e.g. TRK-CONS-ROAD-9021), Order ID, Vehicle Number..."
+              placeholder={t('consumer.searchTrackingPlaceholder', 'Search by Tracking ID (e.g. TRK-CONS-ROAD-9021), Order ID, Vehicle Number...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -234,13 +236,13 @@ function ConsumerTrackingContent() {
             type="submit"
             className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm flex items-center gap-1.5"
           >
-            <Search className="w-4 h-4" /> Track
+            <Search className="w-4 h-4" /> {t('common.track', 'Track')}
           </button>
         </form>
 
         {/* Sample ID Badges */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-zinc-500 dark:text-zinc-400 font-medium">Quick Select Shipments:</span>
+          <span className="text-zinc-500 dark:text-zinc-400 font-medium">{t('consumer.quickSelectShipments', 'Quick Select Shipments:')}</span>
           {trips.map((t) => (
             <button
               key={t.id}

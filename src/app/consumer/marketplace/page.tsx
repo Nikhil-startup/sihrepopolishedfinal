@@ -87,13 +87,13 @@ export default function ConsumerMarketplacePage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Direct Farm-Gate Sourcing
+            {t('consumer.directFarmGateSourcing', 'Direct Farm-Gate Sourcing')}
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
-            Produce Marketplace
+            {t('consumer.marketplaceTitle', 'Produce Marketplace')}
           </h1>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-            Browse verified farm harvests with transparent road freight & direct farmer realizations
+            {t('consumer.marketplaceSubtitle', 'Browse verified farm harvests with transparent road freight & direct farmer realizations')}
           </p>
         </div>
 
@@ -107,10 +107,10 @@ export default function ConsumerMarketplacePage() {
               onChange={(e) => setSortBy(e.target.value as any)}
               className="bg-transparent font-semibold text-zinc-900 dark:text-white focus:outline-none cursor-pointer"
             >
-              <option value="recommended">AI Recommended</option>
-              <option value="freshness">Freshest First (Harvest Date)</option>
-              <option value="price-asc">Price: Low to High</option>
-              <option value="price-desc">Price: High to Low</option>
+              <option value="recommended">{t('consumer.aiRecommended', 'AI Recommended')}</option>
+              <option value="freshness">{t('consumer.freshestFirst', 'Freshest First (Harvest Date)')}</option>
+              <option value="price-asc">{t('consumer.priceAsc', 'Price: Low to High')}</option>
+              <option value="price-desc">{t('consumer.priceDesc', 'Price: High to Low')}</option>
             </select>
           </div>
 
@@ -160,7 +160,7 @@ export default function ConsumerMarketplacePage() {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search produce name, farmer, location, or origin district..."
+            placeholder={t('consumer.searchPlaceholder', 'Search produce name, farmer, location, or origin district...')}
             className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-xs sm:text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
@@ -178,7 +178,7 @@ export default function ConsumerMarketplacePage() {
                   : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700'
               }`}
             >
-              {cat}
+              {cat === 'All' ? t('common.all', 'All') : t(`category.${cat.toLowerCase()}`, cat)}
             </button>
           ))}
         </div>
@@ -194,7 +194,7 @@ export default function ConsumerMarketplacePage() {
           }`}
         >
           <Snowflake className="w-3.5 h-3.5 text-cyan-500" />
-          Cold-Chain Only
+          {t('consumer.coldChainOnly', 'Cold-Chain Only')}
         </button>
       </div>
 
@@ -202,7 +202,7 @@ export default function ConsumerMarketplacePage() {
       {loading ? (
         <div className="py-20 text-center space-y-3">
           <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs text-zinc-400 font-medium">Fetching verified farm listings...</p>
+          <p className="text-xs text-zinc-400 font-medium">{t('consumer.fetchingListings', 'Fetching verified farm listings...')}</p>
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-4">
@@ -210,10 +210,10 @@ export default function ConsumerMarketplacePage() {
             <Filter className="w-6 h-6" />
           </div>
           <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-            No produce found matching your filters
+            {t('consumer.noProductsFound', 'No produce found matching your filters')}
           </h3>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
-            Try resetting your search query, changing the quality grade, or disabling specific filter criteria.
+            {t('consumer.tryResetting', 'Try resetting your search query, changing the quality grade, or disabling specific filter criteria.')}
           </p>
           <button
             type="button"
@@ -225,7 +225,7 @@ export default function ConsumerMarketplacePage() {
             }}
             className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm"
           >
-            Clear All Filters
+            {t('consumer.clearAllFilters', 'Clear All Filters')}
           </button>
         </div>
       ) : (

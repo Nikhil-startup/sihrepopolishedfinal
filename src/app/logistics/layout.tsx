@@ -33,10 +33,10 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
   const { logisticsUser, logoutLogistics } = useAuth();
 
   const navItems = [
-    { href: '/logistics/dashboard', label: t('fleetDashboard') || 'Fleet Dashboard', icon: Layers },
-    { href: '/logistics/trips', label: t('consolidatedTrips') || 'Consolidated Trips', icon: Truck },
-    { href: '/logistics/return-loads', label: t('returnLoadAI') || 'Return Load AI', icon: RefreshCw },
-    { href: '/logistics/telemetry', label: t('reeferTelemetry') || 'Reefer Telemetry', icon: ThermometerSnowflake },
+    { href: '/logistics/dashboard', label: t('nav.dashboard'), icon: Layers },
+    { href: '/logistics/trips', label: t('nav.trips'), icon: Truck },
+    { href: '/logistics/return-loads', label: t('nav.returnLoads'), icon: RefreshCw },
+    { href: '/logistics/telemetry', label: t('nav.telemetry'), icon: ThermometerSnowflake },
   ];
 
   const publicRoutes = ['/logistics', '/logistics/login', '/logistics/register', '/logistics/complete-profile'];
@@ -65,23 +65,23 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
       <div className="bg-slate-900/90 border-b border-slate-800 text-xs text-slate-400 px-4 py-1.5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <span className="flex items-center gap-1.5 font-bold text-cyan-400">
-            <Truck className="w-3.5 h-3.5" /> AgriFlow Fleet & Cold-Chain Network
+            <Truck className="w-3.5 h-3.5" /> AgriFlow {t('nav.fleetOps')}
           </span>
-          <span className="hidden md:inline text-slate-500">&bull; Telemetry & Return-Haul Optimization</span>
+          <span className="hidden md:inline text-slate-500">&bull; {t('logistics.telemetry')}</span>
         </div>
         <div className="flex items-center gap-3">
           <ConnectionIndicator />
           <LowBandwidthToggle />
           <Link href="/" className="hover:text-slate-200 transition flex items-center gap-1">
-            <ArrowLeft className="w-3 h-3" /> Home Hub
+            <ArrowLeft className="w-3 h-3" /> {t('nav.gateway')}
           </Link>
           <span className="text-slate-700">|</span>
           <Link href="/farmer" className="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1">
-            <Sprout className="w-3 h-3" /> Farmer Portal
+            <Sprout className="w-3 h-3" /> {t('nav.farmerPortal')}
           </Link>
           <span className="text-slate-700">|</span>
           <Link href="/consumer" className="text-teal-400 hover:text-teal-300 transition flex items-center gap-1">
-            <Store className="w-3 h-3" /> Buyer Portal
+            <Store className="w-3 h-3" /> {t('nav.buyerPortal')}
           </Link>
           <span className="text-slate-700">|</span>
           <LanguageSelector variant="compact" />
@@ -98,13 +98,13 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white whitespace-nowrap">
-                  AgriFlow <span className="text-cyan-400">Logistics</span>
+                  AgriFlow <span className="text-cyan-400">{t('role.logistics')}</span>
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 whitespace-nowrap">
-                  Active Fleet Ops
+                  {t('nav.fleetOps')}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 truncate hidden md:block">Reefer Telemetry, Highway Routes & Return Load Matching</p>
+              <p className="text-[11px] text-slate-400 truncate hidden md:block">{t('logistics.telemetry')}</p>
             </div>
           </div>
 
@@ -136,7 +136,7 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950 border border-cyan-700/60 hover:bg-cyan-900/80 text-cyan-300 text-xs font-semibold transition"
             >
               <MapPin className="w-3.5 h-3.5 text-cyan-400" />
-              <span className="hidden sm:inline">Active Trip GPS</span>
+              <span className="hidden sm:inline">{t('nav.gpsTracking')}</span>
               <span className="sm:hidden">GPS</span>
             </Link>
 
@@ -145,7 +145,7 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
                 onClick={logoutLogistics}
                 className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-rose-950/40 hover:border-rose-700/50 text-xs font-semibold text-slate-300 hover:text-rose-400 transition"
               >
-                {t('logout')}
+                {t('nav.logout')}
               </button>
             )}
 
@@ -190,7 +190,7 @@ export default function LogisticsLayout({ children }: { children: React.ReactNod
       </main>
 
       <footer className="border-t border-slate-800/60 bg-slate-950 py-6 text-center text-xs text-slate-500">
-        <p>AgriFlow AI &bull; SIH Smart Cold-Chain Transport & Logistics Platform</p>
+        <p>AgriFlow AI &bull; SIH {t('logistics.smartLogistics')} &bull; Road Logistics Only</p>
       </footer>
     </div>
   );

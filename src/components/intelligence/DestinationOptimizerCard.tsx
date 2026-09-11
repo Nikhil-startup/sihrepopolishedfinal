@@ -4,6 +4,7 @@ import React from 'react';
 import { DestinationOptimizationResult } from '@/types/intelligence';
 import { MapPin, Navigation, TrendingUp, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface DestinationOptimizerCardProps {
   destinations: DestinationOptimizationResult[];
@@ -11,15 +12,17 @@ interface DestinationOptimizerCardProps {
 }
 
 export function DestinationOptimizerCard({ destinations, className }: DestinationOptimizerCardProps) {
+  const { t } = useI18n();
+
   return (
     <div className={cn('bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4', className)}>
       <div>
         <h3 className='text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2'>
           <Navigation className='w-4 h-4 text-teal-600 dark:text-teal-400' />
-          Mandi Destination Net Realization Optimizer
+          {t('intelligence.mandiOptimizerTitle')}
         </h3>
         <p className='text-xs text-slate-500 dark:text-slate-400'>
-          Ranked by true realization: Mandi Gross Price − (Freight + APMC Cess + Spoilage Transit Loss)
+          {t('intelligence.mandiOptimizerSubtitle')}
         </p>
       </div>
 
@@ -27,12 +30,12 @@ export function DestinationOptimizerCard({ destinations, className }: Destinatio
         <table className='w-full text-left text-xs border-collapse'>
           <thead>
             <tr className='border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase text-[10px]'>
-              <th className='py-2.5 px-3'>Rank & Mandi</th>
-              <th className='py-2.5 px-3'>Distance</th>
-              <th className='py-2.5 px-3'>Gross Mandi Price</th>
-              <th className='py-2.5 px-3'>Freight & Handling</th>
-              <th className='py-2.5 px-3'>Est. Spoilage %</th>
-              <th className='py-2.5 px-3 text-right'>Net Farmer Realization</th>
+              <th className='py-2.5 px-3'>{t('intelligence.rankAndMandi')}</th>
+              <th className='py-2.5 px-3'>{t('intelligence.distance')}</th>
+              <th className='py-2.5 px-3'>{t('intelligence.grossMandiPrice')}</th>
+              <th className='py-2.5 px-3'>{t('intelligence.freightHandling')}</th>
+              <th className='py-2.5 px-3'>{t('intelligence.estSpoilage')}</th>
+              <th className='py-2.5 px-3 text-right'>{t('intelligence.netFarmerRealization')}</th>
             </tr>
           </thead>
           <tbody className='divide-y divide-slate-100 dark:divide-slate-800/60'>
@@ -86,7 +89,7 @@ export function DestinationOptimizerCard({ destinations, className }: Destinatio
                     </span>
                     {advantageOverLocalPerKg > 0 && (
                       <span className='text-[10px] text-emerald-600 dark:text-emerald-400 block font-normal'>
-                        (+₹{advantageOverLocalPerKg.toFixed(2)} vs local)
+                        {t('intelligence.vsLocal', { diff: advantageOverLocalPerKg.toFixed(2) })}
                       </span>
                     )}
                   </td>

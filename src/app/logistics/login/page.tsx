@@ -4,15 +4,18 @@ import React from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/common/Card';
 import { PhoneAuthForm } from '@/components/auth/PhoneAuthForm';
+import { useI18n } from '@/context/I18nContext';
 import { ArrowLeft, Truck } from 'lucide-react';
 
 export default function LogisticsLoginPage() {
+  const { t } = useI18n();
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-amber-500 selection:text-slate-950">
       
       <div className="max-w-md w-full mx-auto">
         <Link href="/logistics" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-amber-400 transition font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Logistics Portal
+          <ArrowLeft className="w-4 h-4" /> {t('logistics.backToLogistics')}
         </Link>
       </div>
 
@@ -28,15 +31,15 @@ export default function LogisticsLoginPage() {
           <PhoneAuthForm
             role="logistics"
             redirectUrl="/logistics/dashboard"
-            roleTitle="Logistics Operator Login"
-            roleSubtitle="Manage reefer dispatch fleets, driver assignments, and live telemetry."
+            roleTitle={t('logistics.loginTitle')}
+            roleSubtitle={t('logistics.loginSubtitle')}
             themeColor="amber"
           />
 
           <div className="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
-            <span>New carrier or fleet operator? </span>
+            <span>{t('logistics.newCarrier')} </span>
             <Link href="/logistics/register" className="text-amber-400 font-bold hover:underline">
-              Create Fleet Account
+              {t('logistics.createFleetAccount')}
             </Link>
           </div>
 
@@ -44,7 +47,7 @@ export default function LogisticsLoginPage() {
       </div>
 
       <div className="text-center text-xs text-slate-500">
-        AgriFlow AI &bull; Road Freight Logistics Portal
+        AgriFlow AI &bull; {t('logistics.roadFreightCommand')}
       </div>
 
     </div>

@@ -49,10 +49,10 @@ export default function ConsumerCheckoutPage() {
   if (items.length === 0 && !orderCreatedSuccess) {
     return (
       <div className="py-20 text-center max-w-md mx-auto space-y-4">
-        <h2 className="text-xl font-bold">No active items for checkout</h2>
-        <p className="text-xs text-zinc-500">Please add produce from the marketplace before checking out.</p>
+        <h2 className="text-xl font-bold">{t('consumer.noItemsCheckout', 'No active items for checkout')}</h2>
+        <p className="text-xs text-zinc-500">{t('consumer.pleaseAddItems', 'Please add produce from the marketplace before checking out.')}</p>
         <Link href="/consumer/marketplace" className="inline-flex px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">
-          Go to Marketplace
+          {t('consumer.goToMarketplace', 'Go to Marketplace')}
         </Link>
       </div>
     );
@@ -99,10 +99,10 @@ export default function ConsumerCheckoutPage() {
       <div className="flex items-center justify-between">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-            Secure Escrow Checkout
+            {t('consumer.secureCheckout', 'Secure Escrow Checkout')}
           </span>
           <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
-            Confirm Sourcing Order
+            {t('consumer.confirmOrder', 'Confirm Sourcing Order')}
           </h1>
         </div>
 
@@ -110,7 +110,7 @@ export default function ConsumerCheckoutPage() {
           href="/consumer/cart"
           className="inline-flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-emerald-600"
         >
-          <ArrowLeft className="w-4 h-4" /> Edit Cart
+          <ArrowLeft className="w-4 h-4" /> {t('consumer.editCart', 'Edit Cart')}
         </Link>
       </div>
 
@@ -118,13 +118,13 @@ export default function ConsumerCheckoutPage() {
         <div className="p-8 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/40 text-center max-w-lg mx-auto space-y-4">
           <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto animate-bounce" />
           <h2 className="text-xl font-black text-emerald-900 dark:text-emerald-200">
-            Order Successfully Placed & Escrow Locked!
+            {t('consumer.orderSuccessTitle', 'Order Successfully Placed & Escrow Locked!')}
           </h2>
           <p className="text-xs text-zinc-600 dark:text-zinc-300">
-            Order Reference: <strong className="font-mono text-emerald-600 dark:text-emerald-400">{orderCreatedSuccess}</strong>
+            {t('consumer.orderRef', 'Order Reference: {id}').replace('{id}', orderCreatedSuccess)}
           </p>
           <p className="text-xs text-zinc-500">
-            Tata 407 Reefer route has been provisioned. Redirecting to your live order management...
+            {t('consumer.routeProvisioned', 'Tata 407 Reefer route has been provisioned. Redirecting to your live order management...')}
           </p>
         </div>
       ) : (
@@ -135,13 +135,13 @@ export default function ConsumerCheckoutPage() {
             <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-900 dark:text-white flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-emerald-500" />
-                Delivery Destination & Contact
+                {t('consumer.deliveryDestination', 'Delivery Destination & Contact')}
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                    Recipient / Business Name
+                    {t('consumer.recipientName', 'Recipient / Business Name')}
                   </label>
                   <input
                     type="text"
@@ -154,7 +154,7 @@ export default function ConsumerCheckoutPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                    Contact Phone Number
+                    {t('farmer.phone', 'Contact Phone Number')}
                   </label>
                   <input
                     type="text"
@@ -167,7 +167,7 @@ export default function ConsumerCheckoutPage() {
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                    Delivery Address / Mandi Warehouse Corridor
+                    {t('farmer.pickupLocationLabel', 'Delivery Address / Mandi Warehouse Corridor')}
                   </label>
                   <input
                     type="text"
@@ -180,7 +180,7 @@ export default function ConsumerCheckoutPage() {
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-700 dark:text-zinc-300 mb-1">
-                    City / District
+                    {t('farmer.districtState', 'City / District')}
                   </label>
                   <input
                     type="text"

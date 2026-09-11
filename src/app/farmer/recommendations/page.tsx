@@ -7,8 +7,10 @@ import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { Sparkles, ShieldCheck, CheckCircle2, ArrowRight, ArrowUpRight, TrendingUp } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export default function AIRecommendationsPage() {
+  const { t } = useI18n();
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
 
   useEffect(() => {
@@ -20,9 +22,9 @@ export default function AIRecommendationsPage() {
       
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">AI Selling Recommendations</h1>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.aiRecTitle', 'AI Selling Recommendations')}</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Transparent multi-factor intelligence scoring based on regional supply deficits, distance, harvest freshness, and net farmer realization.
+          {t('farmer.aiRecSubtitle', 'Transparent multi-factor intelligence scoring based on regional supply deficits, distance, harvest freshness, and net farmer realization.')}
         </p>
       </div>
 
@@ -35,10 +37,10 @@ export default function AIRecommendationsPage() {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="px-3 py-1 rounded-full bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider">
-                    {rec.score}% AI Match Score
+                    {t('farmer.aiMatchScore', '{score}% AI Match Score').replace('{score}', String(rec.score))}
                   </span>
                   <span className="text-xs text-emerald-400 font-bold">
-                    +{formatINR(rec.expectedImprovementPerKg)}/kg Expected Gain
+                    +{formatINR(rec.expectedImprovementPerKg)}/kg {t('farmer.expectedGain', 'Expected Gain').replace('+{gain}/kg', '').trim()}
                   </span>
                 </div>
                 <h2 className="text-xl font-black text-white">{rec.title}</h2>
@@ -53,14 +55,14 @@ export default function AIRecommendationsPage() {
 
             {/* Explainable Factor Breakdown */}
             <div className="bg-slate-900/90 rounded-2xl p-5 border border-slate-800">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-4 flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Transparent Factor Scoring Breakdown (Explainable AI)
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> {t('farmer.explainableAiTitle', 'Transparent Factor Scoring Breakdown (Explainable AI)')}
               </span>
 
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-xs">
                 <div>
                   <div className="flex justify-between text-slate-300 mb-1">
-                    <span>Demand Deficit:</span>
+                    <span>{t('farmer.demand', 'Demand')} {t('farmer.deficitGap', 'Deficit')}:</span>
                     <span className="font-bold text-emerald-400">{rec.factors.demandStrength}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -70,7 +72,7 @@ export default function AIRecommendationsPage() {
 
                 <div>
                   <div className="flex justify-between text-slate-300 mb-1">
-                    <span>Road Distance:</span>
+                    <span>{t('farmer.roadDistance', 'Road Distance')}:</span>
                     <span className="font-bold text-emerald-400">{rec.factors.distanceScore}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -80,7 +82,7 @@ export default function AIRecommendationsPage() {
 
                 <div>
                   <div className="flex justify-between text-slate-300 mb-1">
-                    <span>Freshness Window:</span>
+                    <span>{t('farmer.freshnessWindow', 'Freshness Window')}:</span>
                     <span className="font-bold text-emerald-400">{rec.factors.freshnessScore}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -90,7 +92,7 @@ export default function AIRecommendationsPage() {
 
                 <div>
                   <div className="flex justify-between text-slate-300 mb-1">
-                    <span>Price Premium:</span>
+                    <span>{t('farmer.pricePremium', 'Price Premium')}:</span>
                     <span className="font-bold text-emerald-400">{rec.factors.expectedPriceScore}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -100,7 +102,7 @@ export default function AIRecommendationsPage() {
 
                 <div>
                   <div className="flex justify-between text-slate-300 mb-1">
-                    <span>Net Realization:</span>
+                    <span>{t('farmer.realization', 'Net Realization')}:</span>
                     <span className="font-bold text-emerald-400">{rec.factors.fairRealizationScore}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -112,7 +114,7 @@ export default function AIRecommendationsPage() {
 
             {/* Bullet reasons */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">Decision Reasoning:</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">{t('farmer.decisionReasoning', 'Decision Reasoning')}:</span>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                 {rec.reasoning.map((reason, idx) => (
                   <div key={idx} className="flex items-start gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50 text-slate-300">

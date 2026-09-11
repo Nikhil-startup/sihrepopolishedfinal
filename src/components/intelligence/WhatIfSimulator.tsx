@@ -19,8 +19,10 @@ import { calculateWeatherShock } from '@/services/weatherShockService';
 import { calculateProfitability } from '@/services/profitabilityService';
 import { evaluateStorageVsSell } from '@/services/storageOptimizerService';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export function WhatIfSimulator() {
+  const { t } = useI18n();
   // Configurable dynamic inputs
   const [expectedHarvestKg, setExpectedHarvestKg] = useState<number>(1000);
   const [damagePercent, setDamagePercent] = useState<number>(40);
@@ -138,37 +140,37 @@ export function WhatIfSimulator() {
               <Sliders className='w-4 h-4' />
             </div>
             <h2 className='text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white'>
-              Interactive What-If Market & Weather Simulator
+              {t('intelligence.whatIfTitle')}
             </h2>
           </div>
           <p className='text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1'>
-            Adjust parameters to see dynamic real-time recalculations of price shocks, sustainable floor, and profit margins.
+            {t('intelligence.whatIfSubtitle')}
           </p>
         </div>
 
         {/* Presets */}
         <div className='flex flex-wrap items-center gap-2'>
-          <span className='text-xs font-semibold text-slate-400'>Presets:</span>
+          <span className='text-xs font-semibold text-slate-400'>{t('intelligence.presets')}</span>
           <button
             type='button'
             onClick={() => applyPreset('benchmark')}
             className='px-2.5 py-1 text-xs font-bold rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200 transition'
           >
-            ★ SIH Benchmark (40% Loss)
+            {t('intelligence.presetBenchmark')}
           </button>
           <button
             type='button'
             onClick={() => applyPreset('demandDrop')}
             className='px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 transition'
           >
-            Lower Demand (700 kg)
+            {t('intelligence.presetDemandDrop')}
           </button>
           <button
             type='button'
             onClick={() => applyPreset('cyclone')}
             className='px-2.5 py-1 text-xs font-bold rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900 hover:bg-rose-100 transition'
           >
-            Severe Cyclone (65% Loss)
+            {t('intelligence.presetCyclone')}
           </button>
         </div>
       </div>
@@ -179,12 +181,12 @@ export function WhatIfSimulator() {
         {/* Left Column: Sliders (5 cols) */}
         <div className='lg:col-span-5 space-y-5 bg-slate-50/70 dark:bg-slate-800/40 p-4 sm:p-5 rounded-2xl border border-slate-100 dark:border-slate-800'>
           <h3 className='text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center justify-between'>
-            <span>Simulation Parameters</span>
+            <span>{t('intelligence.simulationParams')}</span>
             <button 
               onClick={() => applyPreset('benchmark')} 
               className='text-emerald-600 dark:text-emerald-400 flex items-center gap-1 normal-case hover:underline font-medium'
             >
-              <RotateCcw className='w-3 h-3' /> Reset to Benchmark
+              <RotateCcw className='w-3 h-3' /> {t('intelligence.resetBenchmark')}
             </button>
           </h3>
 
@@ -192,7 +194,7 @@ export function WhatIfSimulator() {
           <div className='space-y-1.5'>
             <div className='flex justify-between text-xs font-semibold'>
               <span className='text-slate-700 dark:text-slate-300 flex items-center gap-1'>
-                <CloudRain className='w-3.5 h-3.5 text-blue-500' /> Crop Damage Rate:
+                <CloudRain className='w-3.5 h-3.5 text-blue-500' /> {t('intelligence.cropDamageRate')}
               </span>
               <span className='font-bold text-rose-600 dark:text-rose-400'>
                 {damagePercent}% ({damagedKg} kg lost)
@@ -218,7 +220,7 @@ export function WhatIfSimulator() {
           <div className='space-y-1.5'>
             <div className='flex justify-between text-xs font-semibold'>
               <span className='text-slate-700 dark:text-slate-300 flex items-center gap-1'>
-                <Package className='w-3.5 h-3.5 text-emerald-500' /> Expected Harvest:
+                <Package className='w-3.5 h-3.5 text-emerald-500' /> {t('intelligence.expectedHarvest')}
               </span>
               <span className='font-bold text-slate-900 dark:text-white'>{expectedHarvestKg} kg</span>
             </div>
@@ -237,7 +239,7 @@ export function WhatIfSimulator() {
           <div className='space-y-1.5'>
             <div className='flex justify-between text-xs font-semibold'>
               <span className='text-slate-700 dark:text-slate-300 flex items-center gap-1'>
-                <TrendingUp className='w-3.5 h-3.5 text-amber-500' /> Regional Market Demand:
+                <TrendingUp className='w-3.5 h-3.5 text-amber-500' /> {t('intelligence.regionalDemand')}
               </span>
               <span className='font-bold text-slate-900 dark:text-white'>{expectedDemandKg} kg</span>
             </div>
@@ -256,7 +258,7 @@ export function WhatIfSimulator() {
           <div className='space-y-1.5'>
             <div className='flex justify-between text-xs font-semibold'>
               <span className='text-slate-700 dark:text-slate-300 flex items-center gap-1'>
-                <DollarSign className='w-3.5 h-3.5 text-emerald-500' /> Normal Mandi Benchmark:
+                <DollarSign className='w-3.5 h-3.5 text-emerald-500' /> {t('intelligence.normalBenchmark')}
               </span>
               <span className='font-bold text-emerald-600 dark:text-emerald-400'>₹{baseMarketPrice.toFixed(2)}/kg</span>
             </div>
@@ -274,7 +276,7 @@ export function WhatIfSimulator() {
           {/* 5. Price Elasticity */}
           <div className='space-y-1.5'>
             <div className='flex justify-between text-xs font-semibold'>
-              <span className='text-slate-700 dark:text-slate-300'>Price Elasticity Factor:</span>
+              <span className='text-slate-700 dark:text-slate-300'>{t('intelligence.priceElasticity')}</span>
               <span className='font-bold text-blue-600 dark:text-blue-400'>{priceElasticity.toFixed(2)}</span>
             </div>
             <input
@@ -290,10 +292,10 @@ export function WhatIfSimulator() {
 
           {/* Cost details collapsible */}
           <div className='pt-2 border-t border-slate-200 dark:border-slate-700 space-y-3'>
-            <div className='text-[11px] font-bold uppercase text-slate-400'>Incurred Operational Costs</div>
+            <div className='text-[11px] font-bold uppercase text-slate-400'>{t('intelligence.operationalCosts')}</div>
             <div className='grid grid-cols-3 gap-2'>
               <div>
-                <label className='text-[10px] text-slate-500 block'>Production</label>
+                <label className='text-[10px] text-slate-500 block'>{t('intelligence.production')}</label>
                 <input
                   type='number'
                   value={productionCost}
@@ -302,7 +304,7 @@ export function WhatIfSimulator() {
                 />
               </div>
               <div>
-                <label className='text-[10px] text-slate-500 block'>Recovery</label>
+                <label className='text-[10px] text-slate-500 block'>{t('intelligence.recovery')}</label>
                 <input
                   type='number'
                   value={recoveryCost}
@@ -311,7 +313,7 @@ export function WhatIfSimulator() {
                 />
               </div>
               <div>
-                <label className='text-[10px] text-slate-500 block'>Transport</label>
+                <label className='text-[10px] text-slate-500 block'>{t('intelligence.transport')}</label>
                 <input
                   type='number'
                   value={transportCost}
@@ -329,7 +331,7 @@ export function WhatIfSimulator() {
           {/* Top Metric Cards */}
           <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
             <div className='bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800'>
-              <span className='text-[10px] uppercase font-bold text-slate-400 block'>Marketable Crop</span>
+              <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('intelligence.marketableCrop')}</span>
               <span className='text-lg font-black text-slate-900 dark:text-white mt-1 block'>
                 {shock.marketableSupplyKg} <span className='text-xs font-normal text-slate-400'>kg</span>
               </span>
@@ -337,7 +339,7 @@ export function WhatIfSimulator() {
             </div>
 
             <div className='bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800'>
-              <span className='text-[10px] uppercase font-bold text-slate-400 block'>Market Shortage</span>
+              <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('intelligence.shortagePercent')}</span>
               <span className='text-lg font-black text-rose-600 dark:text-rose-400 mt-1 block'>
                 {shock.marketShortagePercent}%
               </span>
@@ -345,7 +347,7 @@ export function WhatIfSimulator() {
             </div>
 
             <div className='bg-slate-50 dark:bg-slate-800/60 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800'>
-              <span className='text-[10px] uppercase font-bold text-slate-400 block'>Shock Multiplier</span>
+              <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('intelligence.shockMultiplier')}</span>
               <span className='text-lg font-black text-blue-600 dark:text-blue-400 mt-1 block'>
                 {shock.shockMultiplier}x
               </span>
@@ -353,11 +355,11 @@ export function WhatIfSimulator() {
             </div>
 
             <div className='bg-emerald-50 dark:bg-emerald-950/40 p-3.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/60'>
-              <span className='text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 block'>Min. Sustainable</span>
+              <span className='text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400 block'>{t('intelligence.minSustainableShort')}</span>
               <span className='text-lg font-black text-emerald-700 dark:text-emerald-300 mt-1 block'>
                 ₹{shock.minimumSustainablePrice.toFixed(2)}
               </span>
-              <span className='text-[10px] text-emerald-600/80 block mt-0.5'>Cost break-even floor</span>
+              <span className='text-[10px] text-emerald-600/80 block mt-0.5'>{t('intelligence.breakEvenFloor')}</span>
             </div>
           </div>
 
@@ -366,7 +368,7 @@ export function WhatIfSimulator() {
             <div className='flex flex-wrap items-center justify-between gap-2'>
               <div>
                 <span className='text-emerald-200 text-xs font-bold uppercase tracking-wider block'>
-                  Dynamic AI Calculated Selling Price
+                  {t('intelligence.aiCalculatedPrice')}
                 </span>
                 <div className='flex items-baseline gap-2 mt-1'>
                   <span className='text-3xl sm:text-4xl font-black tracking-tight'>
@@ -375,14 +377,14 @@ export function WhatIfSimulator() {
                   <span className='text-emerald-200 text-sm font-semibold'>/ kg</span>
                   {shock.isClamped && (
                     <span className='bg-amber-400 text-amber-950 text-[10px] font-extrabold px-2 py-0.5 rounded-full'>
-                      Safety Clamped at ₹{shock.maxConfiguredPrice}/kg
+                      {t('intelligence.safetyClamped', { max: shock.maxConfiguredPrice })}
                     </span>
                   )}
                 </div>
               </div>
 
               <div className='bg-white/10 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/20 text-right'>
-                <span className='text-[10px] text-emerald-100 uppercase block font-semibold'>Dynamic Selling Range</span>
+                <span className='text-[10px] text-emerald-100 uppercase block font-semibold'>{t('intelligence.dynamicSellingRange')}</span>
                 <span className='text-sm font-extrabold text-white'>
                   ₹{shock.recommendedSellingRange.min.toFixed(2)} - ₹{shock.recommendedSellingRange.max.toFixed(2)}
                 </span>
@@ -397,26 +399,26 @@ export function WhatIfSimulator() {
           {/* Financial Breakdown Grid */}
           <div className='bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3'>
             <span className='text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block'>
-              Dynamic Financial Balance & Profitability
+              {t('intelligence.financialBalance')}
             </span>
 
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs'>
               <div className='p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800'>
-                <span className='text-[10px] text-slate-400 block'>Marketable Revenue</span>
+                <span className='text-[10px] text-slate-400 block'>{t('intelligence.marketableRevenue')}</span>
                 <span className='font-extrabold text-slate-900 dark:text-white text-sm'>
                   ₹{shock.financialImpact.grossRevenueOnMarketableCrop.toLocaleString()}
                 </span>
               </div>
 
               <div className='p-2.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800'>
-                <span className='text-[10px] text-slate-400 block'>Total Incurred Costs</span>
+                <span className='text-[10px] text-slate-400 block'>{t('intelligence.totalCosts')}</span>
                 <span className='font-extrabold text-slate-900 dark:text-white text-sm'>
                   ₹{shock.financialImpact.totalCostsIncurred.toLocaleString()}
                 </span>
               </div>
 
               <div className='p-2.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-200 dark:border-emerald-800'>
-                <span className='text-[10px] text-emerald-600 dark:text-emerald-400 block font-semibold'>Net Farmer Profit</span>
+                <span className='text-[10px] text-emerald-600 dark:text-emerald-400 block font-semibold'>{t('intelligence.netProfit')}</span>
                 <span className={cn(
                   'font-black text-sm',
                   shock.financialImpact.netProfitOnMarketableCrop >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600'
@@ -426,7 +428,7 @@ export function WhatIfSimulator() {
               </div>
 
               <div className='p-2.5 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-200 dark:border-rose-900'>
-                <span className='text-[10px] text-rose-600 dark:text-rose-400 block font-semibold'>Crop Loss Exposure</span>
+                <span className='text-[10px] text-rose-600 dark:text-rose-400 block font-semibold'>{t('intelligence.lossExposure')}</span>
                 <span className='font-black text-sm text-rose-600 dark:text-rose-400'>
                   -₹{shock.financialImpact.revenueLostFromDestroyedCrop.toLocaleString()}
                 </span>
@@ -442,7 +444,7 @@ export function WhatIfSimulator() {
             <div className='text-xs space-y-1'>
               <div className='flex items-center gap-2'>
                 <span className='font-bold uppercase tracking-wider text-[11px] text-blue-900 dark:text-blue-300'>
-                  Storage Optimizer Recommendation:
+                  {t('intelligence.storageRecommendation')}
                 </span>
                 <span className={cn(
                   'px-2 py-0.5 rounded-full font-black text-[10px]',

@@ -5,15 +5,18 @@ import Link from 'next/link';
 import { Card } from '@/components/common/Card';
 import { PhoneAuthForm } from '@/components/auth/PhoneAuthForm';
 import { ArrowLeft, Sprout } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerLoginPage() {
+  const { t } = useI18n();
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500 selection:text-white">
       
       {/* Back link */}
       <div className="max-w-md w-full mx-auto">
         <Link href="/farmer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Farmer Portal
+          <ArrowLeft className="w-4 h-4" /> {t('farmer.backToPortal', 'Back to Farmer Portal')}
         </Link>
       </div>
 
@@ -29,8 +32,8 @@ export default function FarmerLoginPage() {
           <PhoneAuthForm
             role="farmer"
             redirectUrl="/farmer/dashboard"
-            roleTitle="Farmer / FPO Login"
-            roleSubtitle="Manage your harvest, discover live wholesale demand, and eliminate middlemen."
+            roleTitle={t('farmer.loginTitle', 'Farmer / FPO Login')}
+            roleSubtitle={t('farmer.loginSubtitle', 'Manage your harvest, discover live wholesale demand, and eliminate middlemen.')}
             themeColor="emerald"
           />
 
@@ -38,7 +41,7 @@ export default function FarmerLoginPage() {
       </div>
 
       <div className="text-center text-xs text-slate-500">
-        AgriFlow AI &bull; Smart India Hackathon Verified Direct Trade System
+        AgriFlow AI &bull; {t('common.sihVerified', 'Smart India Hackathon Verified Direct Trade System')}
       </div>
 
     </div>

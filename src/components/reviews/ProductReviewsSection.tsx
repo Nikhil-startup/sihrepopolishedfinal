@@ -11,6 +11,7 @@ import {
   Flag, 
   MessageSquare 
 } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 interface ProductReviewsSectionProps {
   productId: string;
@@ -26,6 +27,7 @@ export default function ProductReviewsSection({
   productName,
 }: ProductReviewsSectionProps) {
   const { consumerUser } = useAuth();
+  const { t } = useI18n();
   const [reviews, setReviews] = useState<RatingReview[]>([]);
   const [summary, setSummary] = useState<ParticipantRatingSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,13 +70,13 @@ export default function ProductReviewsSection({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block">
-            Trust & Quality Assurance
+            {t('ratings.trustAssurance')}
           </span>
           <h2 className="text-xl font-black text-zinc-900 dark:text-white mt-0.5">
-            Verified Buyer Reviews & Farmer Rating
+            {t('ratings.title')}
           </h2>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-            100% verified purchases backed by completed cold-chain dispatches from {farmerName}.
+            {t('ratings.verifiedSubtitleWithFarmer', { farmerName })}
           </p>
         </div>
       </div>
@@ -91,13 +93,13 @@ export default function ProductReviewsSection({
               </span>
               <StarRating rating={avgRating} size="md" />
               <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">
-                {totalReviews} Verified {totalReviews === 1 ? 'Purchase' : 'Purchases'}
+                {totalReviews} {totalReviews === 1 ? t('ratings.verifiedPurchase') : t('ratings.verifiedPurchases')}
               </span>
             </>
           ) : (
             <div className="py-4">
-              <span className="text-sm font-bold text-zinc-400 block">No ratings yet</span>
-              <span className="text-[11px] text-zinc-500 mt-1 block">Be the first to rate after completed delivery!</span>
+              <span className="text-sm font-bold text-zinc-400 block">{t('ratings.noRatingsYet')}</span>
+              <span className="text-[11px] text-zinc-500 mt-1 block">{t('ratings.firstToRate')}</span>
             </div>
           )}
         </div>
@@ -110,7 +112,7 @@ export default function ProductReviewsSection({
             return (
               <div key={star} className="flex items-center gap-2.5 text-xs">
                 <span className="w-10 font-bold text-zinc-700 dark:text-zinc-300 shrink-0 text-right">
-                  {star} Star
+                  {star} {t('ratings.star')}
                 </span>
                 <div className="flex-1 h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                   <div
@@ -130,21 +132,21 @@ export default function ProductReviewsSection({
       {/* Reviews List */}
       <div className="space-y-3">
         <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">
-          Customer Reviews ({reviews.length})
+          {t('ratings.customerReviews')} ({reviews.length})
         </h3>
 
         {loading && (
           <div className="p-8 text-center text-xs text-zinc-400">
-            Loading verified reviews...
+            {t('ratings.loadingReviews')}
           </div>
         )}
 
         {!loading && reviews.length === 0 && (
           <div className="p-8 text-center rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 space-y-2">
             <MessageSquare className="w-8 h-8 mx-auto text-zinc-400" />
-            <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400">No reviews yet for this harvest batch.</p>
+            <p className="text-xs font-bold text-zinc-600 dark:text-zinc-400">{t('ratings.noReviewsBatch')}</p>
             <p className="text-[11px] text-zinc-500">
-              Verified buyers receive a Rate & Review prompt once their order arrives at the doorstep.
+              {t('ratings.ratePromptNotice')}
             </p>
           </div>
         )}
@@ -164,7 +166,7 @@ export default function ProductReviewsSection({
                     {rev.raterDisplayName}
                   </span>
                   <span className="text-[10px] text-zinc-400 block">
-                    Reviewed on {rev.createdAt}
+                    {t('ratings.reviewedOn')} {rev.createdAt}
                   </span>
                 </div>
               </div>
@@ -173,13 +175,13 @@ export default function ProductReviewsSection({
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <ShieldCheck className="w-3 h-3" />
-                  ✓ Verified Purchase
+                  ✓ {t('ratings.verifiedPurchaseBadge')}
                 </span>
 
                 <button
                   type="button"
                   onClick={() => setReportReview(rev)}
-                  title="Report inappropriate review"
+                  title={t('reports.reportReview')}
                   className="p-1 text-zinc-400 hover:text-rose-500 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition"
                 >
                   <Flag className="w-3.5 h-3.5" />
@@ -192,7 +194,7 @@ export default function ProductReviewsSection({
               <StarRating rating={rev.rating} size="sm" />
               {rev.categoryRatings?.freshness && (
                 <span className="text-[10px] text-zinc-400">
-                  Freshness: <strong className="text-zinc-700 dark:text-zinc-300">{rev.categoryRatings.freshness}/5</strong>
+                  {t('ratings.freshnessScoreLabel')} <strong className="text-zinc-700 dark:text-zinc-300">{rev.categoryRatings.freshness}/5</strong>
                 </span>
               )}
             </div>

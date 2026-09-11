@@ -16,6 +16,7 @@ import {
   AlertCircle, 
   Loader2 
 } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -60,6 +61,7 @@ export default function ReportModal({
   orderItemId,
   reviewId,
 }: ReportModalProps) {
+  const { t } = useI18n();
   const [selectedReason, setSelectedReason] = useState<ReportReason>('FRAUD_SUSPICIOUS');
   const [description, setDescription] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -67,6 +69,13 @@ export default function ReportModal({
   const [successMsg, setSuccessMsg] = useState('');
 
   if (!isOpen) return null;
+
+  const getEntityName = () => {
+    if (reportType === 'USER') return reportedName || t('role.user') || 'User';
+    if (reportType === 'REVIEW') return t('reports.inappropriateReview');
+    if (reportType === 'PRODUCT') return t('reports.produceListing');
+    return t('reports.orderIssue');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,12 +101,12 @@ export default function ReportModal({
     setSubmitting(false);
 
     if (res.success) {
-      setSuccessMsg(res.message || 'Your report has been submitted and will be reviewed.');
+      setSuccessMsg(res.message || t('reports.reportSubmittedSuccess'));
       setTimeout(() => {
         onClose();
       }, 2500);
     } else {
-      setErrorMsg(res.error || 'Failed to submit report. Please try again.');
+      setErrorMsg(res.error || t('errors.tryAgain') || 'Failed to submit report. Please try again.');
     }
   };
 
@@ -113,10 +122,10 @@ export default function ReportModal({
             </div>
             <div>
               <h2 className="text-base font-black text-slate-900 dark:text-white">
-                Report {reportType === 'USER' ? (reportedName || 'User') : reportType === 'REVIEW' ? 'Inappropriate Review' : reportType === 'PRODUCT' ? 'Produce Listing' : 'Order Issue'}
+                {t('reports.reportEntity', { entity: getEntityName() })}
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                AgriFlow Trust, Safety & Quality Compliance Incident Log
+                {t('reports.incidentLog')}
               </p>
             </div>
           </div>
@@ -135,7 +144,7 @@ export default function ReportModal({
             <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Report Submitted</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('reports.submitted')}</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
               {successMsg}
             </p>
@@ -145,16 +154,16 @@ export default function ReportModal({
             
             {/* Target Details Badge */}
             <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 text-xs flex flex-wrap items-center justify-between gap-2">
-              <span className="text-slate-500 dark:text-slate-400">Target:</span>
+              <span className="text-slate-500 dark:text-slate-400">{t('reports.target')}:</span>
               <strong className="text-slate-800 dark:text-slate-200 font-mono">
-                {reportedName || transactionId || productId || reviewId || 'Platform Entity'}
+                {reportedName || transactionId || productId || reviewId || t('reports.platformEntity')}
               </strong>
             </div>
 
             {/* Reason Selection */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                Why are you filing this report? *
+                {t('reports.whyFiling')}
               </label>
               <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
                 {REPORT_REASONS.map((r) => {
@@ -171,8 +180,8 @@ export default function ReportModal({
                       }`}
                     >
                       <div>
-                        <span className="block">{r.label}</span>
-                        <span className="text-[10px] text-slate-400 font-normal block mt-0.5">{r.desc}</span>
+                        <span className="block">{t(`reports.reasons.${r.code}` as any) || r.label}</span>
+                        <span className="text-[10px] text-slate-400 font-normal block mt-0.5">{t(`reports.reasons.${r.code}_desc` as any) || r.desc}</span>
                       </div>
                       <div className={`w-3.5 h-3.5 rounded-full border shrink-0 mt-0.5 flex items-center justify-center ${
                         isSelected ? 'border-rose-500 bg-rose-500' : 'border-slate-400'
@@ -188,13 +197,13 @@ export default function ReportModal({
             {/* Additional Details */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                Additional Details (Optional)
+                {t('reports.additionalDetails')}
               </label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                placeholder="Provide context or specific details to help the compliance team investigate..."
+                placeholder={t('reports.placeholder')}
                 className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:border-rose-500 outline-none transition resize-none"
               />
             </div>
@@ -209,7 +218,7 @@ export default function ReportModal({
             {/* Action Buttons */}
             <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
               <Button type="button" variant="secondary" size="sm" onClick={onClose} disabled={submitting}>
-                Cancel
+                {t('common.cancel')}
               </Button>
               <button
                 type="submit"
@@ -217,7 +226,7 @@ export default function ReportModal({
                 className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5 disabled:opacity-50"
               >
                 {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ShieldAlert className="w-3.5 h-3.5" />}
-                <span>{submitting ? 'Submitting Report...' : 'Submit Report'}</span>
+                <span>{submitting ? t('reports.submittingReport') : t('reports.submitReportBtn')}</span>
               </button>
             </div>
           </form>
@@ -225,4 +234,5 @@ export default function ReportModal({
       </div>
     </div>
   );
+
 }

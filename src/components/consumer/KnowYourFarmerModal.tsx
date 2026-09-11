@@ -2,6 +2,7 @@
 import React from 'react';
 import { Modal } from '@/components/common/Modal';
 import { FarmerStory } from '@/types/consumer';
+import { useI18n } from '@/context/I18nContext';
 import { ShieldCheck, MapPin, Calendar, Sprout, Heart, CheckCircle2, User } from 'lucide-react';
 
 interface KnowYourFarmerModalProps {
@@ -15,14 +16,15 @@ export function KnowYourFarmerModal({
   onClose,
   farmerStory,
 }: KnowYourFarmerModalProps) {
+  const { t } = useI18n();
   if (!farmerStory) return null;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Know Your Farmer & FPO Transparency"
-      subtitle="Verified direct farm provenance | Zero middleman exploitation"
+      title={t('consumer.knowYourFarmer')}
+      subtitle={t('consumer.provenanceSubtitle')}
       maxWidth="xl"
     >
       <div className="space-y-6">

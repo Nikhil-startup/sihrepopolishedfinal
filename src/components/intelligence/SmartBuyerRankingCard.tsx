@@ -4,6 +4,7 @@ import React from 'react';
 import { BuyerMatchResult } from '@/types/intelligence';
 import { Building2, Star, CheckCircle, Truck, ArrowRight, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface SmartBuyerRankingCardProps {
   buyers: BuyerMatchResult[];
@@ -12,16 +13,18 @@ interface SmartBuyerRankingCardProps {
 }
 
 export function SmartBuyerRankingCard({ buyers, onSelectBuyer, className }: SmartBuyerRankingCardProps) {
+  const { t } = useI18n();
+
   return (
     <div className={cn('bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4', className)}>
       <div className='flex items-center justify-between'>
         <div>
           <h3 className='text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2'>
             <Building2 className='w-4 h-4 text-emerald-600 dark:text-emerald-400' />
-            Direct Buyer Matching & Net Realization
+            {t('intelligence.directBuyerTitle')}
           </h3>
           <p className='text-xs text-slate-500 dark:text-slate-400'>
-            Ranked by Net Farmer Realization (after deducting farm-gate pickup & freight logistics)
+            {t('intelligence.directBuyerSubtitle')}
           </p>
         </div>
       </div>
@@ -49,12 +52,12 @@ export function SmartBuyerRankingCard({ buyers, onSelectBuyer, className }: Smar
                     </span>
                     {buyer.verifiedBuyer && (
                       <span className='text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold flex items-center gap-0.5'>
-                        <ShieldCheck className='w-3 h-3' /> Verified
+                        <ShieldCheck className='w-3 h-3' /> {t('tracking.verifiedCarrier') || 'Verified'}
                       </span>
                     )}
                     {isBestMatch && (
                       <span className='text-[10px] px-2 py-0.5 rounded-full bg-emerald-600 text-white font-bold'>
-                        ★ Top Recommendation
+                        {t('intelligence.topRecommendation')}
                       </span>
                     )}
                   </div>
@@ -62,7 +65,7 @@ export function SmartBuyerRankingCard({ buyers, onSelectBuyer, className }: Smar
                   <div className='flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400'>
                     <span>{buyer.destinationHub}</span>
                     <span>&bull;</span>
-                    <span>{buyer.distanceKm} km away</span>
+                    <span>{buyer.distanceKm} km {t('intelligence.away')}</span>
                     <span>&bull;</span>
                     <span className='flex items-center gap-1 text-amber-500 font-bold'>
                       <Star className='w-3 h-3 fill-amber-400' /> {buyer.reliabilityRating.toFixed(1)}
@@ -80,14 +83,14 @@ export function SmartBuyerRankingCard({ buyers, onSelectBuyer, className }: Smar
 
                 <div className='flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-slate-700 gap-2 shrink-0'>
                   <div>
-                    <span className='text-[10px] text-slate-400 block sm:text-right'>Net Farmer Realization</span>
+                    <span className='text-[10px] text-slate-400 block sm:text-right'>{t('intelligence.netFarmerRealization')}</span>
                     <div className='text-right'>
                       <span className='text-lg font-black text-emerald-600 dark:text-emerald-400'>
                         ₹{netFarmerRealizationPerKg.toFixed(2)}
                       </span>
                       <span className='text-xs text-slate-400 font-semibold'> / kg</span>
                     </div>
-                    <span className='text-[10px] text-slate-400 block sm:text-right'>Gross: ₹{buyer.offeredPricePerKg}/kg</span>
+                    <span className='text-[10px] text-slate-400 block sm:text-right'>{t('market.mandiPrices') || 'Gross'}: ₹{buyer.offeredPricePerKg}/kg</span>
                   </div>
 
                   <button
@@ -100,7 +103,7 @@ export function SmartBuyerRankingCard({ buyers, onSelectBuyer, className }: Smar
                         : 'bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:hover:bg-white dark:text-slate-900'
                     )}
                   >
-                    Select Buyer <ArrowRight className='w-3 h-3' />
+                    {t('intelligence.selectBuyer')} <ArrowRight className='w-3 h-3' />
                   </button>
                 </div>
 

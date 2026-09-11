@@ -10,8 +10,10 @@ import { StatusBadge } from '@/components/common/StatusBadge';
 import { useBandwidth } from '@/context/BandwidthContext';
 import { MapPin, Sparkles, TrendingUp, AlertCircle, Users, ArrowRight, Lightbulb } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 export default function DemandMapPage() {
+  const { t } = useI18n();
   const [zones, setZones] = useState<DemandZone[]>([]);
   const [selectedZone, setSelectedZone] = useState<DemandZone | null>(null);
   const { isLowBandwidth, toggleLowBandwidth } = useBandwidth();
@@ -29,14 +31,14 @@ export default function DemandMapPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Agricultural Demand Intelligence Map</h1>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.demandMapTitle', 'Agricultural Demand Intelligence Map')}</h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Real-time supply deficits, bulk buyer concentrations, and regional price arbitrage across India.
+            {t('farmer.demandMapSubtitle', 'Real-time supply deficits, bulk buyer concentrations, and regional price arbitrage across India.')}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant={isLowBandwidth ? "primary" : "secondary"} size="sm" onClick={toggleLowBandwidth}>
-            {isLowBandwidth ? 'Low-Bandwidth Table Mode (Active)' : 'Switch to Table View'}
+            {isLowBandwidth ? t('farmer.lowBandwidthActive', 'Low-Bandwidth Table Mode (Active)') : t('farmer.switchToTable', 'Switch to Table View')}
           </Button>
         </div>
       </div>
@@ -54,9 +56,9 @@ export default function DemandMapPage() {
                   <div className="flex items-center justify-between text-xs text-slate-400">
                     <span className="font-bold text-emerald-400 flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      Live India Regional Hubs
+                      {t('farmer.liveRegionalHubs', 'Live India Regional Hubs')}
                     </span>
-                    <span>Client Rendered (Zero Latency)</span>
+                    <span>{t('farmer.clientRendered', 'Client Rendered (Zero Latency)')}</span>
                   </div>
 
                   {/* Hotspots */}
@@ -76,33 +78,33 @@ export default function DemandMapPage() {
                           <StatusBadge status={zone.opportunityLevel} />
                         </div>
                         <div className="text-[11px] text-slate-400 space-y-1">
-                          <div className="flex justify-between"><span>Demand:</span> <strong className="text-white">{zone.demandKg.toLocaleString()} kg</strong></div>
-                          <div className="flex justify-between"><span>Local Supply:</span> <span>{zone.supplyKg.toLocaleString()} kg</span></div>
-                          <div className="flex justify-between font-bold text-emerald-400"><span>Supply Gap:</span> <span>{zone.gapKg > 0 ? `+${zone.gapKg.toLocaleString()} kg` : 'Excess Supply'}</span></div>
+                          <div className="flex justify-between"><span>{t('farmer.demand', 'Demand')}:</span> <strong className="text-white">{zone.demandKg.toLocaleString()} kg</strong></div>
+                          <div className="flex justify-between"><span>{t('farmer.localSupply', 'Local Supply')}:</span> <span>{zone.supplyKg.toLocaleString()} kg</span></div>
+                          <div className="flex justify-between font-bold text-emerald-400"><span>{t('farmer.supplyGap', 'Supply Gap')}:</span> <span>{zone.gapKg > 0 ? `+${zone.gapKg.toLocaleString()} kg` : t('farmer.excessSupply', 'Excess Supply')}</span></div>
                         </div>
                       </button>
                     ))}
                   </div>
 
                   <div className="text-[11px] text-slate-400 flex items-center justify-between pt-2 border-t border-slate-800">
-                    <span>Selected: <strong className="text-white">{selectedZone?.region}</strong></span>
-                    <span className="text-emerald-400 font-bold">{selectedZone?.buyerCount} Active Direct Bidders</span>
+                    <span>{t('common.selected', 'Selected')}: <strong className="text-white">{selectedZone?.region}</strong></span>
+                    <span className="text-emerald-400 font-bold">{t('farmer.activeBidders', '{count} Active Direct Bidders').replace('{count}', String(selectedZone?.buyerCount || 0))}</span>
                   </div>
                 </div>
               </div>
             ) : (
               /* Low-Bandwidth Fallback Table */
               <div className="p-6 overflow-y-auto h-full">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">Regional Demand Data (Low-Bandwidth Mode)</h3>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3">{t('farmer.regionalDemandData', 'Regional Demand Data (Low-Bandwidth Mode)')}</h3>
                 <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400">
-                      <th className="pb-2">Region</th>
-                      <th className="pb-2">Commodity</th>
-                      <th className="pb-2">Demand</th>
-                      <th className="pb-2">Supply</th>
-                      <th className="pb-2">Deficit Gap</th>
-                      <th className="pb-2">Opportunity</th>
+                      <th className="pb-2">{t('farmer.region', 'Region')}</th>
+                      <th className="pb-2">{t('farmer.commodity', 'Commodity')}</th>
+                      <th className="pb-2">{t('farmer.demand', 'Demand')}</th>
+                      <th className="pb-2">{t('farmer.localSupply', 'Supply')}</th>
+                      <th className="pb-2">{t('farmer.deficitGap', 'Deficit Gap')}</th>
+                      <th className="pb-2">{t('farmer.opportunity', 'Opportunity')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -128,30 +130,30 @@ export default function DemandMapPage() {
           {selectedZone ? (
             <Card variant="highlight" className="p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Opportunity Intel</span>
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">{t('farmer.opportunityIntel', 'Opportunity Intel')}</span>
                 <StatusBadge status={selectedZone.opportunityLevel} />
               </div>
 
               <div>
                 <h3 className="text-xl font-black text-white">{selectedZone.region}</h3>
-                <span className="text-xs text-slate-400">{selectedZone.state} &bull; Commodity: <strong className="text-white">{selectedZone.commodity}</strong></span>
+                <span className="text-xs text-slate-400">{selectedZone.state} &bull; {t('farmer.commodity', 'Commodity')}: <strong className="text-white">{selectedZone.commodity}</strong></span>
               </div>
 
               <div className="space-y-2 text-xs pt-2 border-t border-slate-800">
                 <div className="flex justify-between text-slate-300">
-                  <span>Buyer Inflow Demand:</span>
+                  <span>{t('farmer.buyerInflow', 'Buyer Inflow Demand')}:</span>
                   <span className="font-bold text-white">{selectedZone.demandKg.toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
-                  <span>Local Hub Supply:</span>
+                  <span>{t('farmer.localHubSupply', 'Local Hub Supply')}:</span>
                   <span>{selectedZone.supplyKg.toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between font-bold text-emerald-400 text-sm">
-                  <span>Supply Deficit Gap:</span>
+                  <span>{t('farmer.deficitGap', 'Supply Deficit Gap')}:</span>
                   <span>+{selectedZone.gapKg.toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between text-slate-300 pt-2 border-t border-slate-800">
-                  <span>Offered Price:</span>
+                  <span>{t('farmer.offeredPrice', 'Offered Price')}:</span>
                   <span className="font-bold text-white">{formatINR(selectedZone.pricePerKg)}/kg</span>
                 </div>
               </div>
@@ -159,18 +161,18 @@ export default function DemandMapPage() {
               <div className="bg-slate-900/90 rounded-xl p-3 border border-slate-800 text-xs text-slate-300 space-y-1">
                 <span className="font-bold text-white flex items-center gap-1 mb-1">
                   <Lightbulb className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Smart Recommendation:</span>
+                  <span>{t('farmer.smartRec', 'Smart Recommendation')}:</span>
                 </span>
                 <p>Consolidate Shadnagar Tomato harvest. Dispatch via Tata 407 Reefer to capture +₹4.00/kg premium over local mandi.</p>
               </div>
 
               <Button className="w-full">
-                <span>Dispatch Lot to {selectedZone.region.split(' ')[0]}</span>
+                <span>{t('farmer.dispatchLotTo', 'Dispatch Lot to {region}').replace('{region}', selectedZone.region.split(' ')[0])}</span>
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Card>
           ) : (
-            <Card className="p-6 text-center text-slate-400">Select a zone on the map</Card>
+            <Card className="p-6 text-center text-slate-400">{t('farmer.selectZonePrompt', 'Select a zone on the map')}</Card>
           )}
         </div>
 

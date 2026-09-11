@@ -3,6 +3,8 @@
 import React from 'react';
 import { DeliveryStatus } from '@/types/delivery';
 import { Truck, CheckCircle2, Clock, MapPin, AlertCircle, ArrowRight } from 'lucide-react';
+import { useI18n } from '@/context/I18nContext';
+import { translateStatus } from '@/lib/i18nHelpers';
 
 interface DeliveryStatusCardProps {
   status: DeliveryStatus;
@@ -17,28 +19,30 @@ export default function DeliveryStatusCard({
   tripId,
   isFarmerView = false,
 }: DeliveryStatusCardProps) {
+  const { t } = useI18n();
+
   const getHeadline = () => {
     switch (status) {
       case 'ORDER CONFIRMED':
-        return isFarmerView ? 'Produce Order Confirmed' : 'Order Confirmed & Scheduled';
+        return t('tracking.orderConfirmed');
       case 'PICKUP SCHEDULED':
-        return isFarmerView ? 'Pickup Scheduled at Farm Gate' : 'Pickup Scheduled from FPO';
+        return t('tracking.pickupScheduled');
       case 'DRIVER ASSIGNED':
-        return 'Reefer Driver Assigned & En Route';
+        return t('tracking.driverAssigned');
       case 'PICKUP STARTED':
-        return isFarmerView ? 'Driver Arrived for Farm Gate Loading' : 'Loading at Regional Farm Hub';
+        return t('tracking.pickupStarted');
       case 'PRODUCE PICKED UP':
-        return isFarmerView ? 'Produce Loaded & Graded' : 'Harvest Loaded & Quality Graded';
+        return t('tracking.producePickedUp');
       case 'IN TRANSIT':
-        return isFarmerView ? 'Your Produce is on the Road' : 'Your Delivery is On the Way';
+        return t('tracking.inTransit');
       case 'APPROACHING DESTINATION':
-        return isFarmerView ? 'Shipment Approaching Destination Terminal' : 'Delivery Approaching Your Location';
+        return t('tracking.approachingDestination');
       case 'ARRIVED':
-        return isFarmerView ? 'Arrived at Destination Hub' : 'Carrier Arrived at Gate';
+        return t('tracking.arrived');
       case 'DELIVERED':
-        return isFarmerView ? 'Produce Delivered & Escrow Released' : 'Order Delivered Successfully';
+        return t('tracking.delivered');
       default:
-        return 'Live Delivery in Progress';
+        return t('tracking.title');
     }
   };
 
@@ -63,19 +67,19 @@ export default function DeliveryStatusCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-wrap">
           <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider border ${getBadgeColor()}`}>
-            ● {status}
+            ● {translateStatus(status, t)}
           </span>
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
-            Trip: {tripId}
+            {t('tracking.trip')} {tripId}
           </span>
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
-            Order: {orderId}
+            {t('tracking.order')} {orderId}
           </span>
         </div>
 
         <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-          <span>SIMULATED LIVE TRACKING</span>
+          <span>{t('tracking.simulatedLive')}</span>
         </div>
       </div>
 
@@ -85,8 +89,8 @@ export default function DeliveryStatusCard({
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
           {isFarmerView
-            ? 'Real-time telemetry and waypoint tracking for your dispatched harvest batches.'
-            : 'Track your incoming farm-fresh produce with live cold-chain climate data.'}
+            ? t('tracking.farmerViewDesc')
+            : t('tracking.consumerViewDesc')}
         </p>
       </div>
     </div>

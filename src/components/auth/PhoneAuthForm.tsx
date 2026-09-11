@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, DemoConfirmationResult } from '@/context/AuthContext';
+import { useI18n } from '@/context/I18nContext';
 import { Button } from '@/components/common/Button';
 import { Phone, Mail, ShieldCheck, ArrowRight, RotateCcw, Sparkles, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 
@@ -23,6 +24,7 @@ export function PhoneAuthForm({
 }: PhoneAuthFormProps) {
   const router = useRouter();
   const { sendPhoneOtp, verifyPhoneOtp, loginWithGoogle, loginWithDemo, isLoading } = useAuth();
+  const { t } = useI18n();
 
   const [authMethod, setAuthMethod] = useState<'PHONE' | 'GOOGLE'>('PHONE');
   const [step, setStep] = useState<'PHONE' | 'OTP'>('PHONE');
@@ -187,7 +189,7 @@ export function PhoneAuthForm({
 
       <div className="text-center">
         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border mb-3 ${colors.badgeBg}`}>
-          <ShieldCheck className="w-3.5 h-3.5" /> Instant Demo Authentication
+          <ShieldCheck className="w-3.5 h-3.5" /> {t('auth.instantDemoAuth')}
         </div>
         <h2 className="text-2xl font-black text-white">{roleTitle}</h2>
         {roleSubtitle && <p className="text-xs text-slate-400 mt-1">{roleSubtitle}</p>}
@@ -206,7 +208,7 @@ export function PhoneAuthForm({
           }`}
         >
           <Phone className="w-3.5 h-3.5" />
-          <span>Phone OTP (Primary)</span>
+          <span>{t('auth.phoneOtpPrimary')}</span>
         </button>
         <button
           type="button"
@@ -219,7 +221,7 @@ export function PhoneAuthForm({
           }`}
         >
           <Mail className="w-3.5 h-3.5" />
-          <span>Gmail (Google)</span>
+          <span>{t('auth.gmailGoogle')}</span>
         </button>
       </div>
 
@@ -243,7 +245,7 @@ export function PhoneAuthForm({
           {step === 'PHONE' ? (
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Your Name (Optional)</label>
+                <label className="text-xs font-bold text-slate-300 block mb-1">{t('auth.yourNameOptional')}</label>
                 <input
                   type="text"
                   value={userName}
@@ -255,7 +257,7 @@ export function PhoneAuthForm({
 
               <div>
                 <label className="text-xs font-bold text-slate-300 block mb-1">
-                  Mobile Number <span className="text-rose-400">*</span>
+                  {t('auth.phoneNumber')} <span className="text-rose-400">*</span>
                 </label>
                 <div className="flex items-center gap-2">
                   <span className="bg-slate-950 border border-slate-700 text-slate-300 px-3.5 py-3 rounded-xl text-sm font-bold select-none">
@@ -273,7 +275,7 @@ export function PhoneAuthForm({
                     />
                   </div>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-1">Direct Firebase SMS code will be sent to this number.</p>
+                <p className="text-[11px] text-slate-500 mt-1">{t('auth.directSmsNotice')}</p>
               </div>
 
               <Button
@@ -282,20 +284,20 @@ export function PhoneAuthForm({
                 className={`w-full py-3.5 text-white font-bold ${colors.btnBg} ${colors.bgHover}`}
               >
                 <Phone className="w-4 h-4 mr-2" />
-                <span>Send SMS Verification OTP</span>
+                <span>{t('auth.sendOtp')}</span>
               </Button>
             </form>
           ) : (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-bold text-slate-300">Enter 6-Digit SMS OTP</label>
+                  <label className="text-xs font-bold text-slate-300">{t('auth.enter6DigitOtp')}</label>
                   <button
                     type="button"
                     onClick={() => setStep('PHONE')}
                     className="text-[11px] text-slate-400 hover:text-white underline flex items-center gap-1"
                   >
-                    <RotateCcw className="w-3 h-3" /> Change number
+                    <RotateCcw className="w-3 h-3" /> {t('auth.changeNumber')}
                   </button>
                 </div>
                 <input
@@ -315,7 +317,7 @@ export function PhoneAuthForm({
                 isLoading={submitting || isLoading}
                 className={`w-full py-3.5 text-white font-bold ${colors.btnBg} ${colors.bgHover}`}
               >
-                <span>Verify OTP & Enter</span>
+                <span>{t('auth.verifyAndEnter')}</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
 
@@ -324,7 +326,7 @@ export function PhoneAuthForm({
                 onClick={handleSendOtp}
                 className="w-full text-center text-xs text-slate-400 hover:text-slate-200 transition py-1"
               >
-                Didn&apos;t receive SMS? <strong className="text-white hover:underline">Resend OTP</strong>
+                {t('auth.didntReceiveSms')} <strong className="text-white hover:underline">{t('auth.resendOtp')}</strong>
               </button>
             </form>
           )}
@@ -335,7 +337,7 @@ export function PhoneAuthForm({
       {authMethod === 'GOOGLE' && (
         <div className="space-y-4">
           <p className="text-xs text-slate-400 text-center">
-            Sign in instantly with your verified Google account. We will create and sync your {role} profile automatically.
+            {t('auth.googleSyncNotice')}
           </p>
 
           <button
@@ -362,7 +364,7 @@ export function PhoneAuthForm({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>Continue with Google Account</span>
+            <span>{t('auth.continueWithGoogle')}</span>
           </button>
         </div>
       )}
@@ -375,7 +377,7 @@ export function PhoneAuthForm({
           className="w-full p-3 rounded-xl bg-slate-950 hover:bg-slate-800/80 border border-slate-800 hover:border-slate-700 text-[11px] text-slate-400 hover:text-slate-200 transition text-center flex items-center justify-center gap-2"
         >
           <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-          <span>Quick Hackathon Pitch Login (One-click Demo Account)</span>
+          <span>{t('auth.quickPitchLogin')}</span>
         </button>
       </div>
     </div>

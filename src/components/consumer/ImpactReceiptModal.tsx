@@ -2,6 +2,7 @@
 import React from 'react';
 import { Modal } from '@/components/common/Modal';
 import { ImpactReceipt } from '@/types/consumer';
+import { useI18n } from '@/context/I18nContext';
 import { formatINR } from '@/lib/utils';
 import { ShieldCheck, Heart, Truck, Sprout, Sparkles, Download } from 'lucide-react';
 import { Button } from '@/components/common/Button';
@@ -17,13 +18,14 @@ export function ImpactReceiptModal({
   onClose,
   receipt,
 }: ImpactReceiptModalProps) {
+  const { t } = useI18n();
   if (!receipt) return null;
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="AgriFlow Impact & Transparency Receipt"
+      title={t('consumer.impactReceipt')}
       subtitle="Audited Value Chain Distribution"
       maxWidth="lg"
     >
@@ -83,7 +85,7 @@ export function ImpactReceiptModal({
 
         <div className="pt-2 flex items-center justify-end gap-3">
           <Button variant="outline" size="sm" onClick={onClose}>
-            Close
+            {t('common.close')}
           </Button>
         </div>
       </div>

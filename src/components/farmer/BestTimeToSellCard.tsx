@@ -7,8 +7,10 @@ import { PriceTrendPoint } from '@/types/farmer';
 import { Clock, ArrowUpRight } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useBandwidth } from '@/context/BandwidthContext';
+import { useI18n } from '@/context/I18nContext';
 
 export function BestTimeToSellCard() {
+  const { t } = useI18n();
   const { isLowBandwidth } = useBandwidth();
   const [trends, setTrends] = useState<PriceTrendPoint[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,20 +39,20 @@ export function BestTimeToSellCard() {
               <Clock className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">Best Time to Sell (AI Forecast)</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Tomato &bull; Live Price Trends</p>
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">{t('farmer.bestTime.title')}</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">{t('farmer.bestTime.subtitle')}</p>
             </div>
           </div>
           <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold">
-            Live Connected
+            {t('farmer.bestTime.liveConnected')}
           </span>
         </div>
 
         {loading ? (
-          <div className="py-8 text-center text-xs text-slate-400">Loading AI forecast...</div>
+          <div className="py-8 text-center text-xs text-slate-400">{t('farmer.bestTime.loading')}</div>
         ) : trends.length === 0 ? (
           <div className="py-8 text-center text-xs text-slate-400">
-            Price trend data will appear here when the backend is connected.
+            {t('farmer.bestTime.empty')}
           </div>
         ) : (
           <>
@@ -63,16 +65,16 @@ export function BestTimeToSellCard() {
                     <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} />
                     <Tooltip
                       contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '0.75rem', fontSize: '12px' }}
-                      formatter={(val: unknown) => [`₹${Number(val) || 0}/kg`, 'Price']}
+                      formatter={(val: unknown) => [`₹${Number(val) || 0}/kg`, t('market.price') || 'Price']}
                     />
-                    <Line type="monotone" dataKey="forecastedPrice" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} name="Forecasted Mandi" />
-                    <Line type="monotone" dataKey="buyerDemandPrice" stroke="#f59e0b" strokeWidth={2} strokeDasharray="4 4" name="Buyer Direct" />
+                    <Line type="monotone" dataKey="forecastedPrice" stroke="#10b981" strokeWidth={2.5} dot={{ r: 3 }} name={t('farmer.bestTime.forecastedMandi')} />
+                    <Line type="monotone" dataKey="buyerDemandPrice" stroke="#f59e0b" strokeWidth={2} strokeDasharray="4 4" name={t('farmer.bestTime.buyerDirect')} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             ) : (
               <div className="bg-slate-800/40 rounded-xl p-3 text-xs space-y-1.5 border border-slate-700">
-                <div className="font-semibold text-slate-300">Forecast Data (Low Bandwidth Mode):</div>
+                <div className="font-semibold text-slate-300">{t('farmer.bestTime.lowBandwidth')}</div>
                 {trends.slice(0, 3).map((item, idx) => (
                   <div key={idx} className="flex justify-between text-slate-400">
                     <span>{item.day}:</span> <span>₹{item.forecastedPrice}/kg</span>
@@ -87,7 +89,7 @@ export function BestTimeToSellCard() {
       <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 space-y-1">
         <p className="flex items-center gap-1.5 font-medium">
           <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
-          <span>Realtime market intelligence updated from configured mandi endpoints.</span>
+          <span>{t('farmer.bestTime.realtimeNotice')}</span>
         </p>
       </div>
     </Card>

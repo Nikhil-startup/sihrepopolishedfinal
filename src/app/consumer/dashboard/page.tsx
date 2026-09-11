@@ -25,8 +25,11 @@ import {
   ShoppingCart
 } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
+import { translateStatus } from '@/lib/i18nHelpers';
 
 export default function ConsumerDashboard() {
+  const { t } = useI18n();
   const { consumerUser } = useAuth();
   const { addToCart } = useCart();
   const [products, setProducts] = useState<ProductDetails[]>([]);
@@ -95,13 +98,13 @@ export default function ConsumerDashboard() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
-              <Sparkles className="w-3.5 h-3.5" /> Buyer Procurement Portal
+              <Sparkles className="w-3.5 h-3.5" /> {t('consumer.buyerProcurementPortal', 'Buyer Procurement Portal')}
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-              Welcome back, {consumerUser?.name || 'Valued Buyer'}
+              {t('consumer.welcomeBuyer', 'Welcome back, {name}').replace('{name}', consumerUser?.name || 'Valued Buyer')}
             </h1>
             <p className="text-xs md:text-sm text-zinc-300 mt-1 max-w-2xl">
-              Source farm-fresh perishable produce directly from aggregated farmer clusters with guaranteed cold-chain logistics.
+              {t('consumer.dashboardSubtitle', 'Source farm-fresh perishable produce directly from aggregated farmer clusters with guaranteed cold-chain logistics.')}
             </p>
           </div>
 
@@ -111,13 +114,13 @@ export default function ConsumerDashboard() {
               onClick={() => setShowDemandModal(true)}
               className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-950/40"
             >
-              <Plus className="w-4 h-4" /> Post Custom Bulk Demand
+              <Plus className="w-4 h-4" /> {t('consumer.postBulkDemand', 'Post Custom Bulk Demand')}
             </button>
             <Link
               href="/consumer/marketplace"
               className="px-4 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold border border-zinc-700 transition flex items-center gap-2"
             >
-              <Store className="w-4 h-4 text-emerald-400" /> Browse Marketplace
+              <Store className="w-4 h-4 text-emerald-400" /> {t('consumer.browseMarketplace', 'Browse Marketplace')}
             </Link>
           </div>
         </div>
@@ -134,7 +137,7 @@ export default function ConsumerDashboard() {
               : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
           }`}
         >
-          Procurement Overview
+          {t('consumer.procurementOverview', 'Procurement Overview')}
         </button>
         <button
           type="button"
@@ -145,7 +148,7 @@ export default function ConsumerDashboard() {
               : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
           }`}
         >
-          Active Orders ({activeOrders.length})
+          {t('consumer.activeOrdersCount', 'Active Orders ({count})').replace('{count}', String(activeOrders.length))}
         </button>
         <button
           type="button"
@@ -156,7 +159,7 @@ export default function ConsumerDashboard() {
               : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'
           }`}
         >
-          Bulk Demands ({bulkDemands.length})
+          {t('consumer.bulkDemandPosts', 'Bulk Demand Posts ({count})').replace('{count}', String(bulkDemands.length))}
         </button>
       </div>
 
@@ -165,15 +168,15 @@ export default function ConsumerDashboard() {
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">Active In-Transit Orders</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">{t('consumer.activeOrdersCount', 'Active Orders ({count})').replace('({count})', '').trim()}</span>
               <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1 block">{activeOrders.length}</span>
             </div>
             <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">Completed Orders</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">{t('consumer.completedOrdersTab', 'Completed Orders')}</span>
               <span className="text-2xl font-black text-zinc-900 dark:text-white mt-1 block">{completedOrders.length}</span>
             </div>
             <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">Posted Demands</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400 block font-semibold">{t('consumer.bulkDemandPosts', 'Posted Demands').replace('({count})', '').trim()}</span>
               <span className="text-2xl font-black text-zinc-900 dark:text-white mt-1 block">{bulkDemands.length}</span>
             </div>
           </div>
@@ -188,7 +191,7 @@ export default function ConsumerDashboard() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
-                      Live Delivery Tracking by GPS
+                      {t('consumer.deliveryTrackingGps', 'Live Delivery Tracking by GPS')}
                     </span>
                     <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
@@ -205,32 +208,32 @@ export default function ConsumerDashboard() {
                 href="/consumer/tracking?id=TRK-CONS-ROAD-9021"
                 className="px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-2 shadow-lg shadow-emerald-950/50 shrink-0"
               >
-                <MapPin className="w-4 h-4" /> Open Full GPS Tracking Map <ArrowRight className="w-3.5 h-3.5" />
+                <MapPin className="w-4 h-4" /> {t('consumer.deliveryTrackingGps', 'Open Full GPS Tracking Map')} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
             {/* GPS Telemetry Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
               <div className="p-4 rounded-2xl bg-zinc-800/80 border border-zinc-700/80 space-y-1">
-                <span className="text-zinc-400 text-[11px] block">Current Highway Position</span>
+                <span className="text-zinc-400 text-[11px] block">{t('logistics.currentHub', 'Current Highway Position')}</span>
                 <strong className="text-white text-sm block">Shamshabad ORR Tollway</strong>
                 <span className="text-emerald-400 font-mono text-[11px] block">17.2403&deg; N, 78.4294&deg; E</span>
               </div>
 
               <div className="p-4 rounded-2xl bg-zinc-800/80 border border-zinc-700/80 space-y-1">
-                <span className="text-zinc-400 text-[11px] block">Carrier & Driver</span>
+                <span className="text-zinc-400 text-[11px] block">{t('logistics.assignedDriver', 'Carrier & Driver')}</span>
                 <strong className="text-white text-sm block">Tata 407 Reefer</strong>
                 <span className="text-zinc-300 text-[11px] block">Mohammed Ismail (TS 08 UB 4192)</span>
               </div>
 
               <div className="p-4 rounded-2xl bg-zinc-800/80 border border-zinc-700/80 space-y-1">
-                <span className="text-zinc-400 text-[11px] block">IoT Reefer Cold Chain</span>
+                <span className="text-zinc-400 text-[11px] block">{t('logistics.liveColdChainTelemetry', 'IoT Reefer Cold Chain')}</span>
                 <strong className="text-emerald-400 text-sm block">5.8&deg;C (Optimal Range)</strong>
                 <span className="text-zinc-300 text-[11px] block">Humidity: 86% &bull; Low Spoilage Risk</span>
               </div>
 
               <div className="p-4 rounded-2xl bg-zinc-800/80 border border-zinc-700/80 space-y-1">
-                <span className="text-zinc-400 text-[11px] block">Target Arrival (ETA)</span>
+                <span className="text-zinc-400 text-[11px] block">{t('farmer.estimatedEta', 'Target Arrival (ETA)')}</span>
                 <strong className="text-white text-sm block">Today, 05:45 PM</strong>
                 <span className="text-emerald-400 font-bold text-[11px] block">28 km Remaining (45 mins)</span>
               </div>
@@ -262,7 +265,7 @@ export default function ConsumerDashboard() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-black font-mono text-zinc-900 dark:text-white">{order.id}</span>
                   <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-                    {order.status}
+                    {translateStatus(order.status, t)}
                   </span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                     Live GPS Active
@@ -277,7 +280,7 @@ export default function ConsumerDashboard() {
                 href={`/consumer/tracking/${order.logisticsId || 'TRK-CONS-ROAD-9021'}`}
                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
               >
-                <Truck className="w-3.5 h-3.5" /> Track Live GPS Map <ArrowRight className="w-3.5 h-3.5" />
+                <Truck className="w-3.5 h-3.5" /> {t('farmer.trackDelivery', 'Track Live GPS Map')} <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           ))}
@@ -297,12 +300,12 @@ export default function ConsumerDashboard() {
                   {demand.produceName} ({demand.requiredQuantityKg} kg)
                 </h4>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                  Delivery to: {demand.deliveryLocation} &bull; Status: <span className="text-emerald-600 font-bold">{demand.status}</span>
+                  Delivery to: {demand.deliveryLocation} &bull; Status: <span className="text-emerald-600 font-bold">{translateStatus(demand.status, t)}</span>
                 </p>
               </div>
 
               <div className="text-right">
-                <span className="text-xs text-zinc-400 block">Matched Volume</span>
+                <span className="text-xs text-zinc-400 block">{t('consumer.matchedVolume', 'Matched Volume')}</span>
                 <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
                   {demand.matchedQuantityKg} / {demand.requiredQuantityKg} kg ({Math.round((demand.matchedQuantityKg / demand.requiredQuantityKg) * 100)}%)
                 </span>
@@ -316,10 +319,10 @@ export default function ConsumerDashboard() {
       {showDemandModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-sm animate-fadeIn">
           <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-2xl space-y-4">
-            <h3 className="text-lg font-black text-zinc-900 dark:text-white">Post Custom Bulk Demand</h3>
+            <h3 className="text-lg font-black text-zinc-900 dark:text-white">{t('consumer.postBulkDemand', 'Post Custom Bulk Demand')}</h3>
             <form onSubmit={handleCreateDemand} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 block mb-1">Produce Commodity</label>
+                <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 block mb-1">{t('farmer.commodity', 'Produce Commodity')}</label>
                 <input
                   type="text"
                   value={newProduceName}
@@ -329,7 +332,7 @@ export default function ConsumerDashboard() {
                 />
               </div>
               <div>
-                <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 block mb-1">Required Quantity (kg)</label>
+                <label className="text-xs font-bold text-zinc-600 dark:text-zinc-400 block mb-1">{t('farmer.quantityLabel', 'Required Quantity (kg)')}</label>
                 <input
                   type="number"
                   value={newRequiredKg}
@@ -344,13 +347,13 @@ export default function ConsumerDashboard() {
                   onClick={() => setShowDemandModal(false)}
                   className="flex-1 py-2.5 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-xs font-bold text-zinc-700 dark:text-zinc-300"
                 >
-                  Cancel
+                  {t('common.cancel', 'Cancel')}
                 </button>
                 <button
                   type="submit"
                   className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white shadow-lg"
                 >
-                  {demandCreated ? 'Created!' : 'Publish Demand'}
+                  {demandCreated ? t('common.saved', 'Created!') : t('farmer.publishListing', 'Publish Demand')}
                 </button>
               </div>
             </form>

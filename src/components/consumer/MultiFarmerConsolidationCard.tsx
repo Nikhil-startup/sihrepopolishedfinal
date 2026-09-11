@@ -1,7 +1,7 @@
 'use client';
-
 import React from 'react';
 import { MultiFarmerSource } from '@/types/consumer';
+import { useI18n } from '@/context/I18nContext';
 import { Users, ShieldCheck, MapPin } from 'lucide-react';
 
 interface MultiFarmerConsolidationCardProps {
@@ -17,6 +17,8 @@ export const MultiFarmerConsolidationCard: React.FC<MultiFarmerConsolidationCard
   produceName,
   isSIHDemoHighlight = false,
 }) => {
+  const { t } = useI18n();
+
   return (
     <div className={`p-6 rounded-2xl border transition-all duration-300 ${
       isSIHDemoHighlight
@@ -31,7 +33,7 @@ export const MultiFarmerConsolidationCard: React.FC<MultiFarmerConsolidationCard
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                Multi-Farmer AI Sourcing Consolidation
+                {t('consumer.multiFarmerConsolidation')}
               </h3>
               {isSIHDemoHighlight && (
                 <span className="px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider rounded-full bg-emerald-500 text-white">

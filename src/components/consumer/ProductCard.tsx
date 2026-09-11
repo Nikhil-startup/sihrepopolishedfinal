@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ProductItem } from '@/types/consumer';
 import { useCart } from '@/context/CartContext';
 import { useI18n } from '@/context/I18nContext';
+import { translateQualityGrade, translateFreshness, translateCategory } from '@/lib/i18nHelpers';
 import { KnowYourFarmerModal } from './KnowYourFarmerModal';
 import { 
   Sparkles, 
@@ -70,11 +71,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
           {/* Grade Badge */}
           <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border backdrop-blur-md bg-white/90 dark:bg-zinc-900/90 shadow-sm ${getGradeBadgeColor(product.grade)}`}>
-              Grade {product.grade}
+              {translateQualityGrade(product.grade, t)}
             </span>
             {product.isColdChainEligible && (
               <span className="text-xs font-medium px-2 py-1 rounded-full bg-cyan-500/90 text-white backdrop-blur-md flex items-center gap-1 shadow-sm">
-                <Sparkles className="w-3 h-3" /> Cold-Chain
+                <Sparkles className="w-3 h-3" /> {t('common.coldChain')}
               </span>
             )}
           </div>
@@ -82,10 +83,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
           {/* Freshness Badge */}
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white">
             <span className="inline-flex items-center gap-1 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg font-medium">
-              <Calendar className="w-3 h-3 text-emerald-400" /> {product.freshness}
+              <Calendar className="w-3 h-3 text-emerald-400" /> {translateFreshness(product.freshness, t)}
             </span>
             <span className="bg-emerald-600/90 text-white font-semibold px-2 py-0.5 rounded text-[11px]">
-              {product.freshnessScore} Freshness
+              {product.freshnessScore} {t('freshness.freshness')}
             </span>
           </div>
         </div>
@@ -96,7 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
             <div className="flex items-start justify-between gap-2 mb-1">
               <div>
                 <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">
-                  {product.category}
+                  {translateCategory(product.category, t)}
                 </span>
                 <h3 className="text-lg font-bold text-zinc-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1">
                   {product.name}
@@ -164,7 +165,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
                 title="See price breakdown"
               >
                 <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
-                <span className="text-[11px] font-medium">{product.priceBreakdown.farmerRealizationBoostPercent}% Farmer Direct</span>
+                <span className="text-[11px] font-medium">{product.priceBreakdown.farmerRealizationBoostPercent}% {t('consumer.farmerDirect')}</span>
               </button>
             </div>
 
@@ -172,15 +173,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
             {showPriceBreakdown && (
               <div className="mb-3 p-3 bg-zinc-50 dark:bg-zinc-800/60 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs animate-in fade-in slide-in-from-top-2 duration-200">
                 <div className="flex justify-between items-center mb-1 text-zinc-600 dark:text-zinc-300">
-                  <span>Farmer Receives (Direct):</span>
+                  <span>{t('consumer.farmerReceives')}:</span>
                   <span className="font-bold text-emerald-600 dark:text-emerald-400">₹{product.priceBreakdown.farmerReceivesPerKg}/kg</span>
                 </div>
                 <div className="flex justify-between items-center text-zinc-500 dark:text-zinc-400 text-[11px]">
-                  <span>Road Freight (Tata 407/Bolero):</span>
+                  <span>{t('consumer.roadFreight')}:</span>
                   <span>₹{product.priceBreakdown.roadLogisticsPerKg}/kg</span>
                 </div>
                 <div className="flex justify-between items-center text-zinc-500 dark:text-zinc-400 text-[11px]">
-                  <span>Platform & Quality AI Fee:</span>
+                  <span>{t('consumer.platformFee')}:</span>
                   <span>₹{product.priceBreakdown.platformFeePerKg}/kg</span>
                 </div>
               </div>
@@ -212,7 +213,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'g
               >
                 {isAdded ? (
                   <>
-                    <Check className="w-4 h-4" /> Added ({quantity}kg)
+                    <Check className="w-4 h-4" /> {t('consumer.added')} ({quantity}kg)
                   </>
                 ) : (
                   <>

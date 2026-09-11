@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, CheckCircle2, AlertTriangle, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 
 interface FactorContribution {
   name: string;
@@ -24,7 +25,7 @@ interface ExplainableAICardProps {
 }
 
 export function ExplainableAICard({
-  title = 'Explainable AI Decision Audit',
+  title,
   confidenceScore = 92,
   factors,
   explanationNarrative,
@@ -33,6 +34,7 @@ export function ExplainableAICard({
   clampedPrice,
   className,
 }: ExplainableAICardProps) {
+  const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -47,13 +49,13 @@ export function ExplainableAICard({
           </div>
           <div>
             <h4 className='text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5'>
-              {title}
+              {title || t('intelligence.explainableAiTitle')}
               <span className='text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'>
-                Transparent Model
+                {t('intelligence.transparentModel')}
               </span>
             </h4>
             <p className='text-[11px] text-slate-500 dark:text-slate-400'>
-              Dynamic breakdown of mathematical weights, regional elasticity & cost baselines
+              {t('intelligence.modelBreakdownDesc')}
             </p>
           </div>
         </div>
@@ -62,7 +64,7 @@ export function ExplainableAICard({
           <div className='hidden sm:flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800/50'>
             <CheckCircle2 className='w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400' />
             <span className='text-xs font-bold text-emerald-700 dark:text-emerald-300'>
-              {confidenceScore}% Confidence
+              {t('intelligence.confidenceScore', { score: String(confidenceScore) })}
             </span>
           </div>
           <button className='p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'>
@@ -75,7 +77,7 @@ export function ExplainableAICard({
         <div className='p-4 space-y-4'>
           {/* Narrative box */}
           <div className='bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 rounded-xl p-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300'>
-            <span className='font-bold text-emerald-800 dark:text-emerald-400'>Mathematical Logic: </span>
+            <span className='font-bold text-emerald-800 dark:text-emerald-400'>{t('intelligence.mathematicalLogic')} </span>
             {explanationNarrative}
           </div>
 
@@ -84,23 +86,23 @@ export function ExplainableAICard({
             <div className='grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1'>
               {minimumSustainablePrice !== undefined && (
                 <div className='bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800'>
-                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Sustainable Floor</span>
+                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('intelligence.sustainableFloor')}</span>
                   <span className='text-sm font-extrabold text-slate-900 dark:text-white'>₹{minimumSustainablePrice.toFixed(2)}/kg</span>
-                  <span className='text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5'>Covers all recovery costs</span>
+                  <span className='text-[10px] text-emerald-600 dark:text-emerald-400 block mt-0.5'>{t('intelligence.coversRecoveryCost')}</span>
                 </div>
               )}
               {unclampedPrice !== undefined && (
                 <div className='bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800'>
-                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Unclamped Shock Price</span>
+                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('intelligence.unclampedShockPrice')}</span>
                   <span className='text-sm font-extrabold text-blue-600 dark:text-blue-400'>₹{unclampedPrice.toFixed(2)}/kg</span>
-                  <span className='text-[10px] text-slate-400 block mt-0.5'>Pure formula dynamic output</span>
+                  <span className='text-[10px] text-slate-400 block mt-0.5'>{t('intelligence.pureFormulaOutput')}</span>
                 </div>
               )}
               {clampedPrice !== undefined && (
                 <div className='bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 col-span-2 sm:col-span-1'>
-                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>Safety Clamped Output</span>
+                  <span className='text-[10px] text-slate-400 uppercase font-semibold block'>{t('intelligence.safetyClampedOutput')}</span>
                   <span className='text-sm font-extrabold text-emerald-600 dark:text-emerald-400'>₹{clampedPrice.toFixed(2)}/kg</span>
-                  <span className='text-[10px] text-slate-400 block mt-0.5'>Safe market price recommendation</span>
+                  <span className='text-[10px] text-slate-400 block mt-0.5'>{t('intelligence.safePriceRecommendation')}</span>
                 </div>
               )}
             </div>
@@ -109,7 +111,7 @@ export function ExplainableAICard({
           {/* Factor contributions list */}
           <div className='space-y-2 pt-1'>
             <span className='text-[11px] font-bold uppercase text-slate-400 tracking-wider block'>
-              Weighted Factor Influence
+              {t('intelligence.weightedInfluence')}
             </span>
             <div className='space-y-1.5'>
               {factors.map((factor, idx) => (
@@ -141,10 +143,11 @@ export function ExplainableAICard({
           </div>
 
           <p className='text-[10px] text-slate-400 dark:text-slate-500 italic text-center pt-1'>
-            * Simulated AI-assisted decision model. Calculations are fully deterministic and dynamically computed from live parameters.
+            {t('intelligence.simulatedAiDisclaimer')}
           </p>
         </div>
       )}
     </div>
   );
 }
+

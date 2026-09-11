@@ -49,11 +49,11 @@ export default function ConsumerLayout({
   }, [isPublicPage, isConsumerAuthenticated, consumerUser, pathname, router]);
 
   const navLinks = [
-    { href: '/consumer/dashboard', label: t('dashboard'), icon: LayoutDashboard, authRequired: true },
-    { href: '/consumer/marketplace', label: t('marketplace'), icon: Store, authRequired: false },
-    { href: '/consumer/cart', label: 'Cart', icon: ShoppingBag, authRequired: false },
-    { href: '/consumer/orders', label: t('orders'), icon: Package, authRequired: true },
-    { href: '/consumer/tracking', label: 'GPS Tracking', icon: Truck, authRequired: false },
+    { href: '/consumer/dashboard', label: t('nav.dashboard'), icon: LayoutDashboard, authRequired: true },
+    { href: '/consumer/marketplace', label: t('nav.marketplace'), icon: Store, authRequired: false },
+    { href: '/consumer/cart', label: t('nav.cart'), icon: ShoppingBag, authRequired: false },
+    { href: '/consumer/orders', label: t('nav.orders'), icon: Package, authRequired: true },
+    { href: '/consumer/tracking', label: t('nav.gpsTracking'), icon: Truck, authRequired: false },
   ];
 
   const handleLogout = () => {
@@ -70,7 +70,7 @@ export default function ConsumerLayout({
           <span className="font-bold flex items-center gap-1">
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" /> AgriFlow AI
           </span>
-          <span className="hidden sm:inline text-emerald-300">&bull; Direct Farmer-to-Consumer Wholesale & Retail Portal</span>
+          <span className="hidden sm:inline text-emerald-300">&bull; {t('nav.directSourcing')}</span>
         </div>
 
         <div className="flex items-center gap-3 text-xs">
@@ -82,7 +82,7 @@ export default function ConsumerLayout({
             href="/"
             className="flex items-center gap-1 text-emerald-200 hover:text-white font-semibold transition-colors"
           >
-            <ArrowLeft className="w-3 h-3" /> Back to Main Gateway
+            <ArrowLeft className="w-3 h-3" /> {t('nav.backToGateway')}
           </Link>
         </div>
       </div>
@@ -98,10 +98,10 @@ export default function ConsumerLayout({
               </div>
               <div>
                 <span className="text-lg font-black tracking-tight text-zinc-900 dark:text-white flex items-center gap-1.5">
-                  AgriFlow <span className="text-emerald-600 dark:text-emerald-400">Buyer</span>
+                  AgriFlow <span className="text-emerald-600 dark:text-emerald-400">{t('role.consumer')}</span>
                 </span>
                 <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block -mt-1 font-medium tracking-wide">
-                  Direct Farm Sourcing Portal
+                  {t('nav.directSourcing')}
                 </span>
               </div>
             </Link>
@@ -137,7 +137,7 @@ export default function ConsumerLayout({
             <Link
               href="/consumer/cart"
               className="relative p-2.5 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors"
-              title="Shopping Cart"
+              title={t('nav.cart')}
             >
               <ShoppingBag className="w-5 h-5" />
               {totalItems > 0 && (
@@ -171,7 +171,7 @@ export default function ConsumerLayout({
                   type="button"
                   onClick={handleLogout}
                   className="p-2 rounded-xl text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                  title="Logout"
+                  title={t('nav.logout')}
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
@@ -182,13 +182,13 @@ export default function ConsumerLayout({
                   href="/consumer/login"
                   className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:text-emerald-600 transition-colors"
                 >
-                  <LogIn className="w-4 h-4" /> {t('login')}
+                  <LogIn className="w-4 h-4" /> {t('nav.login')}
                 </Link>
                 <Link
                   href="/consumer/register"
                   className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-sm transition-all duration-200"
                 >
-                  <UserPlus className="w-4 h-4" /> {t('register')}
+                  <UserPlus className="w-4 h-4" /> {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -228,7 +228,7 @@ export default function ConsumerLayout({
                   onClick={handleLogout}
                   className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 rounded-lg text-xs font-semibold flex items-center gap-1"
                 >
-                  <LogOut className="w-4 h-4" /> Logout
+                  <LogOut className="w-4 h-4" /> {t('nav.logout')}
                 </button>
               </div>
             )}
@@ -264,14 +264,14 @@ export default function ConsumerLayout({
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold border border-zinc-200 dark:border-zinc-700 rounded-xl"
                 >
-                  <LogIn className="w-4 h-4" /> {t('login')}
+                  <LogIn className="w-4 h-4" /> {t('nav.login')}
                 </Link>
                 <Link
                   href="/consumer/register"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-center gap-2 py-2.5 text-xs font-semibold bg-emerald-600 text-white rounded-xl"
                 >
-                  <UserPlus className="w-4 h-4" /> {t('register')}
+                  <UserPlus className="w-4 h-4" /> {t('nav.register')}
                 </Link>
               </div>
             )}
@@ -288,18 +288,18 @@ export default function ConsumerLayout({
       <footer className="mt-auto border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-zinc-500 dark:text-zinc-400">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-zinc-900 dark:text-white">AgriFlow AI Buyer Portal</span>
+            <span className="font-bold text-zinc-900 dark:text-white">AgriFlow AI {t('nav.buyerPortal')}</span>
             <span>&bull; Direct Farm-Gate Procurement & Verified Cold-Chain Road Sourcing</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/consumer/marketplace" className="hover:text-emerald-600 transition-colors">
-              Marketplace
+              {t('nav.marketplace')}
             </Link>
             <Link href="/consumer/settings" className="hover:text-emerald-600 transition-colors">
-              Settings & Bandwidth
+              {t('nav.settings')}
             </Link>
             <Link href="/" className="hover:text-emerald-600 font-semibold transition-colors">
-              Main Gateway
+              {t('nav.gateway')}
             </Link>
           </div>
         </div>

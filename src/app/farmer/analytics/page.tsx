@@ -21,8 +21,10 @@ import {
   CartesianGrid,
   Legend
 } from 'recharts';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerAnalyticsPage() {
+  const { t } = useI18n();
   const [priceTrends, setPriceTrends] = useState<PriceTrendPoint[]>([]);
   const [sihData, setSihData] = useState<SIHScenarioData | null>(null);
   const [activeTab, setActiveTab] = useState<'trends' | 'realization'>('trends');
@@ -41,13 +43,13 @@ export default function FarmerAnalyticsPage() {
             href="/farmer/dashboard"
             className="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold mb-2 hover:underline"
           >
-            <ArrowLeft className="w-3.5 h-3.5" /> Back to Farmer Dashboard
+            <ArrowLeft className="w-3.5 h-3.5" /> {t('common.back', 'Back')}
           </Link>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2.5">
-            <BarChart3 className="w-7 h-7 text-emerald-500" /> Market Analytics & Forecasts
+            <BarChart3 className="w-7 h-7 text-emerald-500" /> {t('farmer.marketAnalyticsTitle', 'Market Analytics & Forecasts')}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Real market prices, AI 7-day surge projections, and transparent net realization comparisons.
+            {t('farmer.marketAnalyticsSubtitle', 'Real market prices, AI 7-day surge projections, and transparent net realization comparisons.')}
           </p>
         </div>
 
@@ -61,7 +63,7 @@ export default function FarmerAnalyticsPage() {
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Price Trends
+            {t('farmer.priceTrends', 'Price Trends')}
           </button>
           <button
             onClick={() => setActiveTab('realization')}
@@ -71,7 +73,7 @@ export default function FarmerAnalyticsPage() {
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
-            Realization
+            {t('farmer.realization', 'Realization')}
           </button>
         </div>
       </div>
@@ -87,7 +89,7 @@ export default function FarmerAnalyticsPage() {
               </div>
               <div className="flex items-center gap-2 text-xs font-bold">
                 <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                  Optimal Selling Window: Day +4
+                  {t('farmer.optimalWindowDay', 'Optimal Selling Window: Day +4')}
                 </span>
               </div>
             </div>
@@ -124,19 +126,19 @@ export default function FarmerAnalyticsPage() {
           {/* Forecast Key Insights */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="p-5">
-              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Benchmark Mandi Rate</span>
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">{t('farmer.benchmarkMandiRate', 'Benchmark Mandi Rate')}</span>
               <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">{formatINR(38.00)}/kg</div>
               <span className="text-xs text-slate-500 mt-1 block">Bowenpally / Chevella Mandi</span>
             </Card>
 
             <Card className="p-5">
-              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Surge Window Peak (Day +4)</span>
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">{t('farmer.surgeWindowPeak', 'Surge Window Peak (Day +4)')}</span>
               <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{formatINR(41.20)}/kg</div>
               <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1 block">+{formatINR(3.20)}/kg (+8.4%) price lift</span>
             </Card>
 
             <Card className="p-5">
-              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">Direct Buyer Institutional Rate</span>
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">{t('farmer.directBuyerRate', 'Direct Buyer Institutional Rate')}</span>
               <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">{formatINR(42.00)}/kg</div>
               <span className="text-xs text-slate-500 mt-1 block">Net payout after cold freight</span>
             </Card>

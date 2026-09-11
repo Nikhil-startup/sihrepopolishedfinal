@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { formatINR } from '@/lib/utils';
+import { useI18n } from '@/context/I18nContext';
 import { RotateCcw, Check, Sparkles, ShieldCheck } from 'lucide-react';
 
 export default function ReturnLoadsPage() {
+  const { t } = useI18n();
   const [claimed, setClaimed] = useState<Record<string, boolean>>({});
 
   const opportunities = [
@@ -37,9 +39,9 @@ export default function ReturnLoadsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Return Load Matching AI</h1>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('logistics.returnLoadsTitle')}</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Eliminate deadhead mileage by claiming non-perishable return cargo for vehicles returning to origin clusters.
+          {t('logistics.returnLoadsSubtitle')}
         </p>
       </div>
 
@@ -50,19 +52,19 @@ export default function ReturnLoadsPage() {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-slate-400">{opp.id}</span>
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/30 text-xs font-bold">
-                  Matched for {opp.vehicleMatch}
+                  {t('logistics.matchedFor', { vehicle: opp.vehicleMatch })}
                 </span>
               </div>
 
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">{opp.route}</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Return Cargo: <strong className="text-slate-700 dark:text-slate-200">{opp.commodity}</strong> ({opp.weightKg.toLocaleString()} kg) &bull; Avoids <strong className="text-emerald-500">{opp.emptyDistanceAvoidedKm} km empty return haul</strong>
+                {t('logistics.returnCargo')}: <strong className="text-slate-700 dark:text-slate-200">{opp.commodity}</strong> ({opp.weightKg.toLocaleString()} kg) &bull; {t('logistics.avoidsEmptyHaul', { km: opp.emptyDistanceAvoidedKm })}
               </p>
             </div>
 
             <div className="flex items-center gap-4 w-full lg:w-auto justify-between">
               <div className="text-left lg:text-right">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Added Operator Revenue</span>
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">{t('logistics.addedOperatorRevenue')}</span>
                 <span className="text-xl font-black text-emerald-500">+{formatINR(opp.additionalEarnings)}</span>
               </div>
 
@@ -72,11 +74,11 @@ export default function ReturnLoadsPage() {
               >
                 {claimed[opp.id] ? (
                   <>
-                    <Check className="w-4 h-4 mr-1" /> Return Load Locked
+                    <Check className="w-4 h-4 mr-1" /> {t('logistics.returnLoadLocked')}
                   </>
                 ) : (
                   <>
-                    <RotateCcw className="w-4 h-4 mr-1" /> Claim Return Load
+                    <RotateCcw className="w-4 h-4 mr-1" /> {t('logistics.claimReturnLoad')}
                   </>
                 )}
               </Button>

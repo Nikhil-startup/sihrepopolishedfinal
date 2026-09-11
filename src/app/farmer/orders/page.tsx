@@ -12,8 +12,10 @@ import { formatINR } from '@/lib/utils';
 import RateAndReviewModal from '@/components/reviews/RateAndReviewModal';
 import ReportModal from '@/components/reports/ReportModal';
 import { UserRole, ReportType } from '@/types/review';
+import { useI18n } from '@/context/I18nContext';
 
 export default function FarmerOrdersPage() {
+  const { t } = useI18n();
   const [orders, setOrders] = useState<Order[]>([]);
 
   // Rating and Report State
@@ -42,9 +44,9 @@ export default function FarmerOrdersPage() {
       
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">Orders & Delivery</h1>
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.ordersDeliveryTitle', 'Orders & Delivery')}</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          Monitor confirmed buyer purchase contracts, road freight dispatches, and delivery payment releases.
+          {t('farmer.ordersDeliverySubtitle', 'Monitor confirmed buyer purchase contracts, road freight dispatches, and delivery payment releases.')}
         </p>
       </div>
 
@@ -57,29 +59,29 @@ export default function FarmerOrdersPage() {
               <div className="flex flex-wrap items-center gap-2.5">
                 <span className="font-mono text-xs font-bold text-slate-400">{order.id}</span>
                 <StatusBadge status={order.status} />
-                <span className="text-xs text-slate-400">&bull; Ordered: {order.orderDate}</span>
+                <span className="text-xs text-slate-400">&bull; {t('common.ordered', 'Ordered')}: {order.orderDate}</span>
               </div>
 
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">{order.buyerName}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{order.buyerType} &bull; Destination: <strong className="text-slate-700 dark:text-slate-200">{order.destinationCity}</strong></p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{order.buyerType} &bull; {t('common.destination', 'Destination')}: <strong className="text-slate-700 dark:text-slate-200">{order.destinationCity}</strong></p>
               </div>
 
               <div className="flex flex-wrap items-center gap-4 text-xs">
                 <div>
-                  <span className="text-slate-400 block">Produce</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{order.produceName} (Grade {order.grade})</span>
+                  <span className="text-slate-400 block">{t('common.produce', 'Produce')}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{order.produceName} ({t('common.grade', 'Grade')} {order.grade})</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Quantity</span>
+                  <span className="text-slate-400 block">{t('common.quantity', 'Quantity')}</span>
                   <span className="font-bold text-slate-900 dark:text-white">{order.quantityKg.toLocaleString()} kg</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Rate</span>
+                  <span className="text-slate-400 block">{t('common.rate', 'Rate')}</span>
                   <span className="font-bold text-emerald-500">{formatINR(order.pricePerKg)}/kg</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">Total Realization Value</span>
+                  <span className="text-slate-400 block">{t('farmer.totalLotValue', 'Total Realization Value')}</span>
                   <span className="font-black text-emerald-500 text-sm">{formatINR(order.totalOrderValue)}</span>
                 </div>
               </div>
@@ -89,7 +91,7 @@ export default function FarmerOrdersPage() {
               <Link href={`/farmer/tracking/${order.logisticsId}`}>
                 <Button className="w-full" size="sm">
                   <Truck className="w-4 h-4" />
-                  <span>Road Tracking</span>
+                  <span>{t('farmer.trackDelivery', 'Road Tracking')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
@@ -111,7 +113,7 @@ export default function FarmerOrdersPage() {
                     className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition flex items-center justify-center gap-1"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    Rate Buyer
+                    {t('farmer.rateBuyer', 'Rate Buyer')}
                   </button>
 
                   <button
@@ -127,7 +129,7 @@ export default function FarmerOrdersPage() {
                     className="flex-1 py-1.5 px-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-bold transition flex items-center justify-center gap-1"
                   >
                     <Truck className="w-3.5 h-3.5 text-cyan-400" />
-                    Rate Carrier
+                    {t('farmer.rateCarrier', 'Rate Carrier')}
                   </button>
 
                   <button
@@ -141,7 +143,7 @@ export default function FarmerOrdersPage() {
                         transactionId: order.id,
                       });
                     }}
-                    title="Report Buyer"
+                    title={t('farmer.reportBuyer', 'Report Buyer')}
                     className="p-1.5 rounded-xl border border-slate-700 hover:bg-rose-950/30 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 transition"
                   >
                     <Flag className="w-3.5 h-3.5" />

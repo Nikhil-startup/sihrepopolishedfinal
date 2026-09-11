@@ -40,7 +40,7 @@ interface I18nContextType {
   language: SupportedLanguage;
   setLanguage: (lang: SupportedLanguage) => void;
   syncWithUserProfile: (lang?: SupportedLanguage) => void;
-  t: (key: string) => string;
+  t: (key: string, paramsOrFallback?: Record<string, string | number> | string, fallback?: string) => string;
   supportedLanguages: LanguageOption[];
 }
 
@@ -55,6 +55,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       const cached = localStorage.getItem('agriflow_cached_lang') as SupportedLanguage;
       if (cached && dictionaries[cached]) {
         setLanguageState(cached);
+        document.documentElement.lang = cached;
       }
     }
   }, []);
@@ -65,6 +66,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       setLanguageState(userLang);
       if (typeof window !== 'undefined') {
         localStorage.setItem('agriflow_cached_lang', userLang);
+        document.documentElement.lang = userLang;
       }
     }
   };
@@ -74,12 +76,46 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     setLanguageState(newLang);
     if (typeof window !== 'undefined') {
       localStorage.setItem('agriflow_cached_lang', newLang);
+      document.documentElement.lang = newLang;
     }
   };
 
-  const t = (key: string): string => {
+  const t = (key: string, paramsOrFallback?: Record<string, string | number> | string, fallback?: string): string => {
+    let params: Record<string, string | number> | undefined;
+    let defaultText: string | undefined = fallback;
+
+    if (typeof paramsOrFallback === 'string') {
+      defaultText = paramsOrFallback;
+    } else if (paramsOrFallback && typeof paramsOrFallback === 'object') {
+      params = paramsOrFallback;
+    }
+
     const currentDict = dictionaries[language] || dictionaries.en;
-    return currentDict[key] || dictionaries.en[key] || key;
+    let text = currentDict[key];
+
+    if (text === undefined) {
+      if (dictionaries.en[key] !== undefined) {
+        text = dictionaries.en[key];
+        if (process.env.NODE_ENV === 'development' && language !== 'en') {
+          console.warn(`[i18n] Missing translation:\n${key}\nLanguage: ${language}`);
+        }
+      } else if (defaultText !== undefined) {
+        text = defaultText;
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`[i18n] Missing translation:\n${key}\nLanguage: ${language}`);
+        }
+        text = key;
+      }
+    }
+
+    if (params && typeof text === 'string') {
+      Object.entries(params).forEach(([paramKey, val]) => {
+        text = text.replace(new RegExp(`\\{${paramKey}\\}`, 'g'), String(val));
+      });
+    }
+
+    return text;
   };
 
   return (
