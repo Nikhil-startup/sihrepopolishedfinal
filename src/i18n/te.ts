@@ -1,4 +1,4 @@
-export const te = {
+﻿export const te = {
   "dashboard": "డాష్‌బోర్డ్ (Dashboard)",
   "marketplace": "మార్కెట్‌ప్లేస్ (Marketplace)",
   "cart": "కార్ట్ (Cart)",
@@ -114,7 +114,7 @@ export const te = {
   "submitReport": "ఫిర్యాదును సమర్పించండి",
   "reportSubmitted": "మీ నివేదిక సమర్పించబడింది మరియు సమీక్షించబడుతుంది.",
   "underReview": "పరిశీలనలో ఉంది",
-  "resolved": "పరిష్కరించబడింది"
+  "resolved": "పరిష్కరించబడింది",
   "aiDecisionCenter": "AI నిర్ణయ కేంద్రం",
   "weatherShock": "వాతావరణ షాక్ సిమ్యులేటర్",
   "minimumSustainablePrice": "కనిష్ట స్థిరమైన ధర",

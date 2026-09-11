@@ -10,9 +10,8 @@ export default function TraceabilityLookupPage() {
   const [lotInput, setLotInput] = useState('LOT-2026-7842');
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
     if (lotInput.trim()) {
-      router.push(/traceability/);
+      router.push(`/traceability/${encodeURIComponent(lotInput.trim())}`);
     }
   };
 

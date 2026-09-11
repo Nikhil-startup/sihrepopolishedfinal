@@ -153,6 +153,7 @@ export default function PublicGateway() {
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-bold text-white">Central Intelligence:</span>
           </div>
+          <div className="flex flex-wrap items-center gap-3">
             <Link href="/farmer/intelligence" className="text-emerald-400 hover:text-emerald-300 transition flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
               <span>AI Decision Center</span>
