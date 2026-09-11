@@ -1,24 +1,12 @@
 import { MarketPrice, PriceTrendPoint } from "@/types/farmer";
-import { apiClient } from "@/lib/apiClient";
-import { mockMarketPrices, mockPriceTrendData } from "./mockData/mockPrices";
+import { demoMarketPrices, demoPriceTrendData } from "@/data/demoData";
 
 export const marketPriceService = {
   async getMarketPrices(): Promise<MarketPrice[]> {
-    try {
-      return await apiClient<MarketPrice[]>('/api/farmer/market-prices', { method: 'GET' });
-    } catch {
-      return mockMarketPrices;
-    }
+    return demoMarketPrices;
   },
 
-  async getPriceTrends(commodity: string): Promise<PriceTrendPoint[]> {
-    try {
-      return await apiClient<PriceTrendPoint[]>('/api/farmer/price-trends', {
-        method: 'GET',
-        params: { commodity },
-      });
-    } catch {
-      return mockPriceTrendData;
-    }
+  async getPriceTrends(_commodity: string): Promise<PriceTrendPoint[]> {
+    return demoPriceTrendData;
   }
 };

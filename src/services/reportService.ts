@@ -1,5 +1,7 @@
-import { apiClient } from '@/lib/apiClient';
 import { CreateReportPayload, ReportEntity } from '@/types/review';
+import { getStoredData, setStoredData } from '@/data/demoData';
+
+const REPORTS_STORAGE_KEY = 'agriflow_reports_store';
 
 export const reportService = {
   /**
@@ -7,11 +9,33 @@ export const reportService = {
    */
   async submitReport(payload: CreateReportPayload): Promise<{ success: boolean; reportId?: string; status?: string; message?: string; error?: string }> {
     try {
-      const res = await apiClient<{ success: boolean; reportId: string; status: string; message: string }>('/api/reports', {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      });
-      return res;
+      const currentReports = getStoredData<ReportEntity[]>(REPORTS_STORAGE_KEY, []);
+      const newReport: ReportEntity = {
+        id: `REP-${Date.now().toString().slice(-6)}`,
+        reporterUserId: payload.reporterUserId,
+        reporterRole: payload.reporterRole,
+        reporterDisplayName: payload.reporterDisplayName,
+        reportedUserId: payload.reportedUserId,
+        reportedRole: payload.reportedRole,
+        reportType: payload.reportType,
+        reason: payload.reason,
+        description: payload.description?.trim(),
+        transactionId: payload.transactionId,
+        productId: payload.productId,
+        orderItemId: payload.orderItemId,
+        reviewId: payload.reviewId,
+        status: 'UNDER_REVIEW',
+        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      };
+
+      setStoredData(REPORTS_STORAGE_KEY, [newReport, ...currentReports]);
+
+      return {
+        success: true,
+        reportId: newReport.id,
+        status: newReport.status,
+        message: 'Your report has been submitted and recorded in the demo safety registry.',
+      };
     } catch (err: any) {
       return {
         success: false,
@@ -24,14 +48,7 @@ export const reportService = {
    * Fetch submitted reports by the current user
    */
   async getMyReports(userId: string): Promise<ReportEntity[]> {
-    try {
-      const res = await apiClient<{ reports: ReportEntity[] }>('/api/reports', {
-        method: 'GET',
-        params: { userId },
-      });
-      return res.reports || [];
-    } catch {
-      return [];
-    }
+    const currentReports = getStoredData<ReportEntity[]>(REPORTS_STORAGE_KEY, []);
+    return currentReports.filter((r) => r.reporterUserId === userId);
   },
 };

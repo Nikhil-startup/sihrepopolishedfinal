@@ -1,5 +1,4 @@
 import { DeliveryTracking } from '@/types/delivery';
-import { apiClient, createLiveTrackingSocket } from '@/lib/apiClient';
 
 export const mockDeliveryTrips: Record<string, DeliveryTracking> = {
   "TRK-CONS-ROAD-9021": {
@@ -181,50 +180,64 @@ export const sharedTrackingService = {
   },
 
   async getTracking(id: string): Promise<DeliveryTracking | null> {
-    try {
-      const data = await apiClient<DeliveryTracking>(`/api/tracking/${id}`, { method: 'GET' });
-      return data;
-    } catch {
-      // Find matching mock trip by id, tripId, or orderId
-      const cleanId = id.trim().toUpperCase();
-      const match = Object.values(mockDeliveryTrips).find(
-        (t) =>
-          t.id.toUpperCase() === cleanId ||
-          t.tripId.toUpperCase() === cleanId ||
-          t.orderId.toUpperCase() === cleanId
-      );
+    const cleanId = id.trim().toUpperCase();
+    const match = Object.values(mockDeliveryTrips).find(
+      (t) =>
+        t.id.toUpperCase() === cleanId ||
+        t.tripId.toUpperCase() === cleanId ||
+        t.orderId.toUpperCase() === cleanId
+    );
 
-      if (match) return { ...match };
+    if (match) return { ...match };
 
-      return {
-        ...defaultMockDeliveryTrip,
-        id,
-        tripId: id.includes("TRK") ? id : `TRK-${id}`,
-      };
-    }
+    return {
+      ...defaultMockDeliveryTrip,
+      id,
+      tripId: id.includes("TRK") ? id : `TRK-${id}`,
+    };
   },
 
   async getTrackingByOrderId(orderId: string): Promise<DeliveryTracking | null> {
-    try {
-      const data = await apiClient<DeliveryTracking>(`/api/tracking/order/${orderId}`, { method: 'GET' });
-      return data;
-    } catch {
-      const cleanOrder = orderId.trim().toUpperCase();
-      const match = Object.values(mockDeliveryTrips).find(
-        (t) => t.orderId.toUpperCase() === cleanOrder
-      );
+    const cleanOrder = orderId.trim().toUpperCase();
+    const match = Object.values(mockDeliveryTrips).find(
+      (t) => t.orderId.toUpperCase() === cleanOrder
+    );
 
-      if (match) return { ...match };
+    if (match) return { ...match };
 
-      return {
-        ...defaultMockDeliveryTrip,
-        orderId,
-      };
-    }
+    return {
+      ...defaultMockDeliveryTrip,
+      orderId,
+    };
   },
 
-  subscribe(tripId: string, onUpdate: (trip: DeliveryTracking) => void, onError?: (err: Event) => void): () => void {
-    return createLiveTrackingSocket<DeliveryTracking>(tripId, onUpdate, onError);
+  subscribe(tripId: string, onUpdate: (trip: DeliveryTracking) => void, _onError?: (err: Event) => void): () => void {
+    if (typeof window === 'undefined') return () => {};
+
+    const cleanId = tripId.trim().toUpperCase();
+    const baseTrip = Object.values(mockDeliveryTrips).find(
+      (t) =>
+        t.id.toUpperCase() === cleanId ||
+        t.tripId.toUpperCase() === cleanId ||
+        t.orderId.toUpperCase() === cleanId
+    ) || defaultMockDeliveryTrip;
+
+    let step = 0;
+    const interval = setInterval(() => {
+      step++;
+      const tempDelta = Math.sin(step) * 0.3;
+      const updated: DeliveryTracking = {
+        ...baseTrip,
+        telemetry: {
+          ...baseTrip.telemetry,
+          temperatureCelsius: Number((5.8 + tempDelta).toFixed(1)),
+          humidityPercent: Math.min(95, Math.max(80, Math.round(86 + Math.cos(step) * 2))),
+        },
+      };
+      onUpdate(updated);
+    }, 3000);
+
+    return () => clearInterval(interval);
   },
 };
 

@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { ConfirmationResult } from 'firebase/auth';
+import { useAuth, DemoConfirmationResult } from '@/context/AuthContext';
 import { Button } from '@/components/common/Button';
 import { Phone, Mail, ShieldCheck, ArrowRight, RotateCcw, Sparkles, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 
@@ -30,7 +29,7 @@ export function PhoneAuthForm({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [userName, setUserName] = useState('');
-  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
+  const [confirmationResult, setConfirmationResult] = useState<DemoConfirmationResult | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [statusMsg, setStatusMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -80,7 +79,7 @@ export function PhoneAuthForm({
       const result = await sendPhoneOtp(fullNumber, 'recaptcha-container');
       setConfirmationResult(result);
       setStep('OTP');
-      setStatusMsg(`6-digit SMS OTP sent to ${fullNumber}`);
+      setStatusMsg(`6-digit SMS OTP sent to ${fullNumber} (Demo OTP: 123456)`);
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string };
       console.error('Phone OTP Send Error:', error);
@@ -188,7 +187,7 @@ export function PhoneAuthForm({
 
       <div className="text-center">
         <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border mb-3 ${colors.badgeBg}`}>
-          <ShieldCheck className="w-3.5 h-3.5" /> Firebase Secure Authentication
+          <ShieldCheck className="w-3.5 h-3.5" /> Instant Demo Authentication
         </div>
         <h2 className="text-2xl font-black text-white">{roleTitle}</h2>
         {roleSubtitle && <p className="text-xs text-slate-400 mt-1">{roleSubtitle}</p>}

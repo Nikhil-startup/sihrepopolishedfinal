@@ -53,7 +53,7 @@ export default function FarmerTrackingPage() {
       <div className="py-24 text-center space-y-4">
         <Truck className="w-12 h-12 mx-auto text-emerald-400 animate-pulse" />
         <h2 className="text-xl font-bold text-white">Connecting to Carrier Realtime Telemetry...</h2>
-        <p className="text-xs text-slate-400">Listening to live GPS and cold-chain WebSocket events.</p>
+        <p className="text-xs text-slate-400">Streaming live GPS coordinates and cold-chain telemetry.</p>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function FarmerTrackingPage() {
 
         <div className="flex items-center gap-2">
           <span className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-            <Wifi className="w-3.5 h-3.5" /> Realtime WebSocket Live
+            <Wifi className="w-3.5 h-3.5" /> Realtime Telemetry Live
           </span>
           <button
             type="button"

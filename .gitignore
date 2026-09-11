@@ -52,4 +52,5 @@ firebase-key.json
 # Temporary files
 *.tmp
 *.temp
+*.tsbuildinfo
 .cache/

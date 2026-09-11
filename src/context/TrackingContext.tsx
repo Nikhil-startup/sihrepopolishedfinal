@@ -42,7 +42,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     fetchTrip();
   }, [fetchTrip]);
 
-  // Subscribe to real-time WebSocket updates from backend
+  // Subscribe to simulated real-time telemetry updates
   useEffect(() => {
     if (!activeTripId) return;
 
