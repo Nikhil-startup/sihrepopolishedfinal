@@ -23,7 +23,11 @@ export default function MandiPricesPage() {
   const { isLowBandwidth } = useBandwidth();
 
   const initPrices = useCallback(() => {
-    marketPriceService.getMarketPrices().then(setPrices);
+    marketPriceService.getMarketPrices()
+      .then(setPrices)
+      .catch(() => {
+        setLiveState('OFFLINE');
+      });
     if (subRef.current) {
       subRef.current.unsubscribe();
     }

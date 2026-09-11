@@ -45,6 +45,7 @@ export default function ConsumerCheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'Card' | 'Demo Cash'>('UPI');
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderCreatedSuccess, setOrderCreatedSuccess] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (items.length === 0 && !orderCreatedSuccess) {
     return (
@@ -61,6 +62,7 @@ export default function ConsumerCheckoutPage() {
   const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+    setErrorMessage(null);
 
     try {
       const newOrder = await consumerService.createOrder({
@@ -89,8 +91,9 @@ export default function ConsumerCheckoutPage() {
       setTimeout(() => {
         router.push(`/consumer/orders`);
       }, 2000);
-    } catch {
+    } catch (err: any) {
       setIsProcessing(false);
+      setErrorMessage(err?.message || 'Failed to place order in Neon PostgreSQL database. Please ensure backend is running.');
     }
   };
 
@@ -113,6 +116,19 @@ export default function ConsumerCheckoutPage() {
           <ArrowLeft className="w-4 h-4" /> {t('consumer.editCart', 'Edit Cart')}
         </Link>
       </div>
+
+      {errorMessage && (
+        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between">
+          <span>{errorMessage}</span>
+          <button
+            type="button"
+            onClick={() => setErrorMessage(null)}
+            className="text-xs font-bold underline"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
 
       {orderCreatedSuccess ? (
         <div className="p-8 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/40 text-center max-w-lg mx-auto space-y-4">

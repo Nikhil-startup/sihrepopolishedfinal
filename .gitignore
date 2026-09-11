@@ -56,3 +56,6 @@ firebase-key.json
 *.temp
 *.tsbuildinfo
 .cache/
+__pycache__/
+*.py[cod]
+*$py.class

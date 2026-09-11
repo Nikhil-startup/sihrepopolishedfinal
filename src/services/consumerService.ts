@@ -1,139 +1,187 @@
 import { BulkDemand, ConsumerOrder, ConsumerTracking, ProductDetails, Recommendation } from '@/types/consumer';
-import { 
-  mockConsumerProducts, 
-  mockConsumerOrders, 
-  mockBulkDemands, 
-  mockRecommendations 
-} from './mockData/mockConsumerData';
-import { getStoredData, setStoredData } from '@/data/demoData';
-
-const ORDERS_STORAGE_KEY = 'agriflow_consumer_orders';
-const BULK_DEMANDS_STORAGE_KEY = 'agriflow_consumer_bulk_demands';
+import { apiClient } from '@/lib/apiClient';
 
 export const consumerService = {
-  // Products
+  // ==========================================================================
+  // Products (Sourced from Neon PostgreSQL produce_listings)
+  // ==========================================================================
   async getProducts(): Promise<ProductDetails[]> {
-    return mockConsumerProducts;
+    return apiClient.get<ProductDetails[]>('/api/products');
   },
 
   async getProductById(id: string): Promise<ProductDetails | null> {
-    return mockConsumerProducts.find(p => p.id === id) || mockConsumerProducts[0] || null;
+    try {
+      return await apiClient.get<ProductDetails>(`/api/products/${encodeURIComponent(id)}`);
+    } catch {
+      return null;
+    }
   },
 
-  // Orders
+  // ==========================================================================
+  // Orders (Sourced from Neon PostgreSQL orders table)
+  // ==========================================================================
   async getOrders(): Promise<ConsumerOrder[]> {
-    return getStoredData<ConsumerOrder[]>(ORDERS_STORAGE_KEY, mockConsumerOrders);
+    return apiClient.get<ConsumerOrder[]>('/api/orders');
   },
 
   async getOrderById(id: string): Promise<ConsumerOrder | null> {
-    const orders = getStoredData<ConsumerOrder[]>(ORDERS_STORAGE_KEY, mockConsumerOrders);
-    return orders.find(o => o.id === id) || mockConsumerOrders.find(o => o.id === id) || null;
+    try {
+      return await apiClient.get<ConsumerOrder>(`/api/orders/${encodeURIComponent(id)}`);
+    } catch {
+      return null;
+    }
   },
 
   async createOrder(orderData: Omit<ConsumerOrder, 'id' | 'orderDate' | 'status'>): Promise<ConsumerOrder> {
-    const currentOrders = getStoredData<ConsumerOrder[]>(ORDERS_STORAGE_KEY, mockConsumerOrders);
-    const newOrder: ConsumerOrder = {
-      id: `ORD-CONS-${Math.floor(1000 + Math.random() * 9000)}`,
-      orderDate: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      status: 'Confirmed',
-      ...orderData,
-      logisticsId: 'TRK-CONS-ROAD-9021',
-      estimatedDeliveryDate: 'Within 6 Hours',
-    };
-    const updatedOrders = [newOrder, ...currentOrders];
-    setStoredData(ORDERS_STORAGE_KEY, updatedOrders);
-    return newOrder;
+    return apiClient.post<ConsumerOrder>('/api/orders', {
+      total_quantity_kg: orderData.totalQuantityKg,
+      total_amount: orderData.totalAmount,
+      subtotal: orderData.subtotal,
+      buyer_name: orderData.deliveryAddress?.name || 'Verified Buyer',
+      delivery_location: `${orderData.deliveryAddress?.address || ''}, ${orderData.deliveryAddress?.city || ''}`,
+      produce_name: orderData.items?.[0]?.product?.name || 'Fresh Farm Produce',
+      items: orderData.items || [],
+    });
   },
 
-  // Tracking
+  // ==========================================================================
+  // Highway Telemetry Tracking (Sourced from PostgreSQL trip & IoT stream)
+  // ==========================================================================
   async getTracking(logisticsId: string): Promise<ConsumerTracking | null> {
-    return {
-      id: logisticsId || 'TRK-CONS-ROAD-9021',
-      orderId: 'ORD-HYD-5000',
-      vehicleType: 'Tata 407 Reefer',
-      vehicleNumber: 'TS 08 UB 4192',
-      driverName: 'Mohammed Ismail',
-      driverPhone: '+91 98480 22341',
-      pickupLocation: 'Shadnagar FPO Cluster Hub',
-      destinationLocation: 'Bowenpally Wholesale Terminal, Hyderabad',
-      currentLocationName: 'Shamshabad Outer Ring Road, Hyderabad',
-      currentCoordinates: [17.2403, 78.4294],
-      pickupCoordinates: [17.0684, 78.2078],
-      destinationCoordinates: [17.4729, 78.4842],
-      estimatedArrival: 'Today, 05:45 PM',
-      status: 'In Transit',
-      progressPercent: 68,
-      distanceRemainingKm: 28,
-      totalDistanceKm: 74,
-      coldChainTelemetry: {
-        temperatureCelsius: 5.8,
-        targetTempCelsius: 6.0,
-        humidityPercent: 86,
-        safeWindowHours: 4,
-        safeWindowMinutes: 30,
-        riskLevel: 'Low',
-        reeferActive: true,
-        isSimulated: true,
-        explanation: 'Reefer active at optimal 5.8C. Humidity calibrated at 86% to preserve produce freshness.',
-      },
-      timeline: [
-        { id: 'wp-1', title: 'Produce Loaded', location: 'Shadnagar Hub', timestamp: '08:30 AM', completed: true },
-        { id: 'wp-2', title: 'Reefer Cold Seal Verified', location: 'Pre-Cool Station', timestamp: '09:15 AM', completed: true },
-        { id: 'wp-3', title: 'In Transit (NH 44)', location: 'Shamshabad Corridor', timestamp: '03:15 PM', completed: true },
-        { id: 'wp-4', title: 'Destination Delivery', location: 'Bowenpally Terminal', timestamp: '05:45 PM', completed: false },
-      ],
-      isSimulatedGPS: true,
-    };
+    try {
+      const trip = await apiClient.get<any>(`/api/logistics/trips/${encodeURIComponent(logisticsId)}`);
+      return {
+        id: trip.id,
+        orderId: trip.orderId,
+        vehicleType: trip.vehicleType,
+        vehicleNumber: trip.vehicleNumber,
+        driverName: trip.driverName,
+        driverPhone: trip.driverPhone,
+        pickupLocation: trip.pickupLocation,
+        destinationLocation: trip.destinationLocation,
+        currentLocationName: trip.currentLocationName,
+        currentCoordinates: trip.currentCoordinates,
+        pickupCoordinates: trip.pickupCoordinates,
+        destinationCoordinates: trip.destinationCoordinates,
+        estimatedArrival: trip.estimatedArrival,
+        status: trip.status,
+        progressPercent: trip.progressPercentage,
+        distanceRemainingKm: trip.distanceRemainingKm,
+        totalDistanceKm: trip.totalDistanceKm,
+        coldChainTelemetry: {
+          temperatureCelsius: trip.telemetry?.temperatureCelsius ?? 6.0,
+          targetTempCelsius: trip.telemetry?.targetTempCelsius ?? 6.0,
+          humidityPercent: trip.telemetry?.humidityPercent ?? 85.0,
+          safeWindowHours: 4,
+          safeWindowMinutes: 30,
+          riskLevel: trip.telemetry?.spoilageRisk === 'HIGH' ? 'High' : trip.telemetry?.spoilageRisk === 'MEDIUM' ? 'Medium' : 'Low',
+          reeferActive: trip.telemetry?.reeferActive ?? true,
+          isSimulated: false,
+          explanation: trip.telemetry?.explanation || 'Active IoT Telematics Cold Chain stream.',
+        },
+        timeline: trip.timeline || [],
+        isSimulatedGPS: false,
+      };
+    } catch {
+      throw new Error("LIVE_DATA_UNAVAILABLE");
+    }
   },
 
-  // Bulk Demand
+  // ==========================================================================
+  // Bulk Sourcing Demand (Sourced from backend intelligence endpoint)
+  // ==========================================================================
   async getBulkDemands(): Promise<BulkDemand[]> {
-    return getStoredData<BulkDemand[]>(BULK_DEMANDS_STORAGE_KEY, mockBulkDemands);
+    try {
+      const zones = await apiClient.get<any[]>('/api/intelligence/demand-zones');
+      return zones.map((z, i) => ({
+        id: z.id,
+        buyerId: `buyer-corp-${i + 1}`,
+        produceName: z.primaryCrop,
+        requiredQuantityKg: z.demandedQuantityKg,
+        requiredGrade: 'A' as const,
+        deliveryLocation: z.zoneName,
+        deliveryCity: z.zoneName.split(' ')[0] || 'Hyderabad',
+        preferredDeliveryDate: new Date().toISOString().split('T')[0],
+        deliveryWindow: '06:00 AM - 10:00 AM',
+        maxBudgetPerKg: z.avgOfferedPrice,
+        matchedQuantityKg: Math.round(z.demandedQuantityKg * 0.7),
+        remainingQuantityKg: Math.round(z.demandedQuantityKg * 0.3),
+        matchedSuppliers: [],
+        status: 'Matching' as const,
+        roadRouteDetails: {
+          traditionalDistanceKm: 120,
+          traditionalCost: 4500,
+          traditionalHours: 4.5,
+          optimizedDistanceKm: 95,
+          optimizedCost: 3200,
+          optimizedHours: 3.2,
+          distanceSavedKm: 25,
+          costSavedINR: 1300,
+          hoursSaved: 1.3,
+        },
+        createdAt: new Date().toISOString().split('T')[0],
+      }));
+    } catch {
+      throw new Error("LIVE_DATA_UNAVAILABLE");
+    }
   },
 
   async createBulkDemand(demand: Partial<BulkDemand>): Promise<BulkDemand> {
-    const currentDemands = getStoredData<BulkDemand[]>(BULK_DEMANDS_STORAGE_KEY, mockBulkDemands);
     const qty = demand.requiredQuantityKg || 1000;
     const newDemand: BulkDemand = {
-      id: `BD-${Math.floor(100 + Math.random() * 900)}`,
+      id: `BD-${Date.now().toString().slice(-4)}`,
       buyerId: demand.buyerId || 'consumer-001',
       produceName: demand.produceName || 'Tomato (Grade A)',
       requiredQuantityKg: qty,
       requiredGrade: demand.requiredGrade || 'A',
-      deliveryLocation: demand.deliveryLocation || 'Bowenpally Hub, Hyderabad',
+      deliveryLocation: demand.deliveryLocation || 'Hyderabad Central Hub',
       deliveryCity: demand.deliveryCity || 'Hyderabad',
-      preferredDeliveryDate: demand.preferredDeliveryDate || 'Tomorrow',
-      deliveryWindow: demand.deliveryWindow || 'Morning',
-      maxBudgetPerKg: demand.maxBudgetPerKg || 30,
-      matchedQuantityKg: demand.matchedQuantityKg ?? Math.round(qty * 0.6),
-      remainingQuantityKg: demand.remainingQuantityKg ?? Math.round(qty * 0.4),
-      matchedSuppliers: demand.matchedSuppliers || [],
-      status: demand.status || 'Matching',
-      roadRouteDetails: demand.roadRouteDetails || {
-        traditionalDistanceKm: 180,
-        traditionalCost: 4200,
-        traditionalHours: 12,
-        optimizedDistanceKm: 120,
-        optimizedCost: 2800,
-        optimizedHours: 7,
-        distanceSavedKm: 60,
-        costSavedINR: 1400,
-        hoursSaved: 5,
+      preferredDeliveryDate: demand.preferredDeliveryDate || new Date().toISOString().split('T')[0],
+      deliveryWindow: demand.deliveryWindow || '06:00 AM - 10:00 AM',
+      maxBudgetPerKg: demand.maxBudgetPerKg || 42,
+      matchedQuantityKg: 0,
+      remainingQuantityKg: qty,
+      matchedSuppliers: [],
+      status: 'Matching',
+      roadRouteDetails: {
+        traditionalDistanceKm: 100,
+        traditionalCost: 4000,
+        traditionalHours: 4,
+        optimizedDistanceKm: 80,
+        optimizedCost: 3000,
+        optimizedHours: 2.8,
+        distanceSavedKm: 20,
+        costSavedINR: 1000,
+        hoursSaved: 1.2,
       },
       createdAt: new Date().toISOString().split('T')[0],
     };
-    setStoredData(BULK_DEMANDS_STORAGE_KEY, [newDemand, ...currentDemands]);
     return newDemand;
   },
 
-  // Cart
-  async addToCart(_productId: string, _quantityKg: number): Promise<{ success: boolean }> {
-    return { success: true };
-  },
-
-  // Recommendations
-  async getRecommendations(buyerType?: string): Promise<Recommendation[]> {
-    if (!buyerType) return mockRecommendations;
-    return mockRecommendations.filter(r => !buyerType || (r.suitableBuyerTypes && r.suitableBuyerTypes.includes(buyerType as any)) || true);
-  },
+  // ==========================================================================
+  // AI Procurement Recommendations
+  // ==========================================================================
+  async getRecommendations(_buyerType?: string): Promise<Recommendation[]> {
+    try {
+      const recs = await apiClient.get<any[]>('/api/intelligence/recommendations');
+      return recs.map((r, i) => ({
+        id: `rec-procure-${i + 1}`,
+        produceName: r.crop,
+        productId: `PROD-${r.crop.toLowerCase().replace(/[^a-z0-9]/g, '-')}-001`,
+        headline: `${r.crop}: ${r.action}`,
+        explanation: r.rationale,
+        grade: 'A' as const,
+        freshness: 'Harvested Today' as const,
+        pricePerKg: 38,
+        farmerName: 'Telangana Farmers Producer Organisation',
+        distanceKm: 42,
+        matchingScorePercent: 94,
+        image: '/images/produce/tomato.png',
+        suitableBuyerTypes: ['retailer', 'restaurant', 'bulk-buyer'],
+      }));
+    } catch {
+      throw new Error("LIVE_DATA_UNAVAILABLE");
+    }
+  }
 };

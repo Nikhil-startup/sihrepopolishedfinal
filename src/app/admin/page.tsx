@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   ShieldCheck, 
@@ -14,14 +14,37 @@ import {
   ArrowRight,
   Sparkles,
   ExternalLink,
-  Sprout
+  Sprout,
+  Database
 } from 'lucide-react';
 import { useI18n } from '@/context/I18nContext';
 import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { ConnectionIndicator } from '@/components/common/ConnectionIndicator';
+import { adminService, AdminMetrics } from '@/services/adminService';
+import { LiveConnectionBanner } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function AdminCommandCenterPage() {
   const { t } = useI18n();
+  const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const fetchMetrics = useCallback(async () => {
+    setLiveState('CONNECTING');
+    try {
+      const data = await adminService.getMetrics();
+      setMetrics(data);
+      setLiveState('LIVE');
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch {
+      setLiveState('OFFLINE');
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMetrics();
+  }, [fetchMetrics]);
 
   const portalLinks = [
     {
@@ -99,43 +122,62 @@ export default function AdminCommandCenterPage() {
       </div>
 
       <div className='max-w-7xl mx-auto space-y-8'>
+
+        {/* Live Database Connection Banner */}
+        <div className="space-y-2">
+          <LiveConnectionBanner
+            state={liveState}
+            onRetry={fetchMetrics}
+            lastUpdated={lastUpdated ?? undefined}
+            streamName="Neon PostgreSQL Platform Database"
+          />
+          <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+            <div className="flex items-center gap-2">
+              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Source: <strong className="text-slate-200">Neon PostgreSQL ({metrics?.data_source || 'DATABASE_SQL_AGGREGATE'})</strong></span>
+            </div>
+            <span className="text-[11px] text-slate-500">Zero mock data • Live SQL counts</span>
+          </div>
+        </div>
         
         {/* Platform Overview Metric Cards */}
         <div className='grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3'>
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.activeFarmers')}</span>
-            <span className='text-xl font-black text-white block'>1,284</span>
-            <span className='text-[10px] text-emerald-400 font-semibold'>{t('admin.thisMonth')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Registered Users</span>
+            <span className='text-xl font-black text-white block'>{metrics?.totalUsers ?? '—'}</span>
+            <span className='text-[10px] text-emerald-400 font-semibold'>Neon DB Verified</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.verifiedBuyers')}</span>
-            <span className='text-xl font-black text-white block'>342</span>
-            <span className='text-[10px] text-blue-400 font-semibold'>{t('admin.retailFpos')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Produce Listings</span>
+            <span className='text-xl font-black text-white block'>{metrics?.totalProduceListings ?? '—'}</span>
+            <span className='text-[10px] text-blue-400 font-semibold'>Active Harvest Batches</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.activeFleet')}</span>
-            <span className='text-xl font-black text-white block'>86</span>
-            <span className='text-[10px] text-amber-400 font-semibold'>{t('admin.iotTelemetry')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Dispatched Orders</span>
+            <span className='text-xl font-black text-white block'>{metrics?.totalOrders ?? '—'}</span>
+            <span className='text-[10px] text-amber-400 font-semibold'>PostgreSQL Orders</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.dailyVolume')}</span>
-            <span className='text-xl font-black text-white block'>48.5 <span className='text-xs text-slate-400'>{t('admin.tons')}</span></span>
-            <span className='text-[10px] text-slate-400 font-semibold'>{t('admin.directTrade')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Gross Transaction GMV</span>
+            <span className='text-xl font-black text-white block'>
+              {metrics ? `₹${Number(metrics.grossTransactionValue).toLocaleString('en-IN')}` : '—'}
+            </span>
+            <span className='text-[10px] text-emerald-400 font-semibold'>Escrow Protected</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.foodLossSalvaged')}</span>
-            <span className='text-xl font-black text-emerald-400 block'>12,400 <span className='text-xs text-slate-400'>kg</span></span>
-            <span className='text-[10px] text-emerald-400 font-semibold'>{t('admin.rescuePaths')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Reefer Fleet</span>
+            <span className='text-xl font-black text-white block'>{metrics?.activeFleetVehicles ?? '—'}</span>
+            <span className='text-[10px] text-cyan-400 font-semibold'>Active Vehicles</span>
           </div>
 
           <div className='bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-1'>
-            <span className='text-[10px] uppercase font-bold text-slate-400 block'>{t('admin.avgUplift')}</span>
-            <span className='text-xl font-black text-emerald-400 block'>+18.4%</span>
-            <span className='text-[10px] text-slate-400 font-semibold'>{t('admin.overMandi')}</span>
+            <span className='text-[10px] uppercase font-bold text-slate-400 block'>Mandi APMC Feeds</span>
+            <span className='text-xl font-black text-emerald-400 block'>{metrics?.apmcTrackedFeeds ?? '—'}</span>
+            <span className='text-[10px] text-slate-400 font-semibold'>Tracked Mandis</span>
           </div>
         </div>
 

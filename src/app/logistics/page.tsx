@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { 
   Truck, 
@@ -10,10 +10,13 @@ import {
   ArrowRight, 
   Activity, 
   Radio,
-  TrendingUp
+  TrendingUp,
+  RotateCw
 } from 'lucide-react';
 import { DeliveryTracking } from '@/types/delivery';
-import { sharedTrackingService, defaultMockDeliveryTrip } from '@/services/sharedTrackingService';
+import { sharedTrackingService } from '@/services/sharedTrackingService';
+import { LiveConnectionBanner } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 import RouteMap from '@/components/maps/RouteMap';
 import ColdChainTelemetryCard from '@/components/tracking/ColdChainTelemetryCard';
 import DeliveryStatusCard from '@/components/tracking/DeliveryStatusCard';
@@ -27,30 +30,63 @@ import { translateDeliveryStatus } from '@/lib/i18nHelpers';
 
 export default function LogisticsDashboardPage() {
   const { t } = useI18n();
-  const [trip, setTrip] = useState<DeliveryTracking>(defaultMockDeliveryTrip);
+  const [trip, setTrip] = useState<DeliveryTracking | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [simulatedTemp, setSimulatedTemp] = useState<number>(5.8);
 
-  useEffect(() => {
-    sharedTrackingService.getTracking('TRK-CONS-ROAD-9021').then((res) => {
-      if (res) setTrip(res);
-    });
+  const fetchTrip = useCallback(async () => {
+    setLoading(true);
+    setLiveState('CONNECTING');
+    try {
+      const res = await sharedTrackingService.getTracking('TRK-CONS-ROAD-9021');
+      if (res) {
+        setTrip(res);
+        setLiveState('LIVE');
+        setLastUpdated(new Date().toLocaleTimeString());
+      } else {
+        setLiveState('OFFLINE');
+        setTrip(null);
+      }
+    } catch {
+      setLiveState('OFFLINE');
+      setTrip(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchTrip();
+  }, [fetchTrip]);
 
   const handleTempChange = (newTemp: number) => {
     setSimulatedTemp(newTemp);
-    setTrip((prev) => ({
-      ...prev,
-      telemetry: {
-        ...prev.telemetry,
-        temperatureCelsius: newTemp,
-        spoilageRisk: newTemp > 12 ? 'HIGH' : newTemp > 8 ? 'MEDIUM' : 'LOW',
-        safeWindowHours: newTemp > 12 ? 1 : newTemp > 8 ? 2 : 4,
-      },
-    }));
+    setTrip((prev) => {
+      if (!prev) return null;
+      return {
+        ...prev,
+        telemetry: {
+          ...prev.telemetry,
+          temperatureCelsius: newTemp,
+          spoilageRisk: newTemp > 12 ? 'HIGH' : newTemp > 8 ? 'MEDIUM' : 'LOW',
+          safeWindowHours: newTemp > 12 ? 1 : newTemp > 8 ? 2 : 4,
+        },
+      };
+    });
   };
 
   return (
     <div className="space-y-8">
+      {/* Live Highway Telematics Connection Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={fetchTrip}
+        lastUpdated={lastUpdated ?? undefined}
+        streamName="Highway Cold-Chain Fleet & Telemetry"
+      />
+
       {/* Fleet KPI Banner */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between">
@@ -94,20 +130,47 @@ export default function LogisticsDashboardPage() {
         </div>
       </div>
 
-      {/* Active Trip Header */}
-      <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 text-xs font-semibold">
-              <Radio className="w-3 h-3 animate-pulse text-cyan-400" /> {t('logistics.liveGpsSensorStream')}
-            </span>
-            <span className="text-xs text-slate-400 font-mono">{t('common.tripId')}: {trip.tripId}</span>
-          </div>
-          <h1 className="text-2xl font-black text-white">{trip.produceName}</h1>
-          <p className="text-sm text-slate-400 mt-0.5">
-            {trip.pickupLocation} &rarr; {trip.destinationLocation}
-          </p>
+      {loading ? (
+        <div className="py-20 text-center space-y-3">
+          <div className="w-8 h-8 border-3 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs text-slate-400 font-medium">Fetching real-time highway telematics...</p>
         </div>
+      ) : liveState === 'OFFLINE' || !trip ? (
+        <div className="py-16 text-center bg-slate-900 rounded-3xl border border-rose-500/30 p-8 space-y-4 max-w-lg mx-auto">
+          <div className="p-4 rounded-full bg-rose-500/10 w-14 h-14 mx-auto flex items-center justify-center text-rose-500">
+            <RotateCw className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-white">
+            Highway Telemetry Stream Unavailable
+          </h3>
+          <p className="text-xs text-slate-400">
+            Zero mock fallback policy is active. Please ensure the backend server and PostgreSQL connection are running.
+          </p>
+          <button
+            type="button"
+            onClick={fetchTrip}
+            className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            Retry Connection
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Active Trip Header */}
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 text-xs font-semibold">
+                  <Radio className="w-3 h-3 animate-pulse text-cyan-400" /> {t('logistics.liveGpsSensorStream')}
+                </span>
+                <span className="text-xs text-slate-400 font-mono">{t('common.tripId')}: {trip.tripId}</span>
+              </div>
+              <h1 className="text-2xl font-black text-white">{trip.produceName}</h1>
+              <p className="text-sm text-slate-400 mt-0.5">
+                {trip.pickupLocation} &rarr; {trip.destinationLocation}
+              </p>
+            </div>
 
         <div className="flex items-center gap-3">
           <div className="text-right">
@@ -217,6 +280,8 @@ export default function LogisticsDashboardPage() {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }

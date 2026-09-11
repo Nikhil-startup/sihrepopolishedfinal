@@ -1,40 +1,18 @@
 import { CreateReportPayload, ReportEntity } from '@/types/review';
-import { getStoredData, setStoredData } from '@/data/demoData';
-
-const REPORTS_STORAGE_KEY = 'agriflow_reports_store';
+import { apiClient } from '@/lib/apiClient';
 
 export const reportService = {
   /**
-   * Submit an incident or violation report
+   * Submit an incident or violation report directly to Neon PostgreSQL.
    */
   async submitReport(payload: CreateReportPayload): Promise<{ success: boolean; reportId?: string; status?: string; message?: string; error?: string }> {
     try {
-      const currentReports = getStoredData<ReportEntity[]>(REPORTS_STORAGE_KEY, []);
-      const newReport: ReportEntity = {
-        id: `REP-${Date.now().toString().slice(-6)}`,
-        reporterUserId: payload.reporterUserId,
-        reporterRole: payload.reporterRole,
-        reporterDisplayName: payload.reporterDisplayName,
-        reportedUserId: payload.reportedUserId,
-        reportedRole: payload.reportedRole,
-        reportType: payload.reportType,
-        reason: payload.reason,
-        description: payload.description?.trim(),
-        transactionId: payload.transactionId,
-        productId: payload.productId,
-        orderItemId: payload.orderItemId,
-        reviewId: payload.reviewId,
-        status: 'UNDER_REVIEW',
-        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
-      };
-
-      setStoredData(REPORTS_STORAGE_KEY, [newReport, ...currentReports]);
-
+      const res = await apiClient.post<any>('/api/reports', payload);
       return {
         success: true,
-        reportId: newReport.id,
-        status: newReport.status,
-        message: 'Your report has been submitted and recorded in the demo safety registry.',
+        reportId: res.reportId,
+        status: res.status,
+        message: 'Your report has been recorded in the verified safety registry.',
       };
     } catch (err: any) {
       return {
@@ -45,10 +23,13 @@ export const reportService = {
   },
 
   /**
-   * Fetch submitted reports by the current user
+   * Fetch submitted reports by user from PostgreSQL.
    */
   async getMyReports(userId: string): Promise<ReportEntity[]> {
-    const currentReports = getStoredData<ReportEntity[]>(REPORTS_STORAGE_KEY, []);
-    return currentReports.filter((r) => r.reporterUserId === userId);
+    try {
+      return await apiClient.get<ReportEntity[]>(`/api/reports?userId=${encodeURIComponent(userId)}`);
+    } catch {
+      return [];
+    }
   },
 };

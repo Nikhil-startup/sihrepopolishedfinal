@@ -1,39 +1,37 @@
 import { LogisticsFleetVehicle, ConsolidatedTrip } from '@/types/logistics';
-import { mockFleetVehicles, mockConsolidatedTrips } from './mockData/mockLogisticsData';
-import { getStoredData, setStoredData } from '@/data/demoData';
-
-const FLEET_STORAGE_KEY = 'agriflow_logistics_fleet';
-const TRIPS_STORAGE_KEY = 'agriflow_logistics_trips';
+import { apiClient } from '@/lib/apiClient';
 
 export const logisticsService = {
+  /**
+   * Fetch road logistics fleet vehicles from Neon PostgreSQL.
+   */
   async getFleet(): Promise<LogisticsFleetVehicle[]> {
-    return getStoredData<LogisticsFleetVehicle[]>(FLEET_STORAGE_KEY, mockFleetVehicles);
+    return apiClient.get<LogisticsFleetVehicle[]>('/api/logistics/fleet');
   },
 
+  /**
+   * Fetch active consolidated highway trips from Neon PostgreSQL.
+   */
   async getTrips(): Promise<ConsolidatedTrip[]> {
-    return getStoredData<ConsolidatedTrip[]>(TRIPS_STORAGE_KEY, mockConsolidatedTrips);
+    return apiClient.get<ConsolidatedTrip[]>('/api/logistics/trips');
   },
 
+  /**
+   * Fetch single trip details by ID from Neon PostgreSQL.
+   */
   async getTripById(id: string): Promise<ConsolidatedTrip | null> {
-    const trips = getStoredData<ConsolidatedTrip[]>(TRIPS_STORAGE_KEY, mockConsolidatedTrips);
-    return trips.find(t => t.id === id) || mockConsolidatedTrips.find(t => t.id === id) || null;
+    try {
+      return await apiClient.get<ConsolidatedTrip>(`/api/logistics/trips/${encodeURIComponent(id)}`);
+    } catch {
+      return null;
+    }
   },
 
-  async acceptReturnLoad(tripId: string, _returnLoadId: string): Promise<boolean> {
-    const trips = getStoredData<ConsolidatedTrip[]>(TRIPS_STORAGE_KEY, mockConsolidatedTrips);
-    const updated = trips.map(trip => {
-      if (trip.id === tripId && trip.returnLoad) {
-        return {
-          ...trip,
-          returnLoad: {
-            ...trip.returnLoad,
-            isClaimed: true,
-          }
-        };
-      }
-      return trip;
-    });
-    setStoredData(TRIPS_STORAGE_KEY, updated);
+  /**
+   * Claim backhaul return load in PostgreSQL to prevent empty deadhead miles.
+   */
+  async acceptReturnLoad(tripId: string, _returnLoadId?: string): Promise<boolean> {
+    await apiClient.post('/api/logistics/return-loads/claim', { tripId });
     return true;
   }
 };

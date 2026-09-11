@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { consumerService } from '@/services/consumerService';
 import { ConsumerOrder } from '@/types/consumer';
@@ -11,6 +11,8 @@ import RateAndReviewModal from '@/components/reviews/RateAndReviewModal';
 import ReportModal from '@/components/reports/ReportModal';
 import { UserRole, ReportType } from '@/types/review';
 import { translateStatus } from '@/lib/i18nHelpers';
+import { LiveConnectionBanner } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 import { 
   Package, 
   Truck, 
@@ -24,15 +26,18 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Flag
+  Flag,
+  RotateCw
 } from 'lucide-react';
 
 export default function ConsumerOrdersPage() {
   const { t } = useI18n();
   const [orders, setOrders] = useState<ConsumerOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | 'active' | 'completed'>('all');
-  const [expandedOrderId, setExpandedOrderId] = useState<string | null>('ORD-HYD-5000');
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [selectedReceiptOrder, setSelectedReceiptOrder] = useState<ConsumerOrder | null>(null);
 
   // Ratings & Reports Modal State
@@ -51,15 +56,28 @@ export default function ConsumerOrdersPage() {
     reportedName: string;
   } | null>(null);
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
+  const fetchOrders = useCallback(async () => {
+    setLoading(true);
+    setLiveState('CONNECTING');
+    try {
       const data = await consumerService.getOrders();
-      setOrders(data);
+      setOrders(data || []);
+      if (data && data.length > 0 && !expandedOrderId) {
+        setExpandedOrderId(data[0].id);
+      }
+      setLiveState('LIVE');
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch {
+      setLiveState('OFFLINE');
+      setOrders([]);
+    } finally {
       setLoading(false);
     }
-    load();
-  }, []);
+  }, [expandedOrderId]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const filteredOrders = orders.filter(o => {
     if (activeTab === 'active') return o.status !== 'Delivered' && o.status !== 'Cancelled';
@@ -116,10 +134,38 @@ export default function ConsumerOrdersPage() {
         </div>
       </div>
 
+      {/* Live Data Connection Status Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={fetchOrders}
+        lastUpdated={lastUpdated ?? undefined}
+        streamName="Neon PostgreSQL Order Records"
+      />
+
       {loading ? (
         <div className="py-20 text-center space-y-3">
           <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-xs text-zinc-400">{t('consumer.fetchingListings', 'Loading order records...')}</p>
+        </div>
+      ) : liveState === 'OFFLINE' ? (
+        <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-rose-500/30 dark:border-rose-900/40 p-8 space-y-4">
+          <div className="p-4 rounded-full bg-rose-500/10 dark:bg-rose-900/20 w-14 h-14 mx-auto flex items-center justify-center text-rose-500">
+            <RotateCw className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+            Order pipeline is currently unreachable
+          </h3>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
+            Zero mock fallback policy is active. Please ensure the backend server and Neon PostgreSQL connection are operational.
+          </p>
+          <button
+            type="button"
+            onClick={fetchOrders}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            Retry Connection
+          </button>
         </div>
       ) : filteredOrders.length === 0 ? (
         <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-3">

@@ -41,6 +41,10 @@ class ApmcPriceRecord(BaseModel):
     arrival_date: str
     source: str = "Agmarknet / APMC Market Yard"
 
+class PriceUpdatePayload(BaseModel):
+    price_id: str
+    new_price: float
+
 class OrderItem(BaseModel):
     id: str
     name: str
@@ -48,12 +52,14 @@ class OrderItem(BaseModel):
     price_per_kg: float
 
 class OrderCreateRequest(BaseModel):
-    items: List[Dict[str, Any]]
+    items: Optional[List[Dict[str, Any]]] = []
     total_quantity_kg: float
-    subtotal: float
+    subtotal: Optional[float] = 0.0
     total_amount: float
     buyer_name: str
     delivery_location: str
+    buyer_id: Optional[str] = None
+    produce_name: Optional[str] = None
 
 class OrderStatusUpdate(BaseModel):
     status: str

@@ -1,12 +1,22 @@
 import { Order, RoadLogisticsTracking } from "@/types/farmer";
-import { mockOrders, mockTrackingDetails } from "./mockData/mockOrders";
+import { apiClient } from "@/lib/apiClient";
 
 export const trackingService = {
+  /**
+   * Fetch purchase orders from Neon PostgreSQL.
+   */
   async getOrders(): Promise<Order[]> {
-    return mockOrders;
+    return apiClient.get<Order[]>('/api/orders');
   },
 
+  /**
+   * Fetch road logistics telemetry details for a trip.
+   */
   async getTrackingDetails(logisticsId: string): Promise<RoadLogisticsTracking | null> {
-    return mockTrackingDetails[logisticsId] || mockTrackingDetails["TRK-RD-9021"] || null;
+    try {
+      return await apiClient.get<RoadLogisticsTracking>(`/api/logistics/trips/${encodeURIComponent(logisticsId)}`);
+    } catch {
+      return null;
+    }
   }
 };

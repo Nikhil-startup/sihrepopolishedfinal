@@ -1,6 +1,6 @@
 import { MarketPrice, PriceTrendPoint } from "@/types/farmer";
-import { demoMarketPrices, demoPriceTrendData } from "@/data/demoData";
-import { createLiveStream, getBackendBaseUrl, LiveConnectionState, LiveStreamSubscription } from "./hybridLiveClient";
+import { apiClient } from "@/lib/apiClient";
+import { createLiveStream, LiveConnectionState, LiveStreamSubscription } from "./hybridLiveClient";
 
 function mapApmcRecordToMarketPrice(r: any): MarketPrice {
   return {
@@ -19,41 +19,39 @@ function mapApmcRecordToMarketPrice(r: any): MarketPrice {
 }
 
 export const marketPriceService = {
+  /**
+   * Fetch authoritative APMC mandi benchmark prices from FastAPI / Neon PostgreSQL.
+   * STRICT ZERO MOCK FALLBACK: Throws error if backend is unavailable.
+   */
   async getMarketPrices(): Promise<MarketPrice[]> {
-    if (typeof window !== 'undefined') {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 1500);
-        const res = await fetch(`${getBackendBaseUrl()}/api/prices`, {
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            return data.map(mapApmcRecordToMarketPrice);
-          }
-        }
-      } catch {
-        // Backend offline, fallback to verified local snapshot
-      }
+    const data = await apiClient.get<any[]>('/api/prices');
+    if (!Array.isArray(data)) {
+      throw new Error('LIVE_DATA_UNAVAILABLE');
     }
-    return demoMarketPrices;
-  },
-
-  async getPriceTrends(_commodity: string): Promise<PriceTrendPoint[]> {
-    return demoPriceTrendData;
+    return data.map(mapApmcRecordToMarketPrice);
   },
 
   /**
-   * Genuine Live Stream Subscription for Real-Time APMC Mandi Auction Records.
-   * ZERO SIMULATED FALLBACK: If disconnected, reports OFFLINE without generating fake ticks.
+   * Fetch 7-day price trends from backend.
+   */
+  async getPriceTrends(commodity: string): Promise<PriceTrendPoint[]> {
+    try {
+      return await apiClient.get<PriceTrendPoint[]>(`/api/prices/trends/${encodeURIComponent(commodity)}`);
+    } catch {
+      throw new Error('LIVE_DATA_UNAVAILABLE');
+    }
+  },
+
+  /**
+   * Real-Time WebSocket stream for APMC Mandi Auction Records.
+   * Receives initial snapshot from PostgreSQL on connection.
+   * Reports OFFLINE if disconnected, with ZERO simulated fake ticks.
    */
   subscribeToPrices(
     onUpdate: (prices: MarketPrice[]) => void,
     onStateChange?: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void
   ): LiveStreamSubscription<any> {
-    let currentPrices: MarketPrice[] = [...demoMarketPrices];
+    let currentPrices: MarketPrice[] = [];
     let lastUpdatedTime: string | undefined = undefined;
 
     return createLiveStream<any>(
@@ -69,7 +67,9 @@ export const marketPriceService = {
         } else if (packet.type === 'PRICE_UPDATE' && packet.data) {
           lastUpdatedTime = packet.timestamp || new Date().toLocaleTimeString();
           const updated = mapApmcRecordToMarketPrice(packet.data);
-          const idx = currentPrices.findIndex(p => p.id === updated.id || (p.commodity === updated.commodity && p.marketName === updated.marketName));
+          const idx = currentPrices.findIndex(
+            p => p.id === updated.id || (p.commodity === updated.commodity && p.marketName === updated.marketName)
+          );
           if (idx >= 0) {
             currentPrices[idx] = updated;
           } else {

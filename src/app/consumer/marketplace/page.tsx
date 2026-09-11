@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { consumerService } from '@/services/consumerService';
 import { ProductItem } from '@/types/consumer';
 import ProductCard from '@/components/consumer/ProductCard';
 import GradeFilterTabs from '@/components/consumer/GradeFilterTabs';
 import { useI18n } from '@/context/I18nContext';
+import { LiveConnectionBanner } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 import { 
   Search, 
   Filter, 
@@ -15,13 +17,16 @@ import {
   List, 
   ArrowUpDown,
   CheckCircle2,
-  Snowflake
+  Snowflake,
+  RotateCw
 } from 'lucide-react';
 
 export default function ConsumerMarketplacePage() {
   const { t } = useI18n();
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   // Filters & Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,15 +36,25 @@ export default function ConsumerMarketplacePage() {
   const [sortBy, setSortBy] = useState<'recommended' | 'price-asc' | 'price-desc' | 'freshness'>('recommended');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  useEffect(() => {
-    async function load() {
-      setLoading(true);
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setLiveState('CONNECTING');
+    try {
       const data = await consumerService.getProducts();
-      setProducts(data);
+      setProducts(data || []);
+      setLiveState('LIVE');
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch {
+      setLiveState('OFFLINE');
+      setProducts([]);
+    } finally {
       setLoading(false);
     }
-    load();
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const categories = ['All', 'Vegetables', 'Fruits', 'Grains', 'Spices'];
 
@@ -144,6 +159,14 @@ export default function ConsumerMarketplacePage() {
         </div>
       </div>
 
+      {/* Live Data Connection Status Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={fetchProducts}
+        lastUpdated={lastUpdated ?? undefined}
+        streamName="Neon PostgreSQL Farm Produce Pipeline"
+      />
+
       {/* Grade Filter Tabs */}
       <GradeFilterTabs
         selectedGrade={selectedGrade}
@@ -203,6 +226,26 @@ export default function ConsumerMarketplacePage() {
         <div className="py-20 text-center space-y-3">
           <div className="w-8 h-8 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-xs text-zinc-400 font-medium">{t('consumer.fetchingListings', 'Fetching verified farm listings...')}</p>
+        </div>
+      ) : liveState === 'OFFLINE' ? (
+        <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-rose-500/30 dark:border-rose-900/40 p-8 space-y-4">
+          <div className="p-4 rounded-full bg-rose-500/10 dark:bg-rose-900/20 w-14 h-14 mx-auto flex items-center justify-center text-rose-500">
+            <RotateCw className="w-6 h-6" />
+          </div>
+          <h3 className="text-base font-bold text-zinc-900 dark:text-white">
+            Live farm produce pipeline is currently unreachable
+          </h3>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
+            Zero mock fallback policy is active. Please ensure the backend server and Neon PostgreSQL connection are operational.
+          </p>
+          <button
+            type="button"
+            onClick={fetchProducts}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            Retry Connection
+          </button>
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="py-16 text-center bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 p-8 space-y-4">

@@ -14,11 +14,16 @@ import { Sprout, Plus, Filter, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 import { useI18n } from '@/context/I18nContext';
 
+import { LiveConnectionBanner, LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
+
 export default function FarmerProducePage() {
   const { t } = useI18n();
   const [produceList, setProduceList] = useState<Produce[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('All');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<ProduceFormData>({
     resolver: zodResolver(produceSchema),
@@ -34,22 +39,41 @@ export default function FarmerProducePage() {
     },
   });
 
-  useEffect(() => { let isMounted = true; farmerService.getProduceList().then(data => { if (isMounted) setProduceList(data || []); }).catch(() => { if (isMounted) setProduceList([]); }); return () => { isMounted = false; }; }, []);
+  const fetchProduce = React.useCallback(async () => {
+    setLiveState('CONNECTING');
+    try {
+      const data = await farmerService.getProduceList();
+      setProduceList(data || []);
+      setLiveState('LIVE');
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch {
+      setLiveState('OFFLINE');
+      setProduceList([]);
+    }
+  }, []);
 
-  const onAddProduceSubmit = (data: ProduceFormData) => {
-    farmerService.addProduce({
-      crop: data.crop,
-      quantity: Number(data.quantity),
-      unit: data.unit,
-      grade: data.grade as ProduceGrade,
-      harvestDate: data.harvestDate,
-      expectedPrice: Number(data.expectedPrice),
-      location: data.location,
-      notes: data.notes,
-    });
-    farmerService.getProduceList().then(data => setProduceList(data || []));
-    setIsAddModalOpen(false);
-    reset();
+  useEffect(() => {
+    fetchProduce();
+  }, [fetchProduce]);
+
+  const onAddProduceSubmit = async (data: ProduceFormData) => {
+    try {
+      await farmerService.addProduce({
+        crop: data.crop,
+        quantity: Number(data.quantity),
+        unit: data.unit,
+        grade: data.grade as ProduceGrade,
+        harvestDate: data.harvestDate,
+        expectedPrice: Number(data.expectedPrice),
+        location: data.location,
+        notes: data.notes,
+      });
+      await fetchProduce();
+      setIsAddModalOpen(false);
+      reset();
+    } catch (e) {
+      console.error('Failed to submit produce listing:', e);
+    }
   };
 
   const filtered = filterStatus === 'All'
@@ -70,7 +94,10 @@ export default function FarmerProducePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.myProduceInventory', 'My Produce Inventory')}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.myProduceInventory', 'My Produce Inventory')}</h1>
+            <LiveBadge state={liveState} />
+          </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t('farmer.manageListedCrops', 'Manage listed crops, declare harvest quantities, and connect with direct buyers.')}
           </p>
@@ -80,6 +107,14 @@ export default function FarmerProducePage() {
           <span>{t('farmer.addProduceTitle', 'Add Agricultural Produce')}</span>
         </Button>
       </div>
+
+      {/* Real-Time Database Connection Banner */}
+      <LiveConnectionBanner
+        state={liveState}
+        onRetry={fetchProduce}
+        lastUpdated={lastUpdated || undefined}
+        streamName="PostgreSQL Produce Listings Feed"
+      />
 
       {/* Filters */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">

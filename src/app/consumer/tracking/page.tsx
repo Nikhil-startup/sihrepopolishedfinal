@@ -62,10 +62,10 @@ function ConsumerTrackingContent() {
 
       // Select initial trip
       const found = allTrips.find(
-        (t) =>
-          t.id.toUpperCase() === initialId.toUpperCase() ||
-          t.tripId.toUpperCase() === initialId.toUpperCase() ||
-          t.orderId.toUpperCase() === initialId.toUpperCase()
+        (t: DeliveryTracking) =>
+          t.id?.toUpperCase() === initialId.toUpperCase() ||
+          t.tripId?.toUpperCase() === initialId.toUpperCase() ||
+          t.orderId?.toUpperCase() === initialId.toUpperCase()
       ) || allTrips[0];
 
       setActiveTrip(found);
