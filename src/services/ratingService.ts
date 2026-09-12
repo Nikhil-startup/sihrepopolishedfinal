@@ -5,7 +5,10 @@ import {
   ParticipantRatingSummary,
   UserRole
 } from '@/types/review';
-import { apiClient } from '@/lib/apiClient';
+import { reviewsStore } from '@/lib/ratingsStore';
+import { getStoredData, setStoredData } from '@/data/demoData';
+
+const REVIEWS_STORAGE_KEY = 'agriflow_reviews_store';
 
 export const ratingService = {
   /**
@@ -20,128 +23,122 @@ export const ratingService = {
     return {
       eligible: true,
       transactionId,
-      targetUserId: targetUserId || 'farmer-01',
+      targetUserId: targetUserId || 'farmer_01',
       targetRole,
-      targetName: targetRole === 'FARMER' ? 'Ramesh Patel (Zaheerabad FPO)' : targetRole === 'LOGISTICS' ? 'Mohammed Ismail (Tata Reefer)' : 'Verified Participant',
+      targetName: targetRole === 'FARMER' ? 'Ramesh Reddy (Shadnagar FPO)' : targetRole === 'LOGISTICS' ? 'Mohammed Ismail (Tata Reefer)' : 'Verified Participant',
       badgeType: 'VERIFIED_TRANSACTION',
       alreadyRated: false,
     };
   },
 
   /**
-   * Submit a verified rating and review to Neon PostgreSQL via FastAPI.
+   * Submit a verified rating and review
    */
   async submitRating(payload: CreateRatingPayload): Promise<{ success: boolean; review?: RatingReview; message?: string; error?: string }> {
     try {
-      const res = await apiClient.post<any>('/api/reviews', payload);
+      const currentReviews = getStoredData<RatingReview[]>(REVIEWS_STORAGE_KEY, reviewsStore);
+      const newReview: RatingReview = {
+        id: `REV-${Date.now().toString().slice(-6)}`,
+        transactionId: payload.transactionId,
+        productId: payload.productId,
+        productName: payload.productId ? 'Verified Agricultural Produce' : undefined,
+        raterUserId: payload.raterUserId,
+        raterRole: payload.raterRole,
+        raterDisplayName: payload.raterDisplayName,
+        ratedUserId: payload.ratedUserId,
+        ratedRole: payload.ratedRole,
+        rating: payload.rating,
+        categoryRatings: payload.categoryRatings,
+        review: payload.review,
+        verificationBadge: 'VERIFIED_PURCHASE',
+        isVerified: true,
+        moderationStatus: 'PUBLISHED',
+        createdAt: new Date().toISOString().replace('T', ' ').slice(0, 16),
+      };
+
+      const updated = [newReview, ...currentReviews];
+      setStoredData(REVIEWS_STORAGE_KEY, updated);
+
       return {
         success: true,
-        review: res.review,
-        message: 'Your verified rating and review have been published directly to the database.',
+        review: newReview,
+        message: 'Rating and review submitted successfully!',
       };
     } catch (err: any) {
       return {
         success: false,
-        error: err?.message || 'Failed to submit review to database. Please try again.',
+        error: err?.message || 'Unable to submit rating.',
       };
     }
   },
 
   /**
-   * Get all reviews for a participant (Farmer or Logistics driver) from PostgreSQL.
+   * Fetch reviews for a specific produce product
    */
-  async getRatingsForEntity(targetUserId: string, targetRole?: UserRole): Promise<RatingReview[]> {
-    const roleParam = targetRole ? `&ratedRole=${encodeURIComponent(targetRole)}` : '';
-    try {
-      return await apiClient.get<RatingReview[]>(`/api/reviews?ratedUserId=${encodeURIComponent(targetUserId)}${roleParam}`);
-    } catch {
-      return [];
+  async getReviewsForProduct(productId: string): Promise<{ reviews: RatingReview[]; summary: ParticipantRatingSummary }> {
+    const currentReviews = getStoredData<RatingReview[]>(REVIEWS_STORAGE_KEY, reviewsStore);
+    const filtered = currentReviews.filter((r) => r.productId === productId || !productId);
+    const totalReviews = filtered.length;
+    let averageRating = 0;
+    const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+    if (totalReviews > 0) {
+      const sum = filtered.reduce((acc, r) => acc + r.rating, 0);
+      averageRating = Number((sum / totalReviews).toFixed(1));
+      filtered.forEach((r) => {
+        const star = Math.min(5, Math.max(1, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+        ratingDistribution[star] = (ratingDistribution[star] || 0) + 1;
+      });
     }
-  },
-
-  /**
-   * Get all verified reviews for a specific produce listing.
-   */
-  async getProductReviews(productId: string): Promise<RatingReview[]> {
-    try {
-      return await apiClient.get<RatingReview[]>(`/api/reviews?productId=${encodeURIComponent(productId)}`);
-    } catch {
-      return [];
-    }
-  },
-
-  /**
-   * Get reviews and participant summary for a specific produce listing.
-   */
-  async getReviewsForProduct(productId: string): Promise<{ reviews: RatingReview[]; summary: ParticipantRatingSummary | null }> {
-    const reviews = await this.getProductReviews(productId);
-    const avg = reviews.length > 0
-      ? Number((reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1))
-      : 5.0;
-    const summary: ParticipantRatingSummary = {
-      userId: productId,
-      role: 'FARMER',
-      averageRating: avg,
-      totalReviews: reviews.length,
-      verifiedTransactionsCount: reviews.length,
-      categoryAverages: {
-        quality: avg,
-        freshness: avg,
-        communication: 5.0,
-        timeliness: 5.0,
-        handling: 5.0,
-      },
-      ratingDistribution: { 5: reviews.length, 4: 0, 3: 0, 2: 0, 1: 0 },
-    };
-    return { reviews, summary };
-  },
-
-  /**
-   * Compute aggregated reputation stats from PostgreSQL reviews.
-   */
-  async getParticipantSummary(userId: string, role: UserRole): Promise<ParticipantRatingSummary> {
-    const reviews = await this.getRatingsForEntity(userId, role);
-    if (reviews.length === 0) {
-      return {
-        userId,
-        role,
-        averageRating: 5.0,
-        totalReviews: 1,
-        verifiedTransactionsCount: 1,
-        categoryAverages: {
-          quality: 5.0,
-          freshness: 5.0,
-          communication: 5.0,
-          timeliness: 5.0,
-          handling: 5.0,
-        },
-        ratingDistribution: { 5: 1, 4: 0, 3: 0, 2: 0, 1: 0 },
-      };
-    }
-
-    const total = reviews.length;
-    const avg = Number((reviews.reduce((acc, r) => acc + r.rating, 0) / total).toFixed(1));
-    const dist: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    reviews.forEach(r => {
-      if (r.rating >= 1 && r.rating <= 5) {
-        dist[r.rating as 1 | 2 | 3 | 4 | 5]++;
-      }
-    });
 
     return {
-      userId,
-      role,
-      averageRating: avg,
-      totalReviews: total,
-      verifiedTransactionsCount: total,
-      categoryAverages: {
-        quality: avg,
-        freshness: avg,
-        communication: avg,
-        timeliness: avg,
-        handling: avg,
+      reviews: filtered,
+      summary: {
+        userId: productId,
+        role: 'FARMER',
+        averageRating: averageRating || 4.8,
+        totalReviews: totalReviews || 1,
+        ratingDistribution: totalReviews > 0 ? ratingDistribution : { 5: 1, 4: 0, 3: 0, 2: 0, 1: 0 },
+        verifiedTransactionsCount: totalReviews || 1,
       },
-      ratingDistribution: dist,
     };
-  }
+  },
+
+  /**
+   * Fetch rating summary & reviews for a Farmer, Buyer, or Logistics Operator
+   */
+  async getReviewsForUser(userId: string, role?: UserRole): Promise<{ reviews: RatingReview[]; summary: ParticipantRatingSummary }> {
+    const currentReviews = getStoredData<RatingReview[]>(REVIEWS_STORAGE_KEY, reviewsStore);
+    const targetRole = role ? role.toUpperCase() : undefined;
+    const filtered = currentReviews.filter((r) => {
+      const matchRole = !targetRole || r.ratedRole === targetRole;
+      const matchUser = !userId || r.ratedUserId === userId;
+      return matchRole || matchUser;
+    });
+
+    const totalReviews = filtered.length;
+    let averageRating = 0;
+    const ratingDistribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+    if (totalReviews > 0) {
+      const sum = filtered.reduce((acc, r) => acc + r.rating, 0);
+      averageRating = Number((sum / totalReviews).toFixed(1));
+      filtered.forEach((r) => {
+        const star = Math.min(5, Math.max(1, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+        ratingDistribution[star] = (ratingDistribution[star] || 0) + 1;
+      });
+    }
+
+    return {
+      reviews: filtered,
+      summary: {
+        userId: userId || 'demo_user',
+        role: (role ? role.toUpperCase() : 'FARMER') as any,
+        averageRating: averageRating || 4.9,
+        totalReviews: totalReviews || 2,
+        ratingDistribution: totalReviews > 0 ? ratingDistribution : { 5: 2, 4: 0, 3: 0, 2: 0, 1: 0 },
+        verifiedTransactionsCount: totalReviews || 2,
+      },
+    };
+  },
 };
