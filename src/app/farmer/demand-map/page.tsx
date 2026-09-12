@@ -78,16 +78,16 @@ export default function DemandMapPage() {
                           <StatusBadge status={zone.opportunityLevel} />
                         </div>
                         <div className="text-[11px] text-slate-400 space-y-1">
-                          <div className="flex justify-between"><span>{t('farmer.demand', 'Demand')}:</span> <strong className="text-white">{zone.demandKg.toLocaleString()} kg</strong></div>
-                          <div className="flex justify-between"><span>{t('farmer.localSupply', 'Local Supply')}:</span> <span>{zone.supplyKg.toLocaleString()} kg</span></div>
-                          <div className="flex justify-between font-bold text-emerald-400"><span>{t('farmer.supplyGap', 'Supply Gap')}:</span> <span>{zone.gapKg > 0 ? `+${zone.gapKg.toLocaleString()} kg` : t('farmer.excessSupply', 'Excess Supply')}</span></div>
+                          <div className="flex justify-between"><span>{t('farmer.demand', 'Demand')}:</span> <strong className="text-white">{(zone.demandKg ?? 0).toLocaleString()} kg</strong></div>
+                          <div className="flex justify-between"><span>{t('farmer.localSupply', 'Local Supply')}:</span> <span>{(zone.supplyKg ?? 0).toLocaleString()} kg</span></div>
+                          <div className="flex justify-between font-bold text-emerald-400"><span>{t('farmer.supplyGap', 'Supply Gap')}:</span> <span>{(zone.gapKg ?? 0) > 0 ? `+${(zone.gapKg ?? 0).toLocaleString()} kg` : t('farmer.excessSupply', 'Excess Supply')}</span></div>
                         </div>
                       </button>
                     ))}
                   </div>
 
                   <div className="text-[11px] text-slate-400 flex items-center justify-between pt-2 border-t border-slate-800">
-                    <span>{t('common.selected', 'Selected')}: <strong className="text-white">{selectedZone?.region}</strong></span>
+                    <span>{t('common.selected', 'Selected')}: <strong className="text-white">{selectedZone?.region || 'None'}</strong></span>
                     <span className="text-emerald-400 font-bold">{t('farmer.activeBidders', '{count} Active Direct Bidders').replace('{count}', String(selectedZone?.buyerCount || 0))}</span>
                   </div>
                 </div>
@@ -112,9 +112,9 @@ export default function DemandMapPage() {
                       <tr key={z.id} onClick={() => setSelectedZone(z)} className="cursor-pointer hover:bg-slate-800/40">
                         <td className="py-2.5 font-bold text-white">{z.region}</td>
                         <td className="py-2.5">{z.commodity}</td>
-                        <td className="py-2.5">{z.demandKg.toLocaleString()} kg</td>
-                        <td className="py-2.5">{z.supplyKg.toLocaleString()} kg</td>
-                        <td className="py-2.5 font-bold text-emerald-400">{z.gapKg > 0 ? `+${z.gapKg.toLocaleString()} kg` : 'Surplus'}</td>
+                        <td className="py-2.5">{(z.demandKg ?? 0).toLocaleString()} kg</td>
+                        <td className="py-2.5">{(z.supplyKg ?? 0).toLocaleString()} kg</td>
+                        <td className="py-2.5 font-bold text-emerald-400">{(z.gapKg ?? 0) > 0 ? `+${(z.gapKg ?? 0).toLocaleString()} kg` : 'Surplus'}</td>
                         <td className="py-2.5"><StatusBadge status={z.opportunityLevel} /></td>
                       </tr>
                     ))}
@@ -142,19 +142,19 @@ export default function DemandMapPage() {
               <div className="space-y-2 text-xs pt-2 border-t border-slate-800">
                 <div className="flex justify-between text-slate-300">
                   <span>{t('farmer.buyerInflow', 'Buyer Inflow Demand')}:</span>
-                  <span className="font-bold text-white">{selectedZone.demandKg.toLocaleString()} kg</span>
+                  <span className="font-bold text-white">{(selectedZone.demandKg ?? 0).toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between text-slate-400">
                   <span>{t('farmer.localHubSupply', 'Local Hub Supply')}:</span>
-                  <span>{selectedZone.supplyKg.toLocaleString()} kg</span>
+                  <span>{(selectedZone.supplyKg ?? 0).toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between font-bold text-emerald-400 text-sm">
                   <span>{t('farmer.deficitGap', 'Supply Deficit Gap')}:</span>
-                  <span>+{selectedZone.gapKg.toLocaleString()} kg</span>
+                  <span>+{(selectedZone.gapKg ?? 0).toLocaleString()} kg</span>
                 </div>
                 <div className="flex justify-between text-slate-300 pt-2 border-t border-slate-800">
                   <span>{t('farmer.offeredPrice', 'Offered Price')}:</span>
-                  <span className="font-bold text-white">{formatINR(selectedZone.pricePerKg)}/kg</span>
+                  <span className="font-bold text-white">{formatINR(selectedZone.pricePerKg ?? 0)}/kg</span>
                 </div>
               </div>
 
@@ -167,7 +167,7 @@ export default function DemandMapPage() {
               </div>
 
               <Button className="w-full">
-                <span>{t('farmer.dispatchLotTo', 'Dispatch Lot to {region}').replace('{region}', selectedZone.region.split(' ')[0])}</span>
+                <span>{t('farmer.dispatchLotTo', 'Dispatch Lot to {region}').replace('{region}', (selectedZone.region || 'Hub').split(' ')[0])}</span>
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </Card>

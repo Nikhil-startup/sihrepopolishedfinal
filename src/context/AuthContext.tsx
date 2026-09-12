@@ -6,16 +6,91 @@ import { User as FarmerUser } from '@/types/farmer';
 import { ConsumerUser } from '@/types/consumer';
 import { LogisticsOperator } from '@/types/logistics';
 import { demoFarmerUser, demoConsumerUser, demoLogisticsUser } from '@/data/demoData';
+import {
+  authService,
+  BackendUser,
+  GoogleAuthPayload,
+  UserProfileCreatePayload,
+} from '@/services/authService';
+import { triggerGoogleAuth } from '@/lib/googleAuth';
 
 export interface DemoConfirmationResult {
   verificationId: string;
   confirm: (verificationCode: string) => Promise<{ user: { uid: string; phoneNumber: string } }>;
 }
 
+export function backendUserToFarmer(u: BackendUser): FarmerUser {
+  return {
+    id: u.id,
+    name: u.full_name || u.name,
+    phone: u.mobile_number || u.phone || '',
+    email: u.email || '',
+    photoURL: u.profile_photo_url,
+    role: 'farmer',
+    state: u.state,
+    district: u.district,
+    place: u.area || u.village_or_locality,
+    address: u.full_address,
+    location: u.location || `${u.area || ''}, ${u.district || ''}, ${u.state || ''}`,
+    preferredLanguage: (u.preferred_language as any) || 'en',
+    profileCompleted: Boolean(u.profile_completed),
+    farmName: `${u.name || 'AgriFlow'}'s Farm`,
+    farmerType: 'Individual Farmer',
+    farmSize: '5 Acres',
+    primaryCrops: ['Tomato', 'Onion'],
+    createdAt: u.created_at || new Date().toISOString(),
+  };
+}
+
+export function backendUserToConsumer(u: BackendUser): ConsumerUser {
+  return {
+    id: u.id,
+    name: u.full_name || u.name,
+    phone: u.mobile_number || u.phone || '',
+    email: u.email || '',
+    photoURL: u.profile_photo_url,
+    role: 'consumer',
+    state: u.state,
+    district: u.district,
+    place: u.area || u.village_or_locality,
+    address: u.full_address,
+    location: u.location || `${u.area || ''}, ${u.district || ''}, ${u.state || ''}`,
+    preferredLanguage: (u.preferred_language as any) || 'en',
+    profileCompleted: Boolean(u.profile_completed),
+    buyerType: 'bulk-buyer',
+    createdAt: u.created_at || new Date().toISOString(),
+  };
+}
+
+export function backendUserToLogistics(u: BackendUser): LogisticsOperator {
+  return {
+    id: u.id,
+    name: u.full_name || u.name,
+    phone: u.mobile_number || u.phone || '',
+    email: u.email || '',
+    photoURL: u.profile_photo_url,
+    role: 'logistics',
+    state: u.state,
+    district: u.district,
+    place: u.area || u.village_or_locality,
+    address: u.full_address,
+    vehicleType: 'Tata 407 Reefer',
+    vehicleNumber: 'TS 08 UB 4192',
+    vehicleCapacityKg: 3500,
+    reeferEnabled: true,
+    operatingRegion: `${u.district || 'Regional'} Corridor`,
+    preferredRoutes: [`${u.district || 'Local Hub'} -> Distribution Hub`],
+    preferredLanguage: (u.preferred_language as any) || 'en',
+    profileCompleted: Boolean(u.profile_completed),
+    createdAt: u.created_at || new Date().toISOString(),
+  };
+}
+
 interface AuthContextType {
   user: FarmerUser | null;
   consumerUser: ConsumerUser | null;
   logisticsUser: LogisticsOperator | null;
+  pendingGoogleUser: BackendUser | null;
   isAuthenticated: boolean;
   isConsumerAuthenticated: boolean;
   isLogisticsAuthenticated: boolean;
@@ -43,7 +118,11 @@ interface AuthContextType {
     role: 'farmer' | 'consumer' | 'logistics' | 'fpo',
     extraData?: { name?: string; phone?: string; state?: string; district?: string; place?: string; preferredLanguage?: any }
   ) => Promise<void>;
-  loginWithGoogle: (role: 'farmer' | 'consumer' | 'logistics' | 'fpo') => Promise<{ profileCompleted: boolean }>;
+  loginWithGoogle: (
+    role: 'farmer' | 'consumer' | 'logistics' | 'fpo',
+    payload?: Partial<GoogleAuthPayload>
+  ) => Promise<{ profileCompleted: boolean; isNewUser?: boolean; user?: BackendUser }>;
+  saveProfile: (payload: UserProfileCreatePayload) => Promise<{ success: boolean; user: BackendUser }>;
   loginWithDemo: (role: string, name?: string, phone?: string) => Promise<void>;
 }
 
@@ -53,6 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FarmerUser | null>(null);
   const [consumerUser, setConsumerUser] = useState<ConsumerUser | null>(null);
   const [logisticsUser, setLogisticsUser] = useState<LogisticsOperator | null>(null);
+  const [pendingGoogleUser, setPendingGoogleUser] = useState<BackendUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -68,6 +148,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         const storedLogistics = sessionStorage.getItem('agriflow_logistics_auth');
         if (storedLogistics) setLogisticsUser(JSON.parse(storedLogistics));
+
+        const storedPending = sessionStorage.getItem('agriflow_pending_profile');
+        if (storedPending) setPendingGoogleUser(JSON.parse(storedPending));
       } catch (e) {
         console.warn('Failed to parse saved sessions:', e);
       }
@@ -79,13 +162,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     try {
       const storedFarmer = sessionStorage.getItem('agriflow_farmer_auth');
-      if (storedFarmer) setUser(JSON.parse(storedFarmer));
+      if (storedFarmer) {
+        const parsed = JSON.parse(storedFarmer);
+        if (parsed.id) {
+          try {
+            const resp = await authService.getProfile(parsed.id);
+            if (resp.success && resp.user) {
+              const updated = backendUserToFarmer(resp.user);
+              setUser(updated);
+              sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(updated));
+              return;
+            }
+          } catch {
+            // fallback to cached
+          }
+        }
+        setUser(parsed);
+      }
 
       const storedConsumer = sessionStorage.getItem('agriflow_consumer_auth');
-      if (storedConsumer) setConsumerUser(JSON.parse(storedConsumer));
+      if (storedConsumer) {
+        const parsed = JSON.parse(storedConsumer);
+        if (parsed.id) {
+          try {
+            const resp = await authService.getProfile(parsed.id);
+            if (resp.success && resp.user) {
+              const updated = backendUserToConsumer(resp.user);
+              setConsumerUser(updated);
+              sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(updated));
+              return;
+            }
+          } catch {
+            // fallback
+          }
+        }
+        setConsumerUser(parsed);
+      }
 
       const storedLogistics = sessionStorage.getItem('agriflow_logistics_auth');
-      if (storedLogistics) setLogisticsUser(JSON.parse(storedLogistics));
+      if (storedLogistics) {
+        const parsed = JSON.parse(storedLogistics);
+        if (parsed.id) {
+          try {
+            const resp = await authService.getProfile(parsed.id);
+            if (resp.success && resp.user) {
+              const updated = backendUserToLogistics(resp.user);
+              setLogisticsUser(updated);
+              sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(updated));
+              return;
+            }
+          } catch {
+            // fallback
+          }
+        }
+        setLogisticsUser(parsed);
+      }
     } catch {
       // Ignored
     }
@@ -157,7 +288,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    setPendingGoogleUser(null);
     sessionStorage.removeItem('agriflow_farmer_auth');
+    sessionStorage.removeItem('agriflow_pending_profile');
     router.push('/farmer');
   };
 
@@ -171,7 +304,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     setConsumerUser(demoUser);
     sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(demoUser));
-    sessionStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'ta');
+    if (typeof window !== 'undefined' && !localStorage.getItem('agriflow_cached_lang')) {
+      localStorage.setItem('agriflow_cached_lang', demoUser.preferredLanguage || 'en');
+    }
     setIsLoading(false);
     return true;
   };
@@ -222,7 +357,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutConsumer = () => {
     setConsumerUser(null);
+    setPendingGoogleUser(null);
     sessionStorage.removeItem('agriflow_consumer_auth');
+    sessionStorage.removeItem('agriflow_pending_profile');
     router.push('/consumer');
   };
 
@@ -293,11 +430,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutLogistics = () => {
     setLogisticsUser(null);
+    setPendingGoogleUser(null);
     sessionStorage.removeItem('agriflow_logistics_auth');
+    sessionStorage.removeItem('agriflow_pending_profile');
     router.push('/logistics');
   };
 
-  // Demo Phone OTP Flow (100% Client-Side Demo)
+  // Phone OTP Flow
   const sendPhoneOtp = async (phoneNumber: string, _appVerifier?: any): Promise<DemoConfirmationResult> => {
     setIsLoading(true);
     await new Promise((res) => setTimeout(res, 400));
@@ -334,13 +473,96 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Simulated Google Sign-In
-  const loginWithGoogle = async (role: 'farmer' | 'consumer' | 'logistics' | 'fpo'): Promise<{ profileCompleted: boolean }> => {
+  // Authoritative Google Sign-In with Neon PostgreSQL Persistence
+  const loginWithGoogle = async (
+    role: 'farmer' | 'consumer' | 'logistics' | 'fpo',
+    payload?: Partial<GoogleAuthPayload>
+  ): Promise<{ profileCompleted: boolean; isNewUser?: boolean; user?: BackendUser }> => {
     setIsLoading(true);
-    await new Promise((res) => setTimeout(res, 300));
-    await loginWithDemo(role, 'Google User', '+91 98480 12345');
-    setIsLoading(false);
-    return { profileCompleted: true };
+    try {
+      let authResult;
+      if (payload && payload.email) {
+        authResult = await authService.authenticateGoogle({
+          email: payload.email,
+          name: payload.name,
+          sub: payload.sub,
+          picture: payload.picture,
+          credential: payload.credential,
+          requested_role: role === 'fpo' ? 'farmer' : role,
+        });
+      } else {
+        authResult = await triggerGoogleAuth(role);
+      }
+
+      const backendUser = authResult.user;
+
+      if (authResult.profileCompleted) {
+        // Returning User with Complete Profile: Restore and redirect directly to dashboard
+        setPendingGoogleUser(null);
+        sessionStorage.removeItem('agriflow_pending_profile');
+
+        const userRole = backendUser.role || (role === 'fpo' ? 'farmer' : role);
+        if (userRole === 'consumer') {
+          const cUser = backendUserToConsumer(backendUser);
+          setConsumerUser(cUser);
+          sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(cUser));
+          router.push('/consumer/dashboard');
+        } else if (userRole === 'logistics') {
+          const lUser = backendUserToLogistics(backendUser);
+          setLogisticsUser(lUser);
+          sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(lUser));
+          router.push('/logistics/dashboard');
+        } else {
+          const fUser = backendUserToFarmer(backendUser);
+          setUser(fUser);
+          sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(fUser));
+          router.push('/farmer/dashboard');
+        }
+
+        return { profileCompleted: true, isNewUser: false, user: backendUser };
+      } else {
+        // New User or Incomplete Profile: Store pending user and redirect to mandatory profile creation
+        setPendingGoogleUser(backendUser);
+        sessionStorage.setItem('agriflow_pending_profile', JSON.stringify(backendUser));
+        router.push('/profile/create');
+        return { profileCompleted: false, isNewUser: true, user: backendUser };
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Authoritative Profile Save to Neon PostgreSQL
+  const saveProfile = async (payload: UserProfileCreatePayload): Promise<{ success: boolean; user: BackendUser }> => {
+    setIsLoading(true);
+    try {
+      const resp = await authService.saveProfile(payload);
+      const savedUser = resp.user;
+
+      setPendingGoogleUser(null);
+      sessionStorage.removeItem('agriflow_pending_profile');
+
+      if (savedUser.role === 'consumer') {
+        const cUser = backendUserToConsumer(savedUser);
+        setConsumerUser(cUser);
+        sessionStorage.setItem('agriflow_consumer_auth', JSON.stringify(cUser));
+        router.push('/consumer/dashboard');
+      } else if (savedUser.role === 'logistics') {
+        const lUser = backendUserToLogistics(savedUser);
+        setLogisticsUser(lUser);
+        sessionStorage.setItem('agriflow_logistics_auth', JSON.stringify(lUser));
+        router.push('/logistics/dashboard');
+      } else {
+        const fUser = backendUserToFarmer(savedUser);
+        setUser(fUser);
+        sessionStorage.setItem('agriflow_farmer_auth', JSON.stringify(fUser));
+        router.push('/farmer/dashboard');
+      }
+
+      return { success: true, user: savedUser };
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // 1-Click Instant Demo Login
@@ -390,6 +612,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         consumerUser,
         logisticsUser,
+        pendingGoogleUser,
         isAuthenticated: !!user,
         isConsumerAuthenticated: !!consumerUser,
         isLogisticsAuthenticated: !!logisticsUser,
@@ -413,6 +636,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         sendPhoneOtp,
         verifyPhoneOtp,
         loginWithGoogle,
+        saveProfile,
         loginWithDemo,
       }}
     >

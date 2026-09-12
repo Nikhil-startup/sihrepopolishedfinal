@@ -58,7 +58,7 @@ export default function ReturnLoadsPage() {
 
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">{opp.route}</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t('logistics.returnCargo')}: <strong className="text-slate-700 dark:text-slate-200">{opp.commodity}</strong> ({opp.weightKg.toLocaleString()} kg) &bull; {t('logistics.avoidsEmptyHaul', { km: opp.emptyDistanceAvoidedKm })}
+                {t('logistics.returnCargo')}: <strong className="text-slate-700 dark:text-slate-200">{opp.commodity}</strong> ({(opp.weightKg ?? 0).toLocaleString()} kg) &bull; {t('logistics.avoidsEmptyHaul', { km: opp.emptyDistanceAvoidedKm })}
               </p>
             </div>
 

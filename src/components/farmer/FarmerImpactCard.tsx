@@ -64,7 +64,7 @@ export function FarmerImpactCard() {
               <div className="bg-slate-900/80 rounded-xl p-3.5 border border-slate-800">
                 <span className="text-[11px] text-slate-400 block font-medium">{t('farmer.impact.totalEarnings')}</span>
                 <span className="text-lg font-black text-emerald-400">+{formatINR(scenario.totalAdditionalRealization)}</span>
-                <span className="text-[10px] text-slate-400 block">{t('farmer.impact.poolSize', { qty: scenario.targetDemandKg.toLocaleString() })}</span>
+                <span className="text-[10px] text-slate-400 block">{t('farmer.impact.poolSize', { qty: (scenario.targetDemandKg ?? 0).toLocaleString() })}</span>
               </div>
             </div>
           )}

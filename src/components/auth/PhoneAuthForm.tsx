@@ -146,12 +146,7 @@ export function PhoneAuthForm({
       if (res.profileCompleted) {
         router.push(redirectUrl);
       } else {
-        const completeRoute = role === 'farmer' || role === 'fpo' 
-          ? '/farmer/complete-profile' 
-          : role === 'consumer' 
-          ? '/consumer/complete-profile' 
-          : '/logistics/complete-profile';
-        router.push(completeRoute);
+        router.push('/profile/create');
       }
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string };

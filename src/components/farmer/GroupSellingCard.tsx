@@ -69,20 +69,20 @@ export function GroupSellingCard() {
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span className="text-slate-700 dark:text-slate-300">
                   {t('farmer.group.pooled', {
-                    current: activePool.currentQuantityKg.toLocaleString(),
-                    target: activePool.targetQuantityKg.toLocaleString()
+                    current: (activePool.currentQuantityKg ?? 0).toLocaleString(),
+                    target: (activePool.targetQuantityKg ?? 0).toLocaleString()
                   })}
                 </span>
                 <span className="text-emerald-500 font-bold">
                   {t('farmer.group.targetMet', {
-                    percent: Math.round((activePool.currentQuantityKg / (activePool.targetQuantityKg || 1)) * 100)
+                    percent: Math.round(((activePool.currentQuantityKg ?? 0) / (activePool.targetQuantityKg || 1)) * 100)
                   })}
                 </span>
               </div>
               <div className="w-full h-2.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all"
-                  style={{ width: `${Math.min(100, Math.round((activePool.currentQuantityKg / (activePool.targetQuantityKg || 1)) * 100))}%` }}
+                  style={{ width: `${Math.min(100, Math.round(((activePool.currentQuantityKg ?? 0) / (activePool.targetQuantityKg || 1)) * 100))}%` }}
                 />
               </div>
             </div>
@@ -94,7 +94,7 @@ export function GroupSellingCard() {
                 {activePool.participants.map((p) => (
                   <div key={p.id} className={`p-2 rounded-lg border ${p.isCurrentUser ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300' : 'bg-slate-800/40 border-slate-700/60 text-slate-300'}`}>
                     <span className="font-bold block truncate">{p.farmerName}</span>
-                    <span className="text-[11px] opacity-80">{p.quantityKg.toLocaleString()} kg</span>
+                    <span className="text-[11px] opacity-80">{(p.quantityKg ?? 0).toLocaleString()} kg</span>
                   </div>
                 ))}
               </div>

@@ -159,7 +159,7 @@ export default function FarmerProducePage() {
                 <div className="grid grid-cols-2 gap-3 my-4 text-xs">
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <span className="text-slate-400 block">{t('farmer.quantityLabel', 'Quantity').replace('*', '').trim()}</span>
-                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{item.quantity.toLocaleString()} {item.unit}</span>
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{(item.quantity ?? 0).toLocaleString()} {item.unit}</span>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <span className="text-slate-400 block">{t('common.qualityGrade', 'Quality Grade')}</span>
@@ -167,7 +167,7 @@ export default function FarmerProducePage() {
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <span className="text-slate-400 block">{t('farmer.expectedPrice', 'Expected Price')}</span>
-                    <span className="text-sm font-bold text-emerald-500">{formatINR(item.expectedPrice)}/{item.unit}</span>
+                    <span className="text-sm font-bold text-emerald-500">{formatINR(item.expectedPrice ?? 0)}/{item.unit}</span>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800">
                     <span className="text-slate-400 block">{t('farmer.harvestDateLabel', 'Harvest Date').replace('*', '').trim()}</span>

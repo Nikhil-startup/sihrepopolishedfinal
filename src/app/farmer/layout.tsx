@@ -83,19 +83,6 @@ export default function FarmerLayout({ children }: { children: React.ReactNode }
           <span className="truncate font-bold">AgriFlow {t('nav.farmerPortal')}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-auto">
-          <ConnectionIndicator />
-          <Link href="/" className="hover:text-white font-bold text-xs">
-            {t('nav.gateway')}
-          </Link>
-          <Link href="/consumer" className="hover:text-white text-blue-300 font-bold text-xs flex items-center gap-1">
-            <Store className="w-3.5 h-3.5" /> <span>{t('nav.buyer')}</span>
-          </Link>
-          <Link href="/logistics" className="hover:text-white text-amber-300 font-bold text-xs flex items-center gap-1">
-            <Truck className="w-3.5 h-3.5" /> <span>{t('nav.fleet')}</span>
-          </Link>
-          <Link href="/admin" className="hover:text-white text-purple-300 font-bold text-xs flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5" /> <span>{t('nav.admin')}</span>
-          </Link>
           <LowBandwidthToggle />
           <LanguageSelector variant="compact" />
         </div>

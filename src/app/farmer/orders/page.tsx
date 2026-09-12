@@ -70,19 +70,19 @@ export default function FarmerOrdersPage() {
               <div className="flex flex-wrap items-center gap-4 text-xs">
                 <div>
                   <span className="text-slate-400 block">{t('common.produce', 'Produce')}</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{order.produceName} ({t('common.grade', 'Grade')} {order.grade})</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{order.produceName || t('farmer.farmProduce', 'Farm Produce')} ({t('common.grade', 'Grade')} {order.grade || 'A'})</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">{t('common.quantity', 'Quantity')}</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{order.quantityKg.toLocaleString()} kg</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{(order.quantityKg ?? 0).toLocaleString()} kg</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">{t('common.rate', 'Rate')}</span>
-                  <span className="font-bold text-emerald-500">{formatINR(order.pricePerKg)}/kg</span>
+                  <span className="font-bold text-emerald-500">{formatINR(order.pricePerKg ?? 0)}/kg</span>
                 </div>
                 <div>
                   <span className="text-slate-400 block">{t('farmer.totalLotValue', 'Total Realization Value')}</span>
-                  <span className="font-black text-emerald-500 text-sm">{formatINR(order.totalOrderValue)}</span>
+                  <span className="font-black text-emerald-500 text-sm">{formatINR(order.totalOrderValue ?? 0)}</span>
                 </div>
               </div>
             </div>

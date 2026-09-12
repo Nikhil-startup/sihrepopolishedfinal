@@ -42,7 +42,7 @@ export const MultiFarmerConsolidationCard: React.FC<MultiFarmerConsolidationCard
               )}
             </div>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
-              Aggregated across {sources.length} local partner farms for seamless {totalQuantityKg.toLocaleString('en-IN')} kg bulk fulfillment ({produceName})
+              Aggregated across {sources.length} local partner farms for seamless {(totalQuantityKg ?? 0).toLocaleString('en-IN')} kg bulk fulfillment ({produceName})
             </p>
           </div>
         </div>
@@ -50,7 +50,7 @@ export const MultiFarmerConsolidationCard: React.FC<MultiFarmerConsolidationCard
         <div className="text-right">
           <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Total Consolidated Volume</span>
           <span className="text-lg font-black text-emerald-600 dark:text-emerald-400">
-            {totalQuantityKg.toLocaleString('en-IN')} kg
+            {(totalQuantityKg ?? 0).toLocaleString('en-IN')} kg
           </span>
         </div>
       </div>
@@ -83,7 +83,7 @@ export const MultiFarmerConsolidationCard: React.FC<MultiFarmerConsolidationCard
               <div className="text-left sm:text-right">
                 <span className="text-[11px] text-zinc-400 block">Volume Share</span>
                 <span className="text-xs font-bold text-zinc-900 dark:text-white">
-                  {source.quantityKg.toLocaleString('en-IN')} kg ({source.contributionPercent}%)
+                  {(source.quantityKg ?? 0).toLocaleString('en-IN')} kg ({source.contributionPercent}%)
                 </span>
               </div>
               <div className="w-24 bg-zinc-200 dark:bg-zinc-700 h-2 rounded-full overflow-hidden hidden sm:block">

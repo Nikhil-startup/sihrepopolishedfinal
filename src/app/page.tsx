@@ -177,11 +177,6 @@ export default function PublicGateway() {
               <Search className="w-3.5 h-3.5" />
               <span>{t('gateway.universalTraceability')}</span>
             </Link>
-            <span className="text-slate-600">&bull;</span>
-            <Link href="/admin" className="text-amber-400 hover:text-amber-300 transition flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5" />
-              <span>{t('gateway.adminCenter')}</span>
-            </Link>
           </div>
         </div>
 

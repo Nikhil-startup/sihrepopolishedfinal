@@ -93,7 +93,7 @@ export default function ConsumerCheckoutPage() {
       }, 2000);
     } catch (err: any) {
       setIsProcessing(false);
-      setErrorMessage(err?.message || 'Failed to place order in Neon PostgreSQL database. Please ensure backend is running.');
+      setErrorMessage(err?.message || 'Failed to place order. Please try again.');
     }
   };
 
