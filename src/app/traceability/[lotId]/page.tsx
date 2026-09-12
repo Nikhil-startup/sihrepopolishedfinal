@@ -21,6 +21,7 @@ import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nContext';
 import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { translateStatus, translateQualityGrade } from '@/lib/i18nHelpers';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
 
 export default function TraceabilityDetailPage({ params }: { params: Promise<{ lotId: string }> }) {
   const resolvedParams = use(params);
@@ -67,6 +68,7 @@ export default function TraceabilityDetailPage({ params }: { params: Promise<{ l
                   {translateStatus(lot.currentStatus, t)}
                 </span>
                 <span className='text-xs font-mono text-slate-400'>{t('traceability.batch')}: {lot.lotId}</span>
+                <LiveBadge state="LIVE" />
               </div>
               <h1 className='text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1'>
                 {lot.commodity} <span className='text-emerald-600 dark:text-emerald-400 font-normal'>({lot.variety})</span>

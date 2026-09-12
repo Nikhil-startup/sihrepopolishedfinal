@@ -13,6 +13,8 @@ import RateAndReviewModal from '@/components/reviews/RateAndReviewModal';
 import ReportModal from '@/components/reports/ReportModal';
 import { UserRole, ReportType } from '@/types/review';
 import { useI18n } from '@/context/I18nContext';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function FarmerOrdersPage() {
   const { t } = useI18n();
@@ -35,19 +37,43 @@ export default function FarmerOrdersPage() {
     transactionId?: string;
   } | null>(null);
 
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
+
   useEffect(() => {
-    trackingService.getOrders().then(setOrders);
+    const sub = trackingService.subscribeToOrders(
+      (data) => {
+        setOrders(data);
+      },
+      (state, _err, updated) => {
+        setLiveState(state);
+        if (updated) setLastUpdated(updated);
+      }
+    );
+
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
 
   return (
     <div className="space-y-6">
       
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.ordersDeliveryTitle', 'Orders & Delivery')}</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          {t('farmer.ordersDeliverySubtitle', 'Monitor confirmed buyer purchase contracts, road freight dispatches, and delivery payment releases.')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.ordersDeliveryTitle', 'Orders & Delivery')}</h1>
+            <LiveBadge state={liveState} />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {t('farmer.ordersDeliverySubtitle', 'Monitor confirmed buyer purchase contracts, road freight dispatches, and delivery payment releases.')}
+          </p>
+        </div>
       </div>
 
       {/* Orders List */}

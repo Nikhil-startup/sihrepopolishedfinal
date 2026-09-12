@@ -24,14 +24,35 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
+
 export default function LogisticsDashboard() {
   const { t } = useI18n();
   const [fleet, setFleet] = useState<LogisticsFleetVehicle[]>([]);
   const [trips, setTrips] = useState<ConsolidatedTrip[]>([]);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
 
   useEffect(() => {
     logisticsService.getFleet().then(setFleet);
-    logisticsService.getTrips().then(setTrips);
+    const sub = logisticsService.subscribeToTrips(
+      (data) => {
+        setTrips(data);
+      },
+      (state, _err, updated) => {
+        setLiveState(state);
+        if (updated) setLastUpdated(updated);
+      }
+    );
+
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
 
   return (
@@ -43,6 +64,7 @@ export default function LogisticsDashboard() {
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>{t('logistics.welcomeFleet')}</span>
             <Truck className="w-6 h-6 text-amber-500 shrink-0" />
+            <LiveBadge state={liveState} />
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t('logistics.depotNotice')}

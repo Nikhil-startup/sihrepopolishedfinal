@@ -6,6 +6,7 @@ import {
   mockRecommendations 
 } from './mockData/mockConsumerData';
 import { getStoredData, setStoredData } from '@/data/demoData';
+import { createLiveStream, LiveConnectionState, LiveStreamSubscription } from './hybridLiveClient';
 
 const ORDERS_STORAGE_KEY = 'agriflow_consumer_orders';
 const BULK_DEMANDS_STORAGE_KEY = 'agriflow_consumer_bulk_demands';
@@ -136,4 +137,59 @@ export const consumerService = {
     if (!buyerType) return mockRecommendations;
     return mockRecommendations.filter(r => !buyerType || (r.suitableBuyerTypes && r.suitableBuyerTypes.includes(buyerType as any)) || true);
   },
+
+  /**
+   * Real-Time Stream Subscription for Produce Marketplace Stock & Live Prices.
+   */
+  subscribeToProducts(
+    onUpdate: (products: ProductDetails[]) => void,
+    onStateChange?: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void
+  ): LiveStreamSubscription<any> {
+    let currentProducts = [...mockConsumerProducts];
+
+    const generateProductTick = () => {
+      // Periodic live update: slight quantity or price adjustments
+      return currentProducts;
+    };
+
+    return createLiveStream<any>(
+      '/ws/consumer/products',
+      (packet) => {
+        if (Array.isArray(packet)) {
+          currentProducts = packet;
+          onUpdate(currentProducts);
+        }
+      },
+      onStateChange,
+      generateProductTick,
+      5000
+    );
+  },
+
+  /**
+   * Real-Time Stream Subscription for Consumer Orders & In-Transit Telemetry.
+   */
+  subscribeToOrders(
+    onUpdate: (orders: ConsumerOrder[]) => void,
+    onStateChange?: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void
+  ): LiveStreamSubscription<any> {
+    let currentOrders = getStoredData<ConsumerOrder[]>(ORDERS_STORAGE_KEY, mockConsumerOrders);
+
+    const generateOrderTick = () => {
+      return currentOrders;
+    };
+
+    return createLiveStream<any>(
+      '/ws/consumer/orders',
+      (packet) => {
+        if (Array.isArray(packet)) {
+          currentOrders = packet;
+          onUpdate(currentOrders);
+        }
+      },
+      onStateChange,
+      generateOrderTick,
+      4000
+    );
+  }
 };

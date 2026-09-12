@@ -29,7 +29,7 @@ export function getBackendWsUrl(): string {
 export function createLiveStream<T>(
   wsPath: string,
   onData: (data: T) => void,
-  onStateChange: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void,
+  onStateChange?: (state: LiveConnectionState, errorMsg?: string, lastUpdated?: string) => void,
   generateLiveFrame?: () => T | null,
   tickIntervalMs: number = 3500
 ): LiveStreamSubscription<T> {
@@ -56,7 +56,7 @@ export function createLiveStream<T>(
 
   const setState = (newState: LiveConnectionState, msg?: string, lastUpdated?: string) => {
     currentState = newState;
-    onStateChange(newState, msg, lastUpdated || getNowFormatted());
+    onStateChange?.(newState, msg, lastUpdated || getNowFormatted());
   };
 
   const startLiveSimulationEngine = () => {

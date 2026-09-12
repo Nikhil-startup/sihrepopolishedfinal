@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 import { translateQualityGrade, translateOrderStatus, translateDeliveryStatus } from '@/lib/i18nHelpers';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function FarmerDashboard() {
   const { user } = useAuth();
@@ -34,6 +36,12 @@ export default function FarmerDashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -50,7 +58,29 @@ export default function FarmerDashboard() {
           setLoading(false);
         }
       });
-    return () => { isMounted = false; };
+
+    aiService.getRecommendations()
+      .then(data => {
+        if (isMounted) setRecommendations(data || []);
+      })
+      .catch(() => {});
+
+    const sub = trackingService.subscribeToOrders(
+      (data) => {
+        if (isMounted) setOrders(data || []);
+      },
+      (state, _err, updated) => {
+        if (isMounted) {
+          setLiveState(state);
+          if (updated) setLastUpdated(updated);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      sub.unsubscribe();
+    };
   }, []);
 
   const topRec = recommendations[0];
@@ -68,6 +98,7 @@ export default function FarmerDashboard() {
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 flex items-center gap-2">
             <span>{t('farmer.namaste')}, {displayName}</span>
             <Sprout className="w-6 h-6 text-emerald-600 shrink-0" />
+            <LiveBadge state={liveState} />
           </h1>
           <p className="text-xs text-slate-500 mt-1 flex items-center flex-wrap gap-1">
             {user?.farmName && (

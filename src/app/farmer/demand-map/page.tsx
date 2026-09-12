@@ -11,18 +11,40 @@ import { useBandwidth } from '@/context/BandwidthContext';
 import { MapPin, Sparkles, TrendingUp, AlertCircle, Users, ArrowRight, Lightbulb } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 import { useI18n } from '@/context/I18nContext';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function DemandMapPage() {
   const { t } = useI18n();
   const [zones, setZones] = useState<DemandZone[]>([]);
   const [selectedZone, setSelectedZone] = useState<DemandZone | null>(null);
   const { isLowBandwidth, toggleLowBandwidth } = useBandwidth();
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
 
   useEffect(() => {
+    let isMounted = true;
     aiService.getDemandZones().then((res) => {
-      setZones(res);
-      setSelectedZone(res[0]);
+      if (isMounted) {
+        setZones(res);
+        setSelectedZone(res[0]);
+      }
     });
+
+    const interval = setInterval(() => {
+      if (isMounted) {
+        setLastUpdated(new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST');
+      }
+    }, 5000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (
@@ -31,7 +53,10 @@ export default function DemandMapPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.demandMapTitle', 'Agricultural Demand Intelligence Map')}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('farmer.demandMapTitle', 'Agricultural Demand Intelligence Map')}</h1>
+            <LiveBadge state={liveState} />
+          </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             {t('farmer.demandMapSubtitle', 'Real-time supply deficits, bulk buyer concentrations, and regional price arbitrage across India.')}
           </p>

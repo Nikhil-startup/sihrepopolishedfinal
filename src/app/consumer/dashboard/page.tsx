@@ -27,6 +27,8 @@ import {
 import { formatINR } from '@/lib/utils';
 import { useI18n } from '@/context/I18nContext';
 import { translateStatus } from '@/lib/i18nHelpers';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function ConsumerDashboard() {
   const { t } = useI18n();
@@ -37,6 +39,12 @@ export default function ConsumerDashboard() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [bulkDemands, setBulkDemands] = useState<BulkDemand[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'orders' | 'demands'>('overview');
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
 
   // New Demand Post Form Modal State
   const [showDemandModal, setShowDemandModal] = useState(false);
@@ -45,6 +53,7 @@ export default function ConsumerDashboard() {
   const [demandCreated, setDemandCreated] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     async function loadData() {
       const [prodList, orderList, recList, demandList] = await Promise.all([
         consumerService.getProducts(),
@@ -52,12 +61,31 @@ export default function ConsumerDashboard() {
         consumerService.getRecommendations(consumerUser?.buyerType),
         consumerService.getBulkDemands()
       ]);
-      setProducts(prodList);
-      setOrders(orderList);
-      setRecommendations(recList);
-      setBulkDemands(demandList);
+      if (isMounted) {
+        setProducts(prodList);
+        setOrders(orderList);
+        setRecommendations(recList);
+        setBulkDemands(demandList);
+      }
     }
     loadData();
+
+    const sub = consumerService.subscribeToOrders(
+      (data) => {
+        if (isMounted) setOrders(data || []);
+      },
+      (state, _err, updated) => {
+        if (isMounted) {
+          setLiveState(state);
+          if (updated) setLastUpdated(updated);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      sub.unsubscribe();
+    };
   }, [consumerUser]);
 
   const activeOrders = orders.filter(o => o.status !== 'Delivered' && o.status !== 'Cancelled');
@@ -100,9 +128,12 @@ export default function ConsumerDashboard() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-3">
               <Sparkles className="w-3.5 h-3.5" /> {t('consumer.buyerProcurementPortal', 'Buyer Procurement Portal')}
             </div>
-            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-              {t('consumer.welcomeBuyer', 'Welcome back, {name}').replace('{name}', consumerUser?.name || 'Valued Buyer')}
-            </h1>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                {t('consumer.welcomeBuyer', 'Welcome back, {name}').replace('{name}', consumerUser?.name || 'Valued Buyer')}
+              </h1>
+              <LiveBadge state={liveState} />
+            </div>
             <p className="text-xs md:text-sm text-zinc-300 mt-1 max-w-2xl">
               {t('consumer.dashboardSubtitle', 'Source farm-fresh perishable produce directly from aggregated farmer clusters with guaranteed cold-chain logistics.')}
             </p>

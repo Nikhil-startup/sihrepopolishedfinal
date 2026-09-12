@@ -20,6 +20,7 @@ import {
   Snowflake,
   RotateCw
 } from 'lucide-react';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
 
 export default function ConsumerMarketplacePage() {
   const { t } = useI18n();
@@ -56,7 +57,28 @@ export default function ConsumerMarketplacePage() {
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     fetchProducts();
+
+    const sub = consumerService.subscribeToProducts(
+      (data) => {
+        if (isMounted) {
+          setProducts(data || []);
+          setLoading(false);
+        }
+      },
+      (state, _err, updated) => {
+        if (isMounted) {
+          setLiveState(state);
+          if (updated) setLastUpdated(updated);
+        }
+      }
+    );
+
+    return () => {
+      isMounted = false;
+      sub.unsubscribe();
+    };
   }, [fetchProducts]);
 
   const categories = ['All', 'Vegetables', 'Fruits', 'Grains', 'Spices'];
@@ -107,9 +129,12 @@ export default function ConsumerMarketplacePage() {
           <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
             {t('consumer.directFarmGateSourcing', 'Direct Farm-Gate Sourcing')}
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
-            {t('consumer.marketplaceTitle', 'Produce Marketplace')}
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-zinc-900 dark:text-white mt-0.5">
+              {t('consumer.marketplaceTitle', 'Produce Marketplace')}
+            </h1>
+            <LiveBadge state={liveState} />
+          </div>
           <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
             {t('consumer.marketplaceSubtitle', 'Browse verified farm harvests with transparent road freight & direct farmer realizations')}
           </p>

@@ -6,16 +6,24 @@ import { logisticsService } from '@/services/logisticsService';
 import { ConsolidatedTrip } from '@/types/logistics';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
-import { Truck, ArrowRight, Navigation, CheckCircle2, Sparkles, Flag } from 'lucide-react';
+import { Truck, ArrowRight, Navigation, CheckCircle2, Sparkles, Flag, Activity } from 'lucide-react';
 import RateAndReviewModal from '@/components/reviews/RateAndReviewModal';
 import ReportModal from '@/components/reports/ReportModal';
 import { UserRole, ReportType } from '@/types/review';
 import { useI18n } from '@/context/I18nContext';
 import { translateDeliveryStatus, translateCategory } from '@/lib/i18nHelpers';
+import { LiveBadge } from '@/components/common/LiveConnectionState';
+import { LiveConnectionState } from '@/services/hybridLiveClient';
 
 export default function LogisticsTripsPage() {
   const { t } = useI18n();
   const [trips, setTrips] = useState<ConsolidatedTrip[]>([]);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
 
   // Rating and Report Modal States
   const [selectedRatingTrip, setSelectedRatingTrip] = useState<{
@@ -33,16 +41,39 @@ export default function LogisticsTripsPage() {
   } | null>(null);
 
   useEffect(() => {
-    logisticsService.getTrips().then(setTrips);
+    const sub = logisticsService.subscribeToTrips(
+      (data) => {
+        setTrips(data);
+      },
+      (state, _err, updated) => {
+        setLiveState(state);
+        if (updated) setLastUpdated(updated);
+      }
+    );
+
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('logistics.activeConsolidatedTrips')}</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          {t('logistics.monitorMultiStop')}
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">{t('logistics.activeConsolidatedTrips')}</h1>
+            <LiveBadge state={liveState} />
+          </div>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            {t('logistics.monitorMultiStop')}
+          </p>
+        </div>
+        {lastUpdated && (
+          <div className="text-xs font-mono text-slate-500 dark:text-slate-400 flex items-center gap-1.5 self-start sm:self-auto bg-slate-100 dark:bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-800">
+            <Activity className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+            <span>GPS Dispatch Sync: {lastUpdated}</span>
+          </div>
+        )}
       </div>
 
       <div className="space-y-4">
