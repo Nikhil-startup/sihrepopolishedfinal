@@ -98,23 +98,23 @@ export default function FarmerAnalyticsPage() {
               <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={priceTrends} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#94a3b8' }} />
-                    <YAxis domain={[30, 48]} tick={{ fontSize: 11, fill: '#94a3b8' }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#42372e" opacity={0.3} />
+                    <XAxis dataKey="day" tick={{ fontSize: 11, fill: '#aa9785' }} />
+                    <YAxis domain={[30, 48]} tick={{ fontSize: 11, fill: '#aa9785' }} />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: '#0f172a',
-                        borderColor: '#334155',
+                        backgroundColor: '#1a1613',
+                        borderColor: '#42372e',
                         borderRadius: '0.75rem',
                         fontSize: '12px',
-                        color: '#fff'
+                        color: '#f5f0e8'
                       }}
                       formatter={(val: unknown) => [formatINR(Number(val) || 0) + '/kg', 'Price']}
                     />
                     <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                    <Line type="monotone" dataKey="currentMandi" stroke="#94a3b8" strokeWidth={2} name="Historic Mandi (INR/kg)" />
-                    <Line type="monotone" dataKey="forecastedPrice" stroke="#10b981" strokeWidth={3} dot={{ r: 4 }} name="AI Forecast Mandi (INR/kg)" />
-                    <Line type="monotone" dataKey="buyerDemandPrice" stroke="#3b82f6" strokeWidth={2.5} strokeDasharray="4 4" name="Direct Buyer Offer (INR/kg)" />
+                    <Line type="monotone" dataKey="currentMandi" stroke="#aa9785" strokeWidth={2} name="Historic Mandi (INR/kg)" />
+                    <Line type="monotone" dataKey="forecastedPrice" stroke="#d97706" strokeWidth={3} dot={{ r: 4 }} name="AI Forecast Mandi (INR/kg)" />
+                    <Line type="monotone" dataKey="buyerDemandPrice" stroke="#ea580c" strokeWidth={2.5} strokeDasharray="4 4" name="Direct Buyer Offer (INR/kg)" />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

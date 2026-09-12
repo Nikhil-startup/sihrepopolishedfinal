@@ -3,14 +3,19 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf6ee;
+  --foreground: #1c1612;
+}
+
+.dark {
+  --background: #120f0d;
+  --foreground: #f5f0e8;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not(.light) {
+    --background: #120f0d;
+    --foreground: #f5f0e8;
   }
 }
 
@@ -21,6 +26,28 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Telugu", "Noto Sans Tamil", "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Sans Malayalam", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+
+/* Warm golden amber selection highlight */
+::selection {
+  background-color: #d97706;
+  color: #ffffff;
+}
+
+/* Custom warm scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #16120f;
+}
+::-webkit-scrollbar-thumb {
+  background: #332920;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d97706;
 }
 
 /* Ensure no text collisions or unbreakable words */
