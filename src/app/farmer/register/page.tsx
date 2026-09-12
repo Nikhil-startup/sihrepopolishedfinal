@@ -71,20 +71,20 @@ export default function FarmerRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#f0fdf4] via-white to-[#f4faf5] text-slate-800 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500 selection:text-white">
       
       <div className="max-w-xl w-full mx-auto">
-        <Link href="/farmer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition font-medium">
+        <Link href="/farmer" className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition font-medium">
           <ArrowLeft className="w-4 h-4" /> {t('back')}
         </Link>
       </div>
 
       <div className="max-w-xl w-full mx-auto my-6">
-        <Card className="bg-slate-900 border-slate-800 p-8 shadow-2xl">
+        <Card className="bg-white border border-emerald-100 p-8 shadow-xl shadow-emerald-950/5 rounded-2xl">
           
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-black text-white tracking-tight">{t('createAccount')}</h1>
-            <p className="text-xs text-slate-400 mt-1">Join the demand-led agricultural direct network.</p>
+            <h1 className="text-2xl font-black text-slate-900 tracking-tight">{t('createAccount')}</h1>
+            <p className="text-xs text-slate-500 mt-1">Join the demand-led agricultural direct network.</p>
           </div>
 
           {/* Stepper Header */}
@@ -97,14 +97,14 @@ export default function FarmerRegisterPage() {
               <div key={s.num} className="flex items-center gap-2">
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
                   step === s.num
-                    ? 'bg-emerald-600 text-white ring-4 ring-emerald-950'
+                    ? 'bg-emerald-600 text-white ring-4 ring-emerald-100'
                     : step > s.num
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                    : 'bg-slate-800 text-slate-500'
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-slate-100 text-slate-400'
                 }`}>
-                  {step > s.num ? <CheckCircle2 className="w-4 h-4" /> : s.num}
+                  {step > s.num ? <CheckCircle2 className="w-4 h-4 text-emerald-700" /> : s.num}
                 </div>
-                <span className="text-xs font-semibold text-slate-400 hidden sm:inline">{s.label}</span>
+                <span className="text-xs font-semibold text-slate-600 hidden sm:inline">{s.label}</span>
               </div>
             ))}
           </div>
@@ -115,40 +115,40 @@ export default function FarmerRegisterPage() {
             {step === 1 && (
               <div className="space-y-4 animate-in fade-in">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Full Name *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Full Name *</label>
                   <input
                     type="text"
                     {...register('fullName')}
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                    className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                   />
-                  {errors.fullName && <p className="text-[11px] text-rose-400 mt-1">{errors.fullName.message}</p>}
+                  {errors.fullName && <p className="text-[11px] text-rose-500 mt-1">{errors.fullName.message}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">Phone Number (10 Digits) *</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Phone Number (10 Digits) *</label>
                     <input
                       type="text"
                       {...register('phone')}
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
-                    {errors.phone && <p className="text-[11px] text-rose-400 mt-1">{errors.phone.message}</p>}
+                    {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone.message}</p>}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">Email (Optional)</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Email (Optional)</label>
                     <input
                       type="email"
                       {...register('email')}
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Farmer Category *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Farmer Category *</label>
                   <select
                     {...register('farmerType')}
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                    className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                   >
                     <option value="Individual Farmer">Individual Farmer</option>
                     <option value="FPO">Farmer Producer Organization (FPO)</option>
@@ -157,25 +157,25 @@ export default function FarmerRegisterPage() {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1 flex items-center gap-1.5">
-                    <Languages className="w-4 h-4 text-emerald-400" />
+                  <label className="text-xs font-bold text-slate-700 block mb-1 flex items-center gap-1.5">
+                    <Languages className="w-4 h-4 text-emerald-600" />
                     <span>Preferred Language (ప్రాధాన్య భాష / भाषा) *</span>
                   </label>
                   <select
                     {...register('preferredLanguage')}
                     onChange={(e) => handleLanguageSelect(e.target.value as SupportedLanguage)}
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none font-bold"
+                    className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none font-bold"
                   >
                     {SUPPORTED_LANGUAGES.map((l) => (
-                      <option key={l.code} value={l.code} className="bg-slate-900 text-white font-medium">
+                      <option key={l.code} value={l.code} className="bg-white text-slate-900 font-medium">
                         {l.nativeLabel} - {l.label}
                       </option>
                     ))}
                   </select>
-                  {errors.preferredLanguage && <p className="text-[11px] text-rose-400 mt-1">{errors.preferredLanguage.message}</p>}
+                  {errors.preferredLanguage && <p className="text-[11px] text-rose-500 mt-1">{errors.preferredLanguage.message}</p>}
                 </div>
 
-                <Button type="button" onClick={nextStep} className="w-full py-3 mt-4">
+                <Button type="button" onClick={nextStep} className="w-full py-3 mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
                   {t('next')}: Location Details &rarr;
                 </Button>
               </div>
@@ -185,66 +185,66 @@ export default function FarmerRegisterPage() {
             {step === 2 && (
               <div className="space-y-4 animate-in fade-in">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Farm / FPO Unit Name *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Farm / FPO Unit Name *</label>
                   <input
                     type="text"
                     {...register('farmName')}
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                    className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                   />
-                  {errors.farmName && <p className="text-[11px] text-rose-400 mt-1">{errors.farmName.message}</p>}
+                  {errors.farmName && <p className="text-[11px] text-rose-500 mt-1">{errors.farmName.message}</p>}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">{t('state')} *</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">{t('state')} *</label>
                     <input
                       type="text"
                       {...register('state')}
                       placeholder="e.g. Telangana / Andhra Pradesh"
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
-                    {errors.state && <p className="text-[11px] text-rose-400 mt-1">{errors.state.message}</p>}
+                    {errors.state && <p className="text-[11px] text-rose-500 mt-1">{errors.state.message}</p>}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">{t('district')} *</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">{t('district')} *</label>
                     <input
                       type="text"
                       {...register('district')}
                       placeholder="e.g. Rangareddy"
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
-                    {errors.district && <p className="text-[11px] text-rose-400 mt-1">{errors.district.message}</p>}
+                    {errors.district && <p className="text-[11px] text-rose-500 mt-1">{errors.district.message}</p>}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">{t('place')} *</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">{t('place')} *</label>
                     <input
                       type="text"
                       {...register('village')}
                       placeholder="e.g. Chevella / Shadnagar"
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
-                    {errors.village && <p className="text-[11px] text-rose-400 mt-1">{errors.village.message}</p>}
+                    {errors.village && <p className="text-[11px] text-rose-500 mt-1">{errors.village.message}</p>}
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-300 block mb-1">Farm Land Size *</label>
+                    <label className="text-xs font-bold text-slate-700 block mb-1">Farm Land Size *</label>
                     <input
                       type="text"
                       {...register('farmSize')}
                       placeholder="e.g. 10 Acres"
-                      className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                      className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                     />
-                    {errors.farmSize && <p className="text-[11px] text-rose-400 mt-1">{errors.farmSize.message}</p>}
+                    {errors.farmSize && <p className="text-[11px] text-rose-500 mt-1">{errors.farmSize.message}</p>}
                   </div>
                 </div>
 
                 <div className="flex gap-3 mt-4">
-                  <Button type="button" variant="secondary" onClick={() => setStep(1)} className="flex-1">
+                  <Button type="button" variant="secondary" onClick={() => setStep(1)} className="flex-1 bg-white hover:bg-emerald-50 border border-emerald-200 text-slate-700 font-semibold">
                     {t('back')}
                   </Button>
-                  <Button type="button" onClick={nextStep} className="flex-1">
+                  <Button type="button" onClick={nextStep} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
                     {t('next')}: Crops &rarr;
                   </Button>
                 </div>
@@ -255,26 +255,26 @@ export default function FarmerRegisterPage() {
             {step === 3 && (
               <div className="space-y-4 animate-in fade-in">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 block mb-1">Primary Cultivated Crops *</label>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">Primary Cultivated Crops *</label>
                   <input
                     type="text"
                     {...register('primaryCrops')}
                     placeholder="e.g. Tomato, Green Chilli, Onion"
-                    className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                    className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                   />
-                  {errors.primaryCrops && <p className="text-[11px] text-rose-400 mt-1">{errors.primaryCrops.message}</p>}
+                  {errors.primaryCrops && <p className="text-[11px] text-rose-500 mt-1">{errors.primaryCrops.message}</p>}
                 </div>
 
-                <div className="bg-emerald-950/40 border border-emerald-800/40 rounded-xl p-4 text-xs text-slate-300 space-y-1">
-                  <span className="font-bold text-emerald-400 block mb-1">✓ Setup Complete</span>
+                <div className="bg-[#f0fdf4] border border-emerald-200 rounded-xl p-4 text-xs text-slate-700 space-y-1">
+                  <span className="font-bold text-emerald-800 block mb-1">✓ Setup Complete</span>
                   <p>Language & location preferences will be synchronized with your account profile across all your devices.</p>
                 </div>
 
                 <div className="flex gap-3 mt-4">
-                  <Button type="button" variant="secondary" onClick={() => setStep(2)} className="flex-1">
+                  <Button type="button" variant="secondary" onClick={() => setStep(2)} className="flex-1 bg-white hover:bg-emerald-50 border border-emerald-200 text-slate-700 font-semibold">
                     {t('back')}
                   </Button>
-                  <Button type="submit" isLoading={isSubmitting} className="flex-1">
+                  <Button type="submit" isLoading={isSubmitting} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold">
                     {t('createAccount')} & {t('dashboard')}
                   </Button>
                 </div>
@@ -283,9 +283,9 @@ export default function FarmerRegisterPage() {
 
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-800 text-center text-xs text-slate-400">
+          <div className="mt-6 pt-4 border-t border-emerald-100 text-center text-xs text-slate-500">
             <span>Already have an account? </span>
-            <Link href="/farmer/login" className="text-emerald-400 font-bold hover:underline">
+            <Link href="/farmer/login" className="text-emerald-700 font-bold hover:underline">
               {t('login')} Here
             </Link>
           </div>

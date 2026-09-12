@@ -53,43 +53,43 @@ export default function FarmerOrdersPage() {
       {/* Orders List */}
       <div className="space-y-4">
         {orders.map((order) => (
-          <Card key={order.id} className="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 hover:border-emerald-500/50 transition">
+          <Card key={order.id} className="p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 bg-white border border-emerald-100 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all rounded-2xl">
             
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2.5">
-                <span className="font-mono text-xs font-bold text-slate-400">{order.id}</span>
+                <span className="font-mono text-xs font-bold text-slate-500">{order.id}</span>
                 <StatusBadge status={order.status} />
                 <span className="text-xs text-slate-400">&bull; {t('common.ordered', 'Ordered')}: {order.orderDate}</span>
               </div>
 
               <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{order.buyerName}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{order.buyerType} &bull; {t('common.destination', 'Destination')}: <strong className="text-slate-700 dark:text-slate-200">{order.destinationCity}</strong></p>
+                <h3 className="text-lg font-bold text-slate-900">{order.buyerName}</h3>
+                <p className="text-xs text-slate-500">{order.buyerType} &bull; {t('common.destination', 'Destination')}: <strong className="text-slate-800">{order.destinationCity}</strong></p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-4 text-xs">
+              <div className="flex flex-wrap items-center gap-4 text-xs bg-[#f4fbf6] p-3 rounded-xl border border-emerald-100">
                 <div>
-                  <span className="text-slate-400 block">{t('common.produce', 'Produce')}</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{order.produceName || t('farmer.farmProduce', 'Farm Produce')} ({t('common.grade', 'Grade')} {order.grade || 'A'})</span>
+                  <span className="text-slate-500 block text-[11px]">{t('common.produce', 'Produce')}</span>
+                  <span className="font-bold text-slate-900">{order.produceName || t('farmer.farmProduce', 'Farm Produce')} ({t('common.grade', 'Grade')} {order.grade || 'A'})</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">{t('common.quantity', 'Quantity')}</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{(order.quantityKg ?? 0).toLocaleString()} kg</span>
+                  <span className="text-slate-500 block text-[11px]">{t('common.quantity', 'Quantity')}</span>
+                  <span className="font-bold text-slate-900">{(order.quantityKg ?? 0).toLocaleString()} kg</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">{t('common.rate', 'Rate')}</span>
-                  <span className="font-bold text-emerald-500">{formatINR(order.pricePerKg ?? 0)}/kg</span>
+                  <span className="text-slate-500 block text-[11px]">{t('common.rate', 'Rate')}</span>
+                  <span className="font-bold text-emerald-700">{formatINR(order.pricePerKg ?? 0)}/kg</span>
                 </div>
                 <div>
-                  <span className="text-slate-400 block">{t('farmer.totalLotValue', 'Total Realization Value')}</span>
-                  <span className="font-black text-emerald-500 text-sm">{formatINR(order.totalOrderValue ?? 0)}</span>
+                  <span className="text-slate-500 block text-[11px]">{t('farmer.totalLotValue', 'Total Realization Value')}</span>
+                  <span className="font-black text-emerald-700 text-sm">{formatINR(order.totalOrderValue ?? 0)}</span>
                 </div>
               </div>
             </div>
 
             <div className="w-full lg:w-auto flex flex-col gap-2 shrink-0">
               <Link href={`/farmer/tracking/${order.logisticsId}`}>
-                <Button className="w-full" size="sm">
+                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold" size="sm">
                   <Truck className="w-4 h-4" />
                   <span>{t('farmer.trackDelivery', 'Road Tracking')}</span>
                   <ArrowRight className="w-4 h-4" />
@@ -110,9 +110,9 @@ export default function FarmerOrdersPage() {
                         productName: order.produceName,
                       });
                     }}
-                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-bold transition flex items-center justify-center gap-1"
+                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 text-xs font-bold transition flex items-center justify-center gap-1"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
                     {t('farmer.rateBuyer', 'Rate Buyer')}
                   </button>
 
@@ -126,9 +126,9 @@ export default function FarmerOrdersPage() {
                         targetName: 'Cold-Chain Reefer Express',
                       });
                     }}
-                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-xs font-bold transition flex items-center justify-center gap-1"
+                    className="flex-1 py-1.5 px-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold transition flex items-center justify-center gap-1"
                   >
-                    <Truck className="w-3.5 h-3.5 text-cyan-400" />
+                    <Truck className="w-3.5 h-3.5 text-emerald-600" />
                     {t('farmer.rateCarrier', 'Rate Carrier')}
                   </button>
 
@@ -144,7 +144,7 @@ export default function FarmerOrdersPage() {
                       });
                     }}
                     title={t('farmer.reportBuyer', 'Report Buyer')}
-                    className="p-1.5 rounded-xl border border-slate-700 hover:bg-rose-950/30 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 transition"
+                    className="p-1.5 rounded-xl border border-slate-200 hover:bg-rose-50 hover:border-rose-300 text-slate-400 hover:text-rose-600 transition"
                   >
                     <Flag className="w-3.5 h-3.5" />
                   </button>

@@ -16,7 +16,22 @@ const warmStone = {
   950: '#120f0d',  // Rich warm deep espresso background
 };
 
-// Warm Harvest Amber & Gold Palette (replaces cold emerald)
+// Agricultural Fresh Emerald & Light Green Palette
+const agriculturalEmerald = {
+  50: '#f0fdf4',   // Ultra-light mint / fresh leaf wash
+  100: '#dcfce7',  // Soft fresh light green
+  200: '#bbf7d0',  // Crisp light green border
+  300: '#86efac',  // Fresh sprout highlight
+  400: '#4ade80',  // Vibrant fresh green
+  500: '#22c55e',  // Lush agricultural green
+  600: '#16a34a',  // Deep rich farmer green (primary buttons)
+  700: '#15803d',  // Forest crop green
+  800: '#166534',  // Deep foliage text
+  900: '#14532d',  // Deep evergreen
+  950: '#052e16',  // Deepest forest
+};
+
+// Warm Harvest Amber & Gold Palette (for prices, alerts, and market benchmarks)
 const warmAmberHarvest = {
   50: '#fefce8',   // Warm morning sunlight
   100: '#fef9c3',  // Warm pale buttercup
@@ -94,8 +109,9 @@ module.exports = {
         gray: warmStone,
         neutral: warmStone,
         stone: warmStone,
-        // Map cool emerald to warm golden harvest amber
-        emerald: warmAmberHarvest,
+        // Agricultural fresh light green and emerald for farmers
+        emerald: agriculturalEmerald,
+        green: agriculturalEmerald,
         // Map cool blue & teal to warm terracotta
         teal: warmTerracotta,
         blue: warmTerracotta,

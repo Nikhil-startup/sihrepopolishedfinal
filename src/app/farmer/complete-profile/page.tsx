@@ -66,33 +66,33 @@ export default function FarmerCompleteProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500 selection:text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#f0fdf4] via-white to-[#f4faf5] text-slate-800 flex flex-col justify-between py-8 px-4 sm:px-6 lg:px-8 selection:bg-emerald-500 selection:text-white">
       <div className="max-w-xl w-full mx-auto">
-        <Link href="/farmer" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-emerald-400 transition font-medium">
+        <Link href="/farmer" className="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-700 transition font-medium">
           <ArrowLeft className="w-4 h-4" /> {t('back')}
         </Link>
       </div>
 
       <div className="max-w-xl w-full mx-auto my-6">
-        <Card className="bg-slate-900 border-slate-800 p-6 sm:p-8 shadow-2xl space-y-6">
+        <Card className="bg-white border border-emerald-100 p-6 sm:p-8 shadow-xl shadow-emerald-950/5 space-y-6 rounded-2xl">
           
           {/* Header - Instagram/Social App Style Cleanliness */}
           <div className="text-center space-y-2">
-            <div className="w-16 h-16 rounded-3xl bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto shadow-lg">
+            <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center mx-auto shadow-sm">
               {user?.photoURL ? (
                 <img src={user.photoURL} alt={user.name} className="w-full h-full rounded-3xl object-cover" />
               ) : (
-                <Sprout className="w-8 h-8 text-emerald-400" />
+                <Sprout className="w-8 h-8 text-emerald-600" />
               )}
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">Complete Your Profile</h1>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Complete Your Profile</h1>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Add a few details so we can personalize mandi price forecasts, local demand, and language for your farm.
             </p>
           </div>
 
           {serverError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs text-rose-400 flex items-center gap-2">
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-600 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{serverError}</span>
             </div>
@@ -102,90 +102,90 @@ export default function FarmerCompleteProfilePage() {
             
             {/* Full Name */}
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Full Name *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Full Name *</label>
               <input
                 type="text"
                 {...register('fullName')}
                 placeholder="e.g. Ramesh Reddy"
-                className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
               />
-              {errors.fullName && <p className="text-[11px] text-rose-400 mt-1">{errors.fullName.message}</p>}
+              {errors.fullName && <p className="text-[11px] text-rose-500 mt-1">{errors.fullName.message}</p>}
             </div>
 
             {/* Email & Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Email Address</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Email Address</label>
                 <input
                   type="email"
                   {...register('email')}
                   placeholder="name@gmail.com"
-                  className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                  className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                 />
-                {errors.email && <p className="text-[11px] text-rose-400 mt-1">{errors.email.message}</p>}
+                {errors.email && <p className="text-[11px] text-rose-500 mt-1">{errors.email.message}</p>}
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">Phone Number</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">Phone Number</label>
                 <input
                   type="text"
                   {...register('phone')}
                   placeholder="10-digit mobile number"
-                  className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-white outline-none"
+                  className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none"
                 />
-                {errors.phone && <p className="text-[11px] text-rose-400 mt-1">{errors.phone.message}</p>}
+                {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone.message}</p>}
               </div>
             </div>
 
             {/* Address */}
             <div>
-              <label className="text-xs font-bold text-slate-300 block mb-1">Farm / Residence Address *</label>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Farm / Residence Address *</label>
               <textarea
                 rows={2}
                 {...register('address')}
                 placeholder="Door No, Farm Cluster Road / Landmark"
-                className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-2 text-sm text-white outline-none"
+                className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-4 py-2 text-sm text-slate-900 outline-none"
               />
-              {errors.address && <p className="text-[11px] text-rose-400 mt-1">{errors.address.message}</p>}
+              {errors.address && <p className="text-[11px] text-rose-500 mt-1">{errors.address.message}</p>}
             </div>
 
             {/* State, District, Place */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">{t('state')} *</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">{t('state')} *</label>
                 <input
                   type="text"
                   {...register('state')}
                   placeholder="e.g. Telangana"
-                  className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"
+                  className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 outline-none"
                 />
-                {errors.state && <p className="text-[11px] text-rose-400 mt-1">{errors.state.message}</p>}
+                {errors.state && <p className="text-[11px] text-rose-500 mt-1">{errors.state.message}</p>}
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">{t('district')} *</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">{t('district')} *</label>
                 <input
                   type="text"
                   {...register('district')}
                   placeholder="e.g. Rangareddy"
-                  className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"
+                  className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 outline-none"
                 />
-                {errors.district && <p className="text-[11px] text-rose-400 mt-1">{errors.district.message}</p>}
+                {errors.district && <p className="text-[11px] text-rose-500 mt-1">{errors.district.message}</p>}
               </div>
               <div>
-                <label className="text-xs font-bold text-slate-300 block mb-1">{t('place')} *</label>
+                <label className="text-xs font-bold text-slate-700 block mb-1">{t('place')} *</label>
                 <input
                   type="text"
                   {...register('place')}
                   placeholder="Village / Town"
-                  className="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2.5 text-sm text-white outline-none"
+                  className="w-full bg-white border border-emerald-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 rounded-xl px-3.5 py-2.5 text-sm text-slate-900 outline-none"
                 />
-                {errors.place && <p className="text-[11px] text-rose-400 mt-1">{errors.place.message}</p>}
+                {errors.place && <p className="text-[11px] text-rose-500 mt-1">{errors.place.message}</p>}
               </div>
             </div>
 
             {/* Visual Preferred Language Selector */}
-            <div className="space-y-2 pt-2 border-t border-slate-800">
-              <label className="text-xs font-bold text-slate-300 block flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-emerald-400" /> {t('preferredLanguage')} *
+            <div className="space-y-2 pt-2 border-t border-emerald-100">
+              <label className="text-xs font-bold text-slate-700 block flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-emerald-600" /> {t('preferredLanguage')} *
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {SUPPORTED_LANGUAGES.map((l) => {
@@ -197,8 +197,8 @@ export default function FarmerCompleteProfilePage() {
                       onClick={() => handleLanguageSelect(l.code)}
                       className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
                         isSelected
-                          ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 font-semibold ring-1 ring-emerald-500'
-                          : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300'
+                          ? 'border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold shadow-xs'
+                          : 'border-emerald-100 bg-white text-slate-700 hover:border-emerald-300'
                       }`}
                     >
                       <span className="text-xs font-bold block">{l.nativeLabel}</span>
@@ -210,7 +210,7 @@ export default function FarmerCompleteProfilePage() {
             </div>
 
             <div className="pt-3">
-              <Button type="submit" disabled={isSubmitting} className="w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2">
+              <Button type="submit" disabled={isSubmitting} className="w-full py-3.5 text-sm font-bold flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white">
                 <span>{isSubmitting ? 'Saving profile...' : 'Complete Profile & Continue'}</span>
                 <ArrowRight className="w-4 h-4" />
               </Button>
