@@ -1,8 +1,8 @@
-# AgriFlow AI — Frontend Prototype
+# AgriFlow AI — Frontend Only
 
-AgriFlow AI is a multimodal, multilingual agricultural supply chain and logistics frontend prototype bridging Farmers, Consumers/Buyers, and Logistics Operators with dynamic pricing algorithms, route optimization, low-bandwidth UI, and farm-to-fork traceability.
+AgriFlow AI is a multimodal, multilingual agricultural supply chain and logistics **frontend prototype** bridging Farmers, Consumers/Buyers, and Logistics Operators with dynamic pricing algorithms, route optimization, and real-time cold chain tracking.
 
-This project is a **100% frontend-only Next.js application**. It requires **NO running backend servers, databases, or cloud functions**. All demo features, user sessions, marketplace transactions, fleet tracking, and farmer stock updates run entirely in the browser with local persistence.
+This is a **100% frontend-only Next.js application** built with demo data stored in `localStorage`. No backend servers or database connections required for local development.
 
 ---
 
@@ -20,7 +20,7 @@ This project is a **100% frontend-only Next.js application**. It requires **NO r
 ## 📁 Project Structure
 
 ```text
-AgriFlow AI
+agriflow-ai-frontend/
 ├── public/                    # Static assets and icons
 ├── docs/                      # Project presentation documentation
 ├── src/
@@ -34,11 +34,10 @@ AgriFlow AI
 │   │   └── page.tsx           # Platform Portal Hub & Gateway
 │   ├── components/            # Reusable UI Components
 │   ├── config/                # Pricing, scoring, and UI configuration
-│   ├── context/               # React Contexts (Auth, Cart, I18n, Theme, Bandwidth, Tracking)
+│   ├── context/               # React Contexts (Auth, Cart, Theme, Bandwidth, Tracking)
 │   ├── data/                  # Centralized Demo Data Layer & localStorage helpers
-│   ├── i18n/                  # Multilingual translation dictionaries (7 Indian languages)
 │   ├── lib/                   # Utility helpers and form validators
-│   ├── services/              # Pure TypeScript business logic and simulated services
+│   ├── services/              # Pure TypeScript business logic
 │   └── types/                 # TypeScript type definitions
 ├── package.json
 ├── tsconfig.json
@@ -48,16 +47,11 @@ AgriFlow AI
 
 ---
 
-## 🌐 Supported Languages
+## 🌐 Languages
 
-AgriFlow supports 7 Indian languages across all portals:
-- **English** (`en`)
-- **Telugu** (`te` - తెలుగు)
-- **Tamil** (`ta` - தமிழ்)
-- **Malayalam** (`ml` - മലയാളം)
-- **Hindi** (`hi` - हिन्दी)
-- **Bengali** (`bn` - বাংলা)
-- **Marathi** (`mr` - मराठी)
+AgriFlow uses **English only** in this frontend-only version. All UI text is hardcoded in English.
+
+Previous language support (Telugu, Tamil, Malayalam, Hindi, Bengali, Marathi) has been removed. The `src/i18n/` directory is no longer present.
 
 ---
 
@@ -92,4 +86,24 @@ One-click pitch logins are available on all login screens:
 
 ```bash
 npm run build
+npm start
 ```
+
+---
+
+## ✅ What's Removed
+
+- ❌ `backend/` — FastAPI Python server
+- ❌ `src/i18n/` — Language translation files (en.ts, te.ts, ta.ts, ml.ts, hi.ts, bn.ts, mr.ts)
+- ❌ `.env.local` — Backend environment configuration
+- ❌ Neon PostgreSQL dependencies
+
+---
+
+## 📝 Notes
+
+- All data is **demo data** stored in `src/data/demoData.ts` and `localStorage`
+- UI is English-only
+- No backend API calls — fully self-contained
+- Perfect for prototyping, demos, and UI testing
+
