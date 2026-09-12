@@ -35,7 +35,23 @@ export default function FarmerDashboard() {
   const [recommendations, setRecommendations] = useState<AIRecommendation[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { let isMounted = true; farmerService.getProduceList().then(data => { if (isMounted) setProduceList(data || []); }).catch(() => { if (isMounted) setProduceList([]); }); return () => { isMounted = false; }; }, []);
+  useEffect(() => {
+    let isMounted = true;
+    farmerService.getProduceList()
+      .then(data => {
+        if (isMounted) {
+          setProduceList(data || []);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setProduceList([]);
+          setLoading(false);
+        }
+      });
+    return () => { isMounted = false; };
+  }, []);
 
   const topRec = recommendations[0];
   const activeOrder = orders.find(o => o.status === 'In Transit') || orders[0];

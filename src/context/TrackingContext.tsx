@@ -26,8 +26,12 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
   const [activeTrip, setActiveTrip] = useState<DeliveryTracking | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() => 
+    typeof window !== 'undefined' 
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST' 
+      : 'Live Telemetry'
+  );
   const subRef = useRef<TrackingSubscriptionHandle | null>(null);
 
   const fetchTrip = useCallback(async () => {

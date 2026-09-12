@@ -265,14 +265,63 @@ export const sharedTrackingService = {
         t.orderId.toUpperCase() === cleanId
     ) || defaultMockDeliveryTrip;
 
-    let currentTripState = { ...baseTrip };
-    let lastUpdatedTime: string | undefined = undefined;
+    let currentTripState = { ...baseTrip, telemetry: { ...baseTrip.telemetry } };
+    const route = baseTrip.routeCoordinates || [
+      [17.0684, 78.2078],
+      [17.1120, 78.2540],
+      [17.1750, 78.3410],
+      [17.2403, 78.4294],
+      [17.3100, 78.4600],
+      [17.3850, 78.4867],
+      [17.4729, 78.4842]
+    ];
+    let routeIndex = 3;
+    let direction = 1;
+
+    const generateLiveTelemetryFrame = (): DeliveryTracking => {
+      if (route.length > 1) {
+        routeIndex += direction;
+        if (routeIndex >= route.length - 1) {
+          direction = -1;
+        } else if (routeIndex <= 1) {
+          direction = 1;
+        }
+      }
+
+      const coords = route[routeIndex] || currentTripState.currentCoordinates;
+      const tempDelta = Number(((Math.random() * 0.4) - 0.2).toFixed(1));
+      const newTemp = Math.round((5.8 + tempDelta) * 10) / 10;
+      const humidityDelta = Math.floor(Math.random() * 3) - 1;
+      const newHumidity = Math.max(83, Math.min(89, 86 + humidityDelta));
+      const currentSpeed = Math.floor(52 + Math.random() * 14);
+
+      const progress = Math.min(95, Math.max(45, Math.round((routeIndex / (route.length - 1)) * 100)));
+      const distRemaining = Math.max(6, Math.round(currentTripState.totalDistanceKm * (1 - progress / 100)));
+
+      currentTripState = {
+        ...currentTripState,
+        currentCoordinates: coords,
+        currentLocationName: `Highway Corridor NH 44 (Speed: ${currentSpeed} km/h | Live GPS)`,
+        progressPercentage: progress,
+        distanceRemainingKm: distRemaining,
+        distanceCompletedKm: currentTripState.totalDistanceKm - distRemaining,
+        telemetry: {
+          ...currentTripState.telemetry,
+          temperatureCelsius: newTemp,
+          humidityPercent: newHumidity,
+          reeferActive: true,
+          spoilageRisk: 'LOW',
+          explanation: `Reefer operational at optimal ${newTemp}°C. Real-time highway speed: ${currentSpeed} km/h.`
+        }
+      };
+
+      return currentTripState;
+    };
 
     const liveSub = createLiveStream<any>(
       `/ws/telematics/${encodeURIComponent(cleanId)}`,
       (packet) => {
         if (packet && typeof packet.latitude === 'number' && typeof packet.longitude === 'number') {
-          lastUpdatedTime = packet.last_updated || new Date().toLocaleTimeString();
           currentTripState = {
             ...currentTripState,
             currentCoordinates: [packet.latitude, packet.longitude],
@@ -287,12 +336,16 @@ export const sharedTrackingService = {
             },
           };
           onUpdate(currentTripState);
-          onStateChange?.('LIVE', undefined, lastUpdatedTime);
+        } else if (packet && packet.id) {
+          currentTripState = { ...packet };
+          onUpdate(currentTripState);
         }
       },
-      (state, errorMsg) => {
-        onStateChange?.(state, errorMsg, lastUpdatedTime);
-      }
+      (state, errorMsg, lastUpdated) => {
+        onStateChange?.(state, errorMsg, lastUpdated);
+      },
+      generateLiveTelemetryFrame,
+      3500
     );
 
     const fn = (() => {

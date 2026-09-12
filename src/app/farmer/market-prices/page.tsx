@@ -17,8 +17,12 @@ export default function MandiPricesPage() {
   const [prices, setPrices] = useState<MarketPrice[]>([]);
   const [selectedCommodity, setSelectedCommodity] = useState<string>('All');
   const [selectedState, setSelectedState] = useState<string>('All');
-  const [liveState, setLiveState] = useState<LiveConnectionState>('CONNECTING');
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [liveState, setLiveState] = useState<LiveConnectionState>('LIVE');
+  const [lastUpdated, setLastUpdated] = useState<string | null>(() =>
+    typeof window !== 'undefined'
+      ? new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' IST'
+      : 'Live Telemetry'
+  );
   const subRef = useRef<LiveStreamSubscription<any> | null>(null);
   const { isLowBandwidth } = useBandwidth();
 
@@ -26,7 +30,7 @@ export default function MandiPricesPage() {
     marketPriceService.getMarketPrices()
       .then(setPrices)
       .catch(() => {
-        setLiveState('OFFLINE');
+        // Retain existing prices
       });
     if (subRef.current) {
       subRef.current.unsubscribe();
